@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title ?? 'CodeIgniter Tutorial') ?></title>
-    <link rel="stylesheet" href="<?= base_url('assets/dist/css/tutorialStyle.css') ?>">
+    <?php
+    // Root-relative URLs so CSS/JS work when hostname differs from app.baseURL
+    // (e.g. GitHub Actions + Lando: page is *.lndo.site but default baseURL may be localhost).
+    ?>
+    <link rel="stylesheet" href="<?= esc('/assets/dist/css/tutorialStyle.css', 'attr') ?>">
 </head>
 <body>
     <header class="site-header">
@@ -20,6 +24,6 @@
         <?= $this->renderSection('content') ?>
     </main>
 
-    <script src="<?= base_url('assets/dist/js/tutorial.js') ?>"></script>
+    <script src="<?= esc('/assets/dist/js/tutorial.js', 'attr') ?>"></script>
 </body>
 </html>
