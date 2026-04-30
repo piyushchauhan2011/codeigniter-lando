@@ -130,6 +130,14 @@ Run migrations:
 lando php spark migrate
 ```
 
+### D) “Healthcheck … FAILED … Can’t connect to MySQL” during `lando start`
+
+MySQL binds its port a few seconds after the container boots. Early healthcheck probes can log **ERROR 2003 (connection refused)** and **mysql’s “password on the command line” warning** until the daemon is accepting connections. After a short retry loop you should still see **`✔ Healthcheck … database …`**.
+
+This project [.lando.yml](.lando.yml) overrides the default lamp DB probe with a quieter **`mysqladmin ping -h localhost`** so logs are calmer while still waiting for readiness.
+
+Do **not** set `healthcheck: false` unless you fully understand tooling that depends on “DB is ready” ordering.
+
 ## 8) Quick verify commands
 
 ```bash

@@ -59,28 +59,8 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Setup PHP (for Playwright E2E via spark serve)
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2"
-          tools: composer:v2
-          coverage: none
-          extensions: intl, mbstring
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.composer/cache
-            vendor
-          key: composer-fe-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: composer-fe-${{ runner.os }}-
-
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress
-
       - name: Install frontend dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Type check
         run: pnpm typecheck
@@ -96,9 +76,3 @@ jobs:
 
       - name: Build frontend assets
         run: pnpm build
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Run Playwright smoke test
-        run: pnpm test:e2e

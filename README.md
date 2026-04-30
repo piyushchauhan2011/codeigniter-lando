@@ -157,12 +157,12 @@ PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site:8080 pnpm test:e2e
 PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site:8443 PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 pnpm test:e2e
 ```
 
-GitHub Actions keep using the built‑in PHP server (`PLAYWRIGHT_BASE_URL` unset) so workflows do not require Docker/Lando.
+On GitHub, **browser E2E** runs in [.github/workflows/playwright-lando.yml](.github/workflows/playwright-lando.yml) via [Lando](https://docs.lando.dev/install/gha.html) (`lando/setup-lando`). The lighter [.github/workflows/ci.yml](.github/workflows/ci.yml) job runs PHP + Node checks (Vitest/build) **without** Playwright.
 
 ## CI and Release Flow
 
-- Pull requests run PHP + frontend checks (lint, format, typecheck, unit tests, Playwright smoke).
-- Pushes to `main` run the same checks to keep branch health green.
+- Pull requests and `main`: **CI** workflow — PHP (lint, PHPStan, PHPUnit) and frontend (typecheck, format, oxlint, Vitest, Vite build) using `pnpm install --frozen-lockfile`.
+- Same triggers: **Playwright (Lando)** workflow — starts the stack from [.lando.yml](.lando.yml), waits for `/hello`, then runs Playwright against the resolve URL (HTTP preferred; HTTPS uses `PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1` when needed).
 - Pushing a tag matching `v*` triggers release packaging and publishes a downloadable tarball asset.
 
 Release a version:
