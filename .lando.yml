@@ -1,0 +1,7 @@
+name: my-first-lamp-app
+recipe: lamp
+config:
+  webroot: public
+  php: '8.2'
+
+scanner: false
