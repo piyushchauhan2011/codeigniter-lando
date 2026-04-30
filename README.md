@@ -1,89 +1,12 @@
-# CodeIgniter 4 Development
+# CodeIgniter tutorial
 
-[![PHPUnit](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-phpunit.yml/badge.svg)](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-phpunit.yml)
-[![PHPStan](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-phpstan.yml/badge.svg)](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-phpstan.yml)
-[![Psalm](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-psalm.yml/badge.svg)](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/test-psalm.yml)
-[![Coverage Status](https://coveralls.io/repos/github/codeigniter4/CodeIgniter4/badge.svg?branch=develop)](https://coveralls.io/github/codeigniter4/CodeIgniter4?branch=develop)
-[![Downloads](https://poser.pugx.org/codeigniter4/framework/downloads)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/codeigniter4/CodeIgniter4)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub stars](https://img.shields.io/github/stars/codeigniter4/CodeIgniter4)](https://packagist.org/packages/codeigniter4/framework)
-[![GitHub license](https://img.shields.io/github/license/codeigniter4/CodeIgniter4)](https://github.com/codeigniter4/CodeIgniter4/blob/develop/LICENSE)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/codeigniter4/CodeIgniter4/pulls)
-<br>
+Hands-on [**CodeIgniter 4**](https://codeigniter.com/) playground: MVC-style routes/controllers/views, PHP tooling (**Composer**, PHPStan, PHPUnit), and a **pnpm**/**Vite**/**TypeScript**/SCSS front end built into `public/assets/dist`. Optional **[Lando](https://lando.dev)** and **Playwright** match local and CI workflows (see [.github/workflows/ci.yml](.github/workflows/ci.yml) and [.github/workflows/playwright-lando.yml](.github/workflows/playwright-lando.yml)).
 
-## What is CodeIgniter?
+Framework reference: [**User Guide**](https://codeigniter.com/user_guide/).
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Serving the app
 
-This repository holds the source code for CodeIgniter 4 only.
-Version 4 is a complete rewrite to bring the quality and the code into a more modern version,
-while still keeping as many of the things intact that has made people love the framework over the years.
-
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
-
-### Documentation
-
-The [User Guide](https://codeigniter.com/user_guide/) is the primary documentation for CodeIgniter 4.
-
-You will also find the [current **in-progress** User Guide](https://codeigniter4.github.io/CodeIgniter4/).
-As with the rest of the framework, it is a work in progress, and will see changes over time to structure, explanations, etc.
-
-You might also be interested in the [API documentation](https://codeigniter4.github.io/api/) for the framework components.
-
-## Important Change with index.php
-
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
-
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
-
-**Please** read the user guide for a better explanation of how CI4 works!
-
-## Repository Management
-
-CodeIgniter is developed completely on a volunteer basis. As such, please give up to 7 days
-for your issues to be reviewed. If you haven't heard from one of the team in that time period,
-feel free to leave a comment on the issue so that it gets brought back to our attention.
-
-> [!IMPORTANT]
-> We use GitHub issues to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-> We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-> FEATURE REQUESTS.
-
-If you raise an issue here that pertains to support or a feature request, it will
-be closed! If you are not sure if you have found a bug, raise a thread on the forum first -
-someone else may have encountered the same thing.
-
-Before raising a new GitHub issue, please check that your bug hasn't already
-been reported or fixed.
-
-We use pull requests (PRs) for CONTRIBUTIONS to the repository.
-We are looking for contributions that address one of the reported bugs or
-approved work packages.
-
-Do not use a PR as a form of feature request.
-Unsolicited contributions will only be considered if they fit nicely
-into the framework roadmap.
-Remember that some components that were part of CodeIgniter 3 are being moved
-to optional packages, with their own repository.
-
-## Contributing
-
-We **are** accepting contributions from the community! It doesn't matter whether you can code, write documentation, or help find bugs,
-all contributions are welcome.
-
-Please read the [*Contributing to CodeIgniter*](https://github.com/codeigniter4/CodeIgniter4/blob/develop/contributing/README.md).
-
-CodeIgniter has had thousands on contributions from people since its creation. This project would not be what it is without them.
-
-<a href="https://github.com/codeigniter4/CodeIgniter4/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=codeigniter4/CodeIgniter4" />
-</a>
-
-Made with [contrib.rocks](https://contrib.rocks).
+Point the web server (or proxy) document root at the **`public/`** directory—not the repo root—so only the front controller and static assets are web-accessible. Set `app.baseURL` in `.env` for the URL you use; with Lando-specific URLs see [LANDO_ONBOARDING.md](LANDO_ONBOARDING.md).
 
 ## Server Requirements
 
@@ -170,9 +93,61 @@ Release a version:
 1. `git tag v1.0.0`
 2. `git push origin v1.0.0`
 
-After the workflow completes, download the tarball from GitHub Releases and copy it to your server with `scp`.
+After the workflow completes you get `codeigniter-tutorial-<tag>.tar.gz`: production `composer install`, built `public/assets/dist`, Composer `vendor/`, skipped empty `writable/*` payloads (fresh logs/cache on each install).
 
-Optional helper to download and unpack a release locally:
+Optional helper to download/unpack locally (no deploy wiring):
 
-- `./scripts/download-release.sh <owner/repo> <tag>`
-- Example: `./scripts/download-release.sh myuser/codeigniter-tutorial v1.0.0`
+```bash
+./scripts/download-release.sh OWNER/REPO v1.0.0
+```
+
+### Deploy tarball to a VPS (releases + symlink + rollback)
+
+[`scripts/deploy-digitalocean.sh`](scripts/deploy-digitalocean.sh) SSHes into Ubuntu-style hosts (DigitalOcean Droplets count) using a rolling release layout beneath `DEPLOY_APP_ROOT`:
+
+- `releases/<nano-timestamp>_…/` — unpacked copies (Apache never points here directly).
+- `current` symlink — rewired on each deploy. Set Apache **`DocumentRoot` to `$DEPLOY_APP_ROOT/current/public`** and allow **`FollowSymLinks`** (or symlink-safe equivalent) inside that tree.
+- `shared/.env`, `shared/writable/` — never copied from tarballs (release trees symlink `.env` + writable into shared state).
+
+Exports before running locally:
+
+```bash
+export DEPLOY_SSH_TARGET=deploy@YOUR_DROPLET
+export DEPLOY_APP_ROOT=/var/www/codeigniter-tutorial
+```
+
+One-time filesystem prep on the Droplet:
+
+```bash
+./scripts/deploy-digitalocean.sh init-shared
+scp ./production.env "${DEPLOY_SSH_TARGET}:${DEPLOY_APP_ROOT}/shared/.env"
+sudo chown -R www-data:www-data "${DEPLOY_APP_ROOT}/shared/writable"
+```
+
+Adjust `sudo chown`/user to match whoever runs PHP/Apache on your Droplet (often `www-data` on Debian/Ubuntu).
+
+Push a tagged release (`v*`) → download URL from GitHub Releases.
+
+```bash
+./scripts/deploy-digitalocean.sh deploy 'https://github.com/OWNER/REPO/releases/download/v1.0.0/codeigniter-tutorial-v1.0.0.tar.gz'
+
+# Roll back symlink + reload Apache to the lexical previous release bucket:
+./scripts/deploy-digitalocean.sh rollback
+
+# Inspect symlink + directories:
+./scripts/deploy-digitalocean.sh releases
+```
+
+Environment knobs:
+
+| Variable | Purpose |
+| --- | --- |
+| `DEPLOY_KEEP_RELEASES` | Default **5**. Oldest dormant folders prune after each successful deploy. |
+| `DEPLOY_APACHE` | `false` skips reload scripts (manual restarts instead). |
+| `DEPLOY_APACHE_CMD` | Override auto-detected graceful reload commands. Requires passwordless `sudo`. |
+| `DEPLOY_SMOKE_URL` | Optional `curl`; failure triggers symlink rollback automatically. |
+
+Notes:
+
+- Releases require GNU `date … %N`; Ubuntu images satisfy this. Fallback uses extra entropy only if `%N` is absent.
+- After a failed curl smoke probe the broken release stays on-disk for forensic diffing.
