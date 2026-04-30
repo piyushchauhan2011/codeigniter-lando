@@ -1,6 +1,11 @@
 /.env
 /vendor/
 /build/
+/node_modules/
+/dist/
+/public/assets/dist/
+/playwright-report/
+/test-results/
 
 # OS/editor noise
 .DS_Store
@@ -23,3 +28,6 @@ Thumbs.db
 !/writable/debugbar/index.html
 !/writable/logs/index.html
 !/writable/uploads/index.html
+
+# PHPUnit (optional local cache; never commit)
+.phpunit.result.cache

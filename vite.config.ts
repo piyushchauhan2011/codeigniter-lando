@@ -1,0 +1,21 @@
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  publicDir: false,
+  build: {
+    outDir: "public/assets/dist",
+    emptyOutDir: true,
+    sourcemap: false,
+    rollupOptions: {
+      input: {
+        tutorial: "resources/ts/tutorial.ts",
+        tutorialStyle: "resources/scss/tutorial.scss"
+      },
+      output: {
+        entryFileNames: "js/[name].js",
+        chunkFileNames: "js/[name].js",
+        assetFileNames: "css/[name][extname]"
+      }
+    }
+  }
+});

@@ -1,0 +1,28 @@
+{
+  "name": "codeigniter-tutorial-frontend",
+  "private": true,
+  "packageManager": "pnpm@10.10.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint resources",
+    "format": "oxfmt resources",
+    "format:check": "oxfmt --check resources",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site:8080 playwright test",
+    "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site:8443 PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "latest",
+    "@types/node": "^25.6.0",
+    "oxfmt": "latest",
+    "oxlint": "latest",
+    "sass": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest"
+  }
+}

@@ -92,7 +92,7 @@
             "CodeIgniter\\ComposerScripts::postUpdate"
         ],
         "post-autoload-dump": [
-            "@composer update --ansi --working-dir=utils"
+            "php -r \"if (is_dir('utils')) { passthru('composer update --ansi --working-dir=utils', $code); exit($code); }\""
         ],
         "analyze": [
             "Composer\\Config::disableProcessTimeout",
@@ -118,7 +118,8 @@
             "phpstan analyse --ansi --generate-baseline=utils/phpstan-baseline/loader.neon",
             "split-phpstan-baseline utils/phpstan-baseline/loader.neon"
         ],
-        "phpstan:check": "vendor/bin/phpstan analyse --verbose --ansi --memory-limit=512M",
+        "ci:php:lint": "php scripts/ci-php-lint.php app",
+        "phpstan:check": "vendor/bin/phpstan analyse -c phpstan.neon --verbose --ansi --memory-limit=512M",
         "sa": "@analyze",
         "style": "@cs-fix",
         "test": "phpunit"

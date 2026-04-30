@@ -116,3 +116,63 @@ This project is set up for Lando-based local development.
 ## Running CodeIgniter Tests
 
 Information on running the CodeIgniter test suite can be found in the [README.md](tests/README.md) file in the tests directory.
+
+## Local Quality Commands
+
+- Install PHP dependencies: `composer install`
+- Lint PHP syntax: `composer ci:php:lint`
+- Static analysis: `composer phpstan:check`
+- Unit tests: `composer test`
+
+## Frontend Tooling (pnpm + Vite + TS + SCSS)
+
+- Install frontend dependencies: `pnpm install`
+- Start Vite dev server: `pnpm dev`
+- Build deployable assets: `pnpm build`
+- Typecheck: `pnpm typecheck`
+- Format check (oxfmt): `pnpm format:check`
+- Lint (oxlint): `pnpm lint`
+- Unit tests (Vitest): `pnpm test`
+- Integration smoke tests (Playwright): `pnpm test:e2e`
+
+The tutorial layout loads built assets from `public/assets/dist` (run `pnpm build` so CSS/JS exist before E2E or deploy).
+
+### Playwright with Lando (recommended locally)
+
+Playwright defaults to starting `php spark serve` only when **`PLAYWRIGHT_BASE_URL` is not set**. If you use Lando, start the stack first and point tests at its URL instead:
+
+1. `lando start` (or `lando restart` after tooling / proxy changes — see `lando --help`).
+2. `pnpm build` (so `public/assets/dist` exists inside the synced project).
+
+Then either set the base URL explicitly or use these shortcuts (they match [.lando.yml](.lando.yml) `name:` + [LANDO_ONBOARDING.md](LANDO_ONBOARDING.md) proxy ports):
+
+- HTTP proxy: `pnpm test:e2e:lando:http`
+- HTTPS proxy (often needs cert trust locally): `pnpm test:e2e:lando:https`
+
+Equivalent manual run:
+
+```bash
+PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site:8080 pnpm test:e2e
+# or HTTPS + skip self-signed cert errors in CI/local:
+PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site:8443 PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 pnpm test:e2e
+```
+
+GitHub Actions keep using the built‑in PHP server (`PLAYWRIGHT_BASE_URL` unset) so workflows do not require Docker/Lando.
+
+## CI and Release Flow
+
+- Pull requests run PHP + frontend checks (lint, format, typecheck, unit tests, Playwright smoke).
+- Pushes to `main` run the same checks to keep branch health green.
+- Pushing a tag matching `v*` triggers release packaging and publishes a downloadable tarball asset.
+
+Release a version:
+
+1. `git tag v1.0.0`
+2. `git push origin v1.0.0`
+
+After the workflow completes, download the tarball from GitHub Releases and copy it to your server with `scp`.
+
+Optional helper to download and unpack a release locally:
+
+- `./scripts/download-release.sh <owner/repo> <tag>`
+- Example: `./scripts/download-release.sh myuser/codeigniter-tutorial v1.0.0`
