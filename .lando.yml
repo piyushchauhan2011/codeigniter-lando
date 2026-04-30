@@ -5,3 +5,18 @@ config:
   php: '8.2'
 
 scanner: false
+
+services:
+  database:
+    # Default lamp probe uses mysql with -p and hits host `database`; it often logs
+    # several benign connection-refused retries + mysqld stderr noise on cold start.
+    # Ping localhost inside the DB container instead (quiet, usual Docker MySQL pattern).
+    healthcheck:
+      command:
+        - mysqladmin
+        - ping
+        - "-h"
+        - localhost
+        - "--silent"
+      retries: 30
+      delay: 2500
