@@ -1,0 +1,112 @@
+name: Playwright E2E (Lando)
+
+# Runs browser smoke tests against the real LAMP stack from .lando.yml.
+# Uses GitHub-hosted Docker + setup-lando: https://docs.lando.dev/install/gha.html
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: playwright-lando-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  playwright-lando:
+    name: Lando stack + Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Lando
+        uses: lando/setup-lando@v3
+        with:
+          lando-version: stable
+          telemetry: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+          coverage: none
+          extensions: intl, mbstring
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install Composer dependencies (host filesystem = Lando mount)
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend assets
+        run: pnpm build
+
+      - name: Start Lando
+        run: lando start
+
+      - name: Resolve appserver URL for Playwright
+        id: lando
+        run: |
+          set -euo pipefail
+          JSON=$(lando info --format=json)
+          echo "::group::lando info (truncated)"
+          echo "$JSON" | head -c 12000
+          echo
+          echo "::endgroup::"
+          HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://"))' | head -n1)
+          HTTPS=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^https://"))' | head -n1)
+          URL="${HTTP:-}"
+          IGNORE="false"
+          if [[ -z "$URL" ]]; then
+            URL="${HTTPS}"
+            IGNORE="true"
+          fi
+          if [[ -z "$URL" ]]; then
+            echo "Could not find an HTTP or HTTPS appserver URL in lando info output."
+            exit 1
+          fi
+          BASE="${URL%/}"
+          echo "Resolved base URL: $BASE (ignore_https_errors=$IGNORE)"
+          echo "base-url=$BASE" >> "$GITHUB_OUTPUT"
+          echo "ignore-https=$IGNORE" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for CodeIgniter /hello route
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.lando.outputs.base-url }}"
+          for i in $(seq 1 48); do
+            if curl -fsS "${BASE}/hello" >/dev/null 2>&1; then
+              echo "Ready after poll $i"
+              exit 0
+            fi
+            echo "waiting for ${BASE}/hello ..."
+            sleep 10
+          done
+          exit 1
+
+      - name: Install Chromium (Playwright)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Playwright smoke tests against Lando
+        run: |
+          set -euo pipefail
+          export PLAYWRIGHT_BASE_URL="${{ steps.lando.outputs.base-url }}"
+          if [[ "${{ steps.lando.outputs.ignore-https }}" == "true" ]]; then
+            export PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1
+          fi
+          pnpm exec playwright test
