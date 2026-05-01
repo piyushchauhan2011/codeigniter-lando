@@ -22,8 +22,11 @@ jobs:
     name: Coverage and metrics comment
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -45,22 +48,34 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Run unit tests with coverage
+      - name: Run unit tests with coverage (PR head)
         run: |
           mkdir -p build
           composer test:coverage
+          cp -f build/coverage-text.txt build/pr-coverage-text.txt
 
-      - name: Run PhpMetrics (summary JSON)
+      - name: Baseline coverage (merge target / PR base)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: bash scripts/ci-cover-pr-base.sh
+
+      - name: Run PhpMetrics on PR head (summary JSON)
         run: |
           mkdir -p build
           vendor/bin/phpmetrics app,scripts --report-summary-json=build/phpmetrics-summary.json
 
       - name: Build PR comment markdown
         env:
-          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_SHA: ${{ github.event.pull_request.head.sha }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          COVERAGE_TXT: ${{ github.workspace }}/build/pr-coverage-text.txt
+          BASE_COVERAGE_TXT: ${{ github.workspace }}/build/base-coverage-text.txt
+          COVERAGE_PR_LABEL: This PR
+          COVERAGE_BASE_LABEL: PR base (target branch)
         run: bash scripts/ci-build-pr-comment.sh build/pr-comment.md
 
       - name: Post or update sticky PR comment
