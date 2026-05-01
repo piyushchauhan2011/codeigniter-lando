@@ -121,8 +121,15 @@ jobs:
           done
           exit 1
 
+      - name: Wait until MySQL accepts connections from appserver
+        run: |
+          set -euo pipefail
+          lando php scripts/ci-wait-mysql.php
+
       - name: Run database migrations
-        run: lando php spark migrate --all
+        run: |
+          set -euo pipefail
+          lando php spark migrate --all
 
       - name: Install Chromium (Playwright)
         run: pnpm exec playwright install --with-deps chromium

@@ -166,7 +166,9 @@ PLAYWRIGHT_BASE_URL=https://your-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 
 
 To run Playwright against a locally managed **`php spark serve`** instead (no Lando), use **`pnpm test:e2e:spark`**.
 
-The **GitHub Actions** workflow [`.github/workflows/playwright-lando.yml`](.github/workflows/playwright-lando.yml) exports **`PLAYWRIGHT_BASE_URL`** (from **`lando info`**) and, for HTTPS, **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS`**, then runs **`pnpm test:e2e`**—so CI and local use the same script. It prefers a **`https://`** appserver URL when available; plain **`http://`** is only used if HTTPS is not listed.
+The **GitHub Actions** workflow [`.github/workflows/playwright-lando.yml`](.github/workflows/playwright-lando.yml) exports **`PLAYWRIGHT_BASE_URL`** (from **`lando info`**) and, for HTTPS, **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS`**, then runs **`pnpm test:e2e`**—so CI and local use the same script. It prefers a **`https://`** appserver URL when available; plain **`http://`** is only used if HTTPS is not listed. After Lando is up, CI runs **`lando php scripts/ci-wait-mysql.php`** (poll **MySQL** at **`database:3306`** from inside the appserver with the same **`lamp`** / **`lamp`** creds as **`.env`**) before **`lando php spark migrate --all`**, because **`spark migrate`** can see **connection refused** if it runs before the DB accepts TCP from the appserver—even when Lando’s healthcheck has already passed.
+
+CI also runs this poll script after **`lando start`** and wraps **`lando php spark migrate --all`** in **`set -euo pipefail`** so a failed migration fails the job (no Playwright run on broken DB).
 
 ## 9) Debugging PHP with VS Code / Cursor (Xdebug + Lando)
 
