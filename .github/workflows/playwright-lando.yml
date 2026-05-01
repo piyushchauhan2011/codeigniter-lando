@@ -63,7 +63,7 @@ jobs:
           app.baseURL = 'https://my-first-lamp-app.lndo.site/'
           app.forceGlobalSecureRequests = true
           app.indexPage = ''
-          database.default.hostname = database
+          database.default.hostname = myfirstlampapp_database_1
           database.default.database = lamp
           database.default.username = lamp
           database.default.password = lamp
