@@ -166,6 +166,8 @@ PLAYWRIGHT_BASE_URL=https://your-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 
 
 To run Playwright against a locally managed **`php spark serve`** instead (no Lando), use **`pnpm test:e2e:spark`**.
 
+The **GitHub Actions** workflow [`.github/workflows/playwright-lando.yml`](.github/workflows/playwright-lando.yml) picks a **`https://`** appserver URL from **`lando info`** when available (same idea as **`pnpm test:e2e`**) and sets **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** for the Lando certificate. Plain **`http://`** is only used if HTTPS is not listed.
+
 ## 9) Debugging PHP with VS Code / Cursor (Xdebug + Lando)
 
 This repo **gitignores** the **`.vscode/`** directory so editor settings stay local. Each developer should create their own **`launch.json`** (see below).

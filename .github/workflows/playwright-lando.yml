@@ -68,13 +68,16 @@ jobs:
           echo "$JSON" | head -c 12000
           echo
           echo "::endgroup::"
-          HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://"))' | head -n1)
+          # Prefer HTTPS + ignore cert errors (same idea as pnpm test:e2e). HTTP caused flaky
+          # Playwright runs vs apps tuned for https:// in app.baseURL.
           HTTPS=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^https://"))' | head -n1)
-          URL="${HTTP:-}"
+          HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://"))' | head -n1)
+          URL="${HTTPS:-}"
           IGNORE="false"
-          if [[ -z "$URL" ]]; then
-            URL="${HTTPS}"
+          if [[ -n "$URL" ]]; then
             IGNORE="true"
+          else
+            URL="${HTTP:-}"
           fi
           if [[ -z "$URL" ]]; then
             echo "Could not find an HTTP or HTTPS appserver URL in lando info output."
@@ -89,8 +92,12 @@ jobs:
         run: |
           set -euo pipefail
           BASE="${{ steps.lando.outputs.base-url }}"
+          CURL=(curl -fsS)
+          if [[ "$BASE" == https://* ]]; then
+            CURL+=(--insecure)
+          fi
           for i in $(seq 1 48); do
-            if curl -fsS "${BASE}/hello" >/dev/null 2>&1; then
+            if "${CURL[@]}" "${BASE}/hello" >/dev/null 2>&1; then
               echo "Ready after poll $i"
               exit 0
             fi
