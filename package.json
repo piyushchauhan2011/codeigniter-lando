@@ -7,13 +7,16 @@
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint resources",
+    "lint:css": "stylelint \"resources/**/*.scss\"",
+    "lint:css:fix": "stylelint \"resources/**/*.scss\" --fix",
+    "lint:all": "pnpm lint && pnpm lint:css",
     "format": "oxfmt resources",
     "format:check": "oxfmt --check resources",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site:8080 playwright test",
-    "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site:8443 PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test"
+    "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site playwright test",
+    "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test"
   },
   "devDependencies": {
     "@playwright/test": "latest",
@@ -21,6 +24,8 @@
     "oxfmt": "latest",
     "oxlint": "latest",
     "sass": "latest",
+    "stylelint": "^17.9.1",
+    "stylelint-config-standard-scss": "^17.0.0",
     "typescript": "latest",
     "vite": "latest",
     "vitest": "latest"

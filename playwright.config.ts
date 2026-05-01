@@ -1,5 +1,6 @@
 import { defineConfig, type PlaywrightTestConfig } from "@playwright/test";
 
+/** Port for `php spark serve` when PLAYWRIGHT_BASE_URL is unset (not used for Lando). */
 const port = process.env.PLAYWRIGHT_PORT ?? "8080";
 const localOrigin = `http://127.0.0.1:${port}`;
 const explicitBaseURL = process.env.PLAYWRIGHT_BASE_URL?.trim();

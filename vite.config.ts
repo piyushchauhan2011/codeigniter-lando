@@ -9,7 +9,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         tutorial: "resources/ts/tutorial.ts",
-        tutorialStyle: "resources/scss/tutorial.scss"
+        tutorialStyle: "resources/scss/tutorial.scss",
+        portal: "resources/ts/portal.ts",
       },
       output: {
         entryFileNames: "js/[name].js",

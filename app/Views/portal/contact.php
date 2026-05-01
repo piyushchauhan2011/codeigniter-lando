@@ -9,7 +9,7 @@
         <div class="flash-error"><ul><?php foreach ($errors as $err): ?><li><?= esc(is_array($err) ? implode(' ', $err) : $err) ?></li><?php endforeach; ?></ul></div>
     <?php endif; ?>
 
-    <form method="post" action="<?= site_url('contact') ?>" class="form">
+    <form method="post" action="<?= portal_url('contact') ?>" class="form">
         <?= csrf_field() ?>
         <label for="name">Name</label>
         <input id="name" name="name" value="<?= esc(old('name') ?? '') ?>" required>

@@ -3,6 +3,7 @@
 namespace Config;
 
 use App\Libraries\PortalAuth;
+use App\Libraries\PortalLocale;
 use CodeIgniter\Config\BaseService;
 
 /**
@@ -27,5 +28,14 @@ class Services extends BaseService
         }
 
         return new PortalAuth(service('session'));
+    }
+
+    public static function portalLocale(bool $getShared = true): PortalLocale
+    {
+        if ($getShared) {
+            return static::getSharedInstance('portalLocale');
+        }
+
+        return new PortalLocale();
     }
 }

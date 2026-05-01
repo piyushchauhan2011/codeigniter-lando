@@ -16,7 +16,7 @@ class PortalEmployerFilter implements FilterInterface
         $auth = Services::portalAuth();
 
         if (! $auth->isEmployer()) {
-            return redirect()->to(site_url('dashboard'))->with('error', 'Employer account required.');
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('error', 'Employer account required.');
         }
 
         return null;

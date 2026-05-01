@@ -12,7 +12,7 @@
         <p><img src="<?= esc(base_url('uploads/' . $profile['logo_path']), 'attr') ?>" alt="Logo" class="company-logo"></p>
     <?php endif; ?>
 
-    <form method="post" action="<?= site_url('employer/profile') ?>" class="form" enctype="multipart/form-data">
+    <form method="post" action="<?= portal_url('employer/profile') ?>" class="form" enctype="multipart/form-data">
         <?= csrf_field() ?>
         <label for="company_name">Company name</label>
         <input id="company_name" name="company_name" value="<?= esc(old('company_name', $profile['company_name'])) ?>" required>

@@ -1,7 +1,7 @@
 <article class="job-card">
-    <h3><a href="<?= site_url('jobs/' . (int) ($job['id'] ?? 0)) ?>"><?= esc($job['title'] ?? '') ?></a></h3>
+    <h3><a href="<?= portal_url('jobs/' . (int) ($job['id'] ?? 0)) ?>"><?= esc($job['title'] ?? '') ?></a></h3>
     <p class="muted">
-        <?= esc($job['company_name'] ?? 'Company') ?> · <?= esc($job['location'] ?? '') ?> · <?= esc(str_replace('_', '-', (string) ($job['employment_type'] ?? ''))) ?>
+        <?= esc($job['company_name'] ?? 'Company') ?> · <?= esc($job['location'] ?? '') ?> · <?= esc(portal_employment_label((string) ($job['employment_type'] ?? ''))) ?>
     </p>
     <?php
         $salaryMin = isset($job['salary_min']) ? (string) $job['salary_min'] : '';
@@ -9,8 +9,12 @@
         ?>
     <?php if ($salaryMin !== '' || $salaryMax !== ''): ?>
         <p class="salary">
-            <?php if ($salaryMin !== ''): ?>From <?= esc($salaryMin) ?><?php endif; ?>
-            <?php if ($salaryMax !== ''): ?> — up to <?= esc($salaryMax) ?><?php endif; ?>
+            <span class="salary__label"><?= esc(lang('Portal.salary_label')) ?>:</span>
+            <?php if ($salaryMin !== ''): ?><?= esc(lang('Portal.salary_from')) ?> <?= esc($salaryMin) ?><?php endif; ?>
+            <?php if ($salaryMax !== ''): ?> — <?= esc(lang('Portal.salary_up_to')) ?> <?= esc($salaryMax) ?><?php endif; ?>
         </p>
+    <?php endif; ?>
+    <?php if (isset($job['created_at']) && is_string($job['created_at']) && $job['created_at'] !== ''): ?>
+        <p class="posted-at muted"><span class="posted-at__label"><?= esc(lang('Portal.posted_label')) ?>:</span> <?= esc(portal_localized_datetime($job['created_at'])) ?></p>
     <?php endif; ?>
 </article>

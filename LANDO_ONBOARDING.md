@@ -8,37 +8,36 @@ This project uses Lando for local development.
 - Docker installed and running
 - Linux/macOS shell access
 
-## 2) Global Lando proxy port setup (important)
+## 2) Global Lando config (optional)
 
-Set your global Lando proxy ports so this project uses `8080` and `8443`:
+With defaults, Lando serves this app at a **`.lndo.site` URL** (often **`https://my-first-lamp-app.lndo.site/`** with **no port in the address bar**). You **do not** need to edit `~/.lando/config.yml` unless you are resolving a port conflict or a team standard.
 
-`~/.lando/config.yml`
+If you **do** customize the proxy, use `~/.lando/config.yml` keys such as `proxyHttpPort` and `proxyHttpsPort` (see [Lando global config](https://docs.lando.dev/config/global.html)), then run `lando poweroff` and start again.
 
-```yaml
-proxyHttpPort: 8080
-proxyHttpsPort: 8443
-```
+**Rule of thumb:** whatever **`lando info`** prints under **urls** for `appserver` is what must match **`app.baseURL`** in `.env` (scheme, host, port if any, trailing slash).
 
-Then apply:
-
-```bash
-lando poweroff
-```
+**Xdebug:** uses the DBGp **client** port (Xdebug 3 default **9003**), not your HTTP/HTTPS URL. Optional PHP ini overrides belong in your own Lando/PHP setup if you need a non-default port.
 
 ## 3) Project Lando configuration
 
-This project uses:
+See [.lando.yml](.lando.yml). Notable points:
+
+- **`services.appserver.scanner: false`** — avoids spurious URL probes (e.g. `127.0.0.1:8000`) on start.
+- **`services.appserver.xdebug`** includes **`coverage`** so `composer test:coverage` / `test:coverage:html` work inside the container.
+- **`database.healthcheck`** — quieter MySQL readiness check.
+
+Minimal excerpt:
 
 ```yaml
-name: my-first-lamp-app
-recipe: lamp
-config:
-  webroot: public
-  php: '8.2'
 scanner: false
+services:
+  appserver:
+    xdebug: "debug,develop,coverage"
+    scanner: false
+  database:
+    healthcheck:
+      # ...
 ```
-
-`scanner: false` is used to avoid noisy URL probe errors for `127.0.0.1:8000` and `127.0.0.1:443`.
 
 ## 4) Start the app
 
@@ -48,18 +47,20 @@ lando start
 lando info
 ```
 
-Expected main URLs:
+Copy the **https** `appserver` URL you will actually use (or **http** if you prefer plain HTTP). Examples:
 
-- `http://my-first-lamp-app.lndo.site:8080/`
-- `https://my-first-lamp-app.lndo.site:8443/`
+- `https://my-first-lamp-app.lndo.site/`
+- `http://my-first-lamp-app.lndo.site/` (if your proxy exposes HTTP that way)
+
+If Lando prints a **localhost** URL with a **random host port**, that is also valid—use it consistently in `.env`.
 
 ## 5) CodeIgniter environment config
 
-Create `.env` from `env` if missing, then set:
+Create `.env` from `env` if missing, then set **`app.baseURL`** to the **same origin** as in the browser (from `lando info`), **with a trailing slash**:
 
 ```ini
 CI_ENVIRONMENT = development
-app.baseURL = 'https://my-first-lamp-app.lndo.site:8443/'
+app.baseURL = 'https://my-first-lamp-app.lndo.site/'
 app.forceGlobalSecureRequests = true
 app.indexPage = ''
 
@@ -71,10 +72,7 @@ database.default.DBDriver = MySQLi
 database.default.port = 3306
 ```
 
-These values fix:
-
-- wrong asset/debugbar URLs pointing to `localhost:8080`
-- `index.php` appearing in generated URLs
+Adjust **`app.baseURL`** and **`app.forceGlobalSecureRequests`** if you use **http** instead of **https**. Wrong **`baseURL`** causes broken assets, wrong redirects, and `index.php` leaking into generated URLs.
 
 ## 6) Trust HTTPS certificate (no browser warnings)
 
@@ -142,5 +140,6 @@ Do **not** set `healthcheck: false` unless you fully understand tooling that dep
 
 ```bash
 lando info
-curl -vkI https://my-first-lamp-app.lndo.site:8443/
+# Replace BASE with your appserver URL from lando info (no trailing path):
+curl -vkI "https://my-first-lamp-app.lndo.site/"
 ```

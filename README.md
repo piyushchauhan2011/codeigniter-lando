@@ -32,9 +32,9 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 
 This project is set up for Lando-based local development.
 
-- Read `LANDO_ONBOARDING.md` for setup, troubleshooting, and HTTPS certificate trust steps.
-- Main app URL: `https://my-first-lamp-app.lndo.site:8443/`
-- If you see `index.php` in URL or asset 404s, verify `.env` values in the onboarding guide.
+- Read [LANDO_ONBOARDING.md](LANDO_ONBOARDING.md) for setup, troubleshooting, and HTTPS certificate trust steps.
+- After `lando start`, use the **`https://…` appserver URL from `lando info`** (often `https://my-first-lamp-app.lndo.site/` with **no port** in the host).
+- Set **`app.baseURL` in `.env`** to that same origin (trailing slash). If you see `index.php` in the URL or asset 404s, the base URL usually does not match what you opened in the browser.
 
 ## Running CodeIgniter Tests
 
@@ -67,17 +67,16 @@ Playwright defaults to starting `php spark serve` only when **`PLAYWRIGHT_BASE_U
 1. `lando start` (or `lando restart` after tooling / proxy changes — see `lando --help`).
 2. `pnpm build` (so `public/assets/dist` exists inside the synced project).
 
-Then either set the base URL explicitly or use these shortcuts (they match [.lando.yml](.lando.yml) `name:` + [LANDO_ONBOARDING.md](LANDO_ONBOARDING.md) proxy ports):
+Then either set the base URL explicitly or use these shortcuts (they assume the default **`.lndo.site`** host from [.lando.yml](.lando.yml) `name:`; if your `lando info` URLs use a non-default port, set `PLAYWRIGHT_BASE_URL` yourself):
 
-- HTTP proxy: `pnpm test:e2e:lando:http`
-- HTTPS proxy (often needs cert trust locally): `pnpm test:e2e:lando:https`
+- HTTP: `pnpm test:e2e:lando:http`
+- HTTPS (sets `PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1` for the local Lando cert): `pnpm test:e2e:lando:https`
 
 Equivalent manual run:
 
 ```bash
-PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site:8080 pnpm test:e2e
-# or HTTPS + skip self-signed cert errors in CI/local:
-PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site:8443 PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 pnpm test:e2e
+PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site pnpm test:e2e
+PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 pnpm test:e2e
 ```
 
 On GitHub, **browser E2E** runs in [.github/workflows/playwright-lando.yml](.github/workflows/playwright-lando.yml) via [Lando](https://docs.lando.dev/install/gha.html) (`lando/setup-lando`). The lighter [.github/workflows/ci.yml](.github/workflows/ci.yml) job runs PHP + Node checks (Vitest/build) **without** Playwright.

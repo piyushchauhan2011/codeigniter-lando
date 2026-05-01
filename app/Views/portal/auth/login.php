@@ -14,7 +14,7 @@
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= site_url('login') ?>" class="form">
+    <form method="post" action="<?= portal_url('login') ?>" class="form">
         <?= csrf_field() ?>
         <label for="email">Email</label>
         <input id="email" name="email" type="email" value="<?= esc(old('email') ?? '') ?>" required>
@@ -24,6 +24,6 @@
 
         <button type="submit" class="btn">Sign in</button>
     </form>
-    <p class="muted">No account? <a href="<?= site_url('register') ?>">Register</a></p>
+    <p class="muted">No account? <a href="<?= portal_url('register') ?>">Register</a></p>
 </section>
 <?php $this->endSection(); ?>

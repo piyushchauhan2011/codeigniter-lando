@@ -14,7 +14,7 @@
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= site_url('register') ?>" class="form">
+    <form method="post" action="<?= portal_url('register') ?>" class="form">
         <?= csrf_field() ?>
         <label for="email">Email</label>
         <input id="email" name="email" type="email" value="<?= esc(old('email') ?? '') ?>" required>
@@ -36,6 +36,6 @@
 
         <button type="submit" class="btn">Create account</button>
     </form>
-    <p class="muted">Already registered? <a href="<?= site_url('login') ?>">Sign in</a></p>
+    <p class="muted">Already registered? <a href="<?= portal_url('login') ?>">Sign in</a></p>
 </section>
 <?php $this->endSection(); ?>

@@ -82,7 +82,7 @@ class Employer extends BaseController
 
         model(EmployerProfileModel::class, false)->update($profile['id'], $data);
 
-        return redirect()->to(site_url('employer/profile'))->with('message', 'Profile updated.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('employer/profile')))->with('message', 'Profile updated.');
     }
 
     public function newJob(): string
@@ -127,7 +127,7 @@ class Employer extends BaseController
 
         $jobId = model(JobModel::class, false)->insert($insert, true);
 
-        return redirect()->to(site_url('employer'))->with('message', 'Job saved (ID ' . $jobId . ').');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('employer')))->with('message', 'Job saved (ID ' . $jobId . ').');
     }
 
     public function editJob(int $jobId): string
@@ -183,7 +183,7 @@ class Employer extends BaseController
 
         model(JobModel::class, false)->update($jobId, $data);
 
-        return redirect()->to(site_url('employer'))->with('message', 'Job updated.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('employer')))->with('message', 'Job updated.');
     }
 
     public function deleteJob(int $jobId)
@@ -197,7 +197,7 @@ class Employer extends BaseController
 
         model(JobModel::class, false)->delete($jobId);
 
-        return redirect()->to(site_url('employer'))->with('message', 'Job deleted.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('employer')))->with('message', 'Job deleted.');
     }
 
     public function applications(int $jobId): string
@@ -250,7 +250,7 @@ class Employer extends BaseController
         }
 
         if (! model(JobModel::class)->belongsToEmployer((int) $app['job_id'], (int) $auth->id())) {
-            return redirect()->to(site_url('employer'))->with('error', 'Not allowed.');
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('employer')))->with('error', 'Not allowed.');
         }
 
         $relative = $app['resume_path'];

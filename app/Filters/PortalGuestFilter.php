@@ -16,7 +16,7 @@ class PortalGuestFilter implements FilterInterface
         $auth = Services::portalAuth();
 
         if ($auth->check()) {
-            return redirect()->to(site_url('dashboard'));
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')));
         }
 
         return null;

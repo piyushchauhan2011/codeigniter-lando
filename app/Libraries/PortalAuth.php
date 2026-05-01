@@ -45,10 +45,13 @@ class PortalAuth
         return $this->id() !== null && $this->role() !== null;
     }
 
-    public function login(int $userId, string $email, string $role): void
+    /**
+     * @param int|string $userId Row IDs from the DB layer are often strings (PDO string mode).
+     */
+    public function login(int|string $userId, string $email, string $role): void
     {
         $this->session->set([
-            self::SESSION_USER_ID => $userId,
+            self::SESSION_USER_ID => (int) $userId,
             self::SESSION_EMAIL   => $email,
             self::SESSION_ROLE    => $role,
         ]);

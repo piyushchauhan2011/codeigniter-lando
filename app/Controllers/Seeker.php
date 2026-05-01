@@ -80,7 +80,7 @@ class Seeker extends BaseController
 
         model(JobSeekerProfileModel::class, false)->update($profile['id'], $data);
 
-        return redirect()->to(site_url('seeker/profile'))->with('message', 'Profile updated.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('seeker/profile')))->with('message', 'Profile updated.');
     }
 
     public function applications(): string
@@ -90,7 +90,7 @@ class Seeker extends BaseController
         $applications = model(JobApplicationModel::class)->findAllForSeeker((int) $auth->id());
 
         return view('portal/seeker/applications', [
-            'title'          => 'My applications',
+            'title'        => lang('Portal.applications_heading'),
             'applications' => $applications,
         ]);
     }
@@ -157,7 +157,7 @@ class Seeker extends BaseController
 
         Events::trigger('job_application_submitted', $jobId, (int) $auth->id());
 
-        return redirect()->to(site_url('jobs/' . $jobId))->with('message', 'Application submitted.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('jobs/' . $jobId)))->with('message', 'Application submitted.');
     }
 
     public function toggleSave(int $jobId)

@@ -25,11 +25,12 @@ class Jobs extends BaseController
         $jobModel->applyPublishedFilters($filters);
         $jobs  = $jobModel->paginate(10);
         $pager = $jobModel->pager;
+        $pager->setPath(Services::portalLocale()->localizePath('jobs'));
 
         $categories = model(JobCategoryModel::class)->getCachedForForms();
 
         return view('portal/jobs/index', [
-            'title'      => 'Job listings',
+            'title'      => lang('Portal.job_listings_title'),
             'jobs'       => $jobs,
             'pager'      => $pager,
             'filters'    => $filters,

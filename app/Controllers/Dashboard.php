@@ -13,13 +13,13 @@ class Dashboard extends BaseController
         $auth = Services::portalAuth();
 
         if ($auth->isEmployer()) {
-            return redirect()->to(site_url('employer'));
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('employer')));
         }
 
         if ($auth->isSeeker()) {
-            return redirect()->to(site_url('seeker'));
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('seeker')));
         }
 
-        return redirect()->to(site_url('login'))->with('error', 'Unable to resolve dashboard.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('login')))->with('error', 'Unable to resolve dashboard.');
     }
 }

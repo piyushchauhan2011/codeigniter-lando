@@ -8,7 +8,7 @@
         <div class="flash-error"><ul><?php foreach ($errors as $err): ?><li><?= esc(is_array($err) ? implode(' ', $err) : $err) ?></li><?php endforeach; ?></ul></div>
     <?php endif; ?>
 
-    <form method="post" action="<?= site_url($job ? 'employer/jobs/' . (int) $job['id'] : 'employer/jobs') ?>" class="form">
+    <form method="post" action="<?= portal_url($job ? 'employer/jobs/' . (int) $job['id'] : 'employer/jobs') ?>" class="form">
         <?= csrf_field() ?>
         <label for="title">Title</label>
         <input id="title" name="title" value="<?= esc(old('title', $job['title'] ?? '')) ?>" required>
