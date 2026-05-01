@@ -147,6 +147,29 @@ lando info
 curl -vkI "https://my-first-lamp-app.lndo.site/"
 ```
 
+### Front-end build and Playwright (Lando)
+
+After **`lando start`** and a correct **`app.baseURL`** in `.env`, build assets and run tests from the project root:
+
+```bash
+pnpm install
+pnpm run build
+pnpm test
+pnpm test:e2e
+```
+
+**`pnpm test:e2e`** defaults to **`https://my-first-lamp-app.lndo.site`** and **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** when **`PLAYWRIGHT_BASE_URL`** is unset (Lando dev certificate). If **`PLAYWRIGHT_BASE_URL`** is already set—**`lando info`** URLs in CI, or your own origin—it is left as-is; set **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** yourself when using HTTPS with the Lando CA. Override the origin if yours differs (see **`lando info`**):
+
+```bash
+PLAYWRIGHT_BASE_URL=https://your-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 pnpm exec playwright test
+```
+
+To run Playwright against a locally managed **`php spark serve`** instead (no Lando), use **`pnpm test:e2e:spark`**.
+
+The **GitHub Actions** workflow [`.github/workflows/playwright-lando.yml`](.github/workflows/playwright-lando.yml) exports **`PLAYWRIGHT_BASE_URL`** (from **`lando info`**) and, for HTTPS, **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS`**, then runs **`pnpm test:e2e`**—so CI and local use the same script. It prefers a **`https://`** appserver URL when available; plain **`http://`** is only used if HTTPS is not listed. After Lando is up, CI runs **`lando php scripts/ci-wait-mysql.php`** (poll **MySQL** at **`database:3306`** from inside the appserver with the same **`lamp`** / **`lamp`** creds as **`.env`**) before **`lando php spark migrate --all`**, because **`spark migrate`** can see **connection refused** if it runs before the DB accepts TCP from the appserver—even when Lando’s healthcheck has already passed.
+
+CI also runs this poll script after **`lando start`** and wraps **`lando php spark migrate --all`** in **`set -euo pipefail`** so a failed migration fails the job (no Playwright run on broken DB).
+
 ## 9) Debugging PHP with VS Code / Cursor (Xdebug + Lando)
 
 This repo **gitignores** the **`.vscode/`** directory so editor settings stay local. Each developer should create their own **`launch.json`** (see below).

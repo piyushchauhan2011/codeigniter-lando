@@ -1,4 +1,8 @@
-<article class="job-card">
+<article
+    class="job-card"
+    data-job-id="<?= (int) ($job['id'] ?? 0) ?>"
+    data-employment-type="<?= esc((string) ($job['employment_type'] ?? ''), 'attr') ?>"
+>
     <h3><a href="<?= portal_url('jobs/' . (int) ($job['id'] ?? 0)) ?>"><?= esc($job['title'] ?? '') ?></a></h3>
     <p class="muted">
         <?= esc($job['company_name'] ?? 'Company') ?> · <?= esc($job['location'] ?? '') ?> · <?= esc(portal_employment_label((string) ($job['employment_type'] ?? ''))) ?>

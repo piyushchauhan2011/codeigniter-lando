@@ -1,0 +1,30 @@
+{
+  "jobs": [
+    {
+      "id": 9001,
+      "employer_user_id": 1,
+      "category_id": 1,
+      "title": "Fixture Senior Engineer",
+      "description": "Playwright fake job from JSON fixture.",
+      "employment_type": "full_time",
+      "location": "Remote",
+      "salary_min": "120000",
+      "salary_max": "150000",
+      "status": "published",
+      "company_name": "Fixture Corp"
+    },
+    {
+      "id": 9002,
+      "employer_user_id": 1,
+      "category_id": 1,
+      "title": "Fixture Part-time Analyst",
+      "description": "Another fake row for collection size.",
+      "employment_type": "part_time",
+      "location": "Montreal",
+      "salary_min": "40",
+      "salary_max": "55",
+      "status": "published",
+      "company_name": "Fixture Corp"
+    }
+  ]
+}

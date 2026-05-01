@@ -56,6 +56,24 @@ jobs:
       - name: Build frontend assets
         run: pnpm build
 
+      - name: Create .env for Lando
+        run: |
+          cat > .env <<'EOF'
+          CI_ENVIRONMENT = development
+          app.baseURL = 'https://my-first-lamp-app.lndo.site/'
+          app.forceGlobalSecureRequests = true
+          app.indexPage = ''
+          # Same hostname Lando documents in `lando info` → internal_connection.host (`database`).
+          # That alias and the Compose container name (e.g. myfirstlampapp_database_1) resolve to
+          # the same IP inside the appserver; prefer the service alias so this stays portable.
+          database.default.hostname = database
+          database.default.database = lamp
+          database.default.username = lamp
+          database.default.password = lamp
+          database.default.DBDriver = MySQLi
+          database.default.port = 3306
+          EOF
+
       - name: Start Lando
         run: lando start
 
@@ -68,13 +86,16 @@ jobs:
           echo "$JSON" | head -c 12000
           echo
           echo "::endgroup::"
-          HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://"))' | head -n1)
+          # Prefer HTTPS + ignore cert errors (same idea as pnpm test:e2e). HTTP caused flaky
+          # Playwright runs vs apps tuned for https:// in app.baseURL.
           HTTPS=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^https://"))' | head -n1)
-          URL="${HTTP:-}"
+          HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://"))' | head -n1)
+          URL="${HTTPS:-}"
           IGNORE="false"
-          if [[ -z "$URL" ]]; then
-            URL="${HTTPS}"
+          if [[ -n "$URL" ]]; then
             IGNORE="true"
+          else
+            URL="${HTTP:-}"
           fi
           if [[ -z "$URL" ]]; then
             echo "Could not find an HTTP or HTTPS appserver URL in lando info output."
@@ -89,8 +110,12 @@ jobs:
         run: |
           set -euo pipefail
           BASE="${{ steps.lando.outputs.base-url }}"
+          CURL=(curl -fsS)
+          if [[ "$BASE" == https://* ]]; then
+            CURL+=(--insecure)
+          fi
           for i in $(seq 1 48); do
-            if curl -fsS "${BASE}/hello" >/dev/null 2>&1; then
+            if "${CURL[@]}" "${BASE}/hello" >/dev/null 2>&1; then
               echo "Ready after poll $i"
               exit 0
             fi
@@ -98,6 +123,16 @@ jobs:
             sleep 10
           done
           exit 1
+
+      - name: Wait until MySQL accepts connections from appserver
+        run: |
+          set -euo pipefail
+          lando php scripts/ci-wait-mysql.php
+
+      - name: Run database migrations
+        run: |
+          set -euo pipefail
+          lando php spark migrate --all
 
       - name: Install Chromium (Playwright)
         run: pnpm exec playwright install --with-deps chromium
@@ -109,4 +144,4 @@ jobs:
           if [[ "${{ steps.lando.outputs.ignore-https }}" == "true" ]]; then
             export PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1
           fi
-          pnpm exec playwright test
+          pnpm test:e2e

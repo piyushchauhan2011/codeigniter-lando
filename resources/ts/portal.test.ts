@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatPortalLocalPreview } from "./portal";
+import { formatPortalLocalPreview } from "./portal_clock";
 
 describe("formatPortalLocalPreview", () => {
   it("formats a fixed instant for en", () => {
