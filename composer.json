@@ -17,14 +17,18 @@
         "psr/log": "^3.0"
     },
     "require-dev": {
+        "codeigniter/coding-standard": "^1.7",
         "codeigniter/phpstan-codeigniter": "^1.5",
         "fakerphp/faker": "^1.24",
+        "friendsofphp/php-cs-fixer": "^3.76",
         "kint-php/kint": "^6.1",
         "mikey179/vfsstream": "^1.6.12",
+        "nexusphp/cs-config": "^3.26",
         "nexusphp/tachycardia": "^2.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1.36",
         "phpstan/phpstan-strict-rules": "^2.0",
+        "phpmetrics/phpmetrics": "^2.8",
         "phpunit/phpcov": "^9.0.2 || ^10.0",
         "phpunit/phpunit": "^10.5.16 || ^11.2",
         "predis/predis": "^3.0",
@@ -70,8 +74,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "CodeIgniter\\": "tests/system/",
-            "Utils\\": "utils/src/"
+            "CodeIgniter\\": "tests/system/"
         }
     },
     "config": {
@@ -101,19 +104,19 @@
         ],
         "cs": [
             "Composer\\Config::disableProcessTimeout",
-            "utils/vendor/bin/php-cs-fixer check --ansi --verbose --diff --config=.php-cs-fixer.user-guide.php",
-            "utils/vendor/bin/php-cs-fixer check --ansi --verbose --diff --config=.php-cs-fixer.no-header.php",
-            "utils/vendor/bin/php-cs-fixer check --ansi --verbose --diff --config=.php-cs-fixer.tests.php",
-            "utils/vendor/bin/php-cs-fixer check --ansi --verbose --diff"
+            "vendor/bin/php-cs-fixer check --ansi --verbose --diff --config=.php-cs-fixer.user-guide.php",
+            "vendor/bin/php-cs-fixer check --ansi --verbose --diff --config=.php-cs-fixer.no-header.php",
+            "vendor/bin/php-cs-fixer check --ansi --verbose --diff --config=.php-cs-fixer.tests.php",
+            "vendor/bin/php-cs-fixer check --ansi --verbose --diff"
         ],
         "cs-fix": [
             "Composer\\Config::disableProcessTimeout",
-            "utils/vendor/bin/php-cs-fixer fix --ansi --verbose --diff --config=.php-cs-fixer.user-guide.php",
-            "utils/vendor/bin/php-cs-fixer fix --ansi --verbose --diff --config=.php-cs-fixer.no-header.php",
-            "utils/vendor/bin/php-cs-fixer fix --ansi --verbose --diff --config=.php-cs-fixer.tests.php",
-            "utils/vendor/bin/php-cs-fixer fix --ansi --verbose --diff"
+            "vendor/bin/php-cs-fixer fix --ansi --verbose --diff --config=.php-cs-fixer.user-guide.php",
+            "vendor/bin/php-cs-fixer fix --ansi --verbose --diff --config=.php-cs-fixer.no-header.php",
+            "vendor/bin/php-cs-fixer fix --ansi --verbose --diff --config=.php-cs-fixer.tests.php",
+            "vendor/bin/php-cs-fixer fix --ansi --verbose --diff"
         ],
-        "metrics": "utils/vendor/bin/phpmetrics --config=phpmetrics.json",
+        "metrics": "vendor/bin/phpmetrics --config=phpmetrics.json",
         "phpstan:baseline": [
             "phpstan analyse --ansi --generate-baseline=utils/phpstan-baseline/loader.neon",
             "split-phpstan-baseline utils/phpstan-baseline/loader.neon"

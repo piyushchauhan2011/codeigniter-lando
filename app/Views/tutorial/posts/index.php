@@ -1,6 +1,6 @@
-<?= $this->extend('tutorial/layout') ?>
+<?php $this->extend('tutorial/layout'); ?>
 
-<?= $this->section('content') ?>
+<?php $this->section('content'); ?>
 <section class="card">
     <h2>Posts (Database + Model)</h2>
     <p>This list comes from the <code>posts</code> table using <code>PostModel</code>.</p>
@@ -21,4 +21,4 @@
         <?php endforeach; ?>
     <?php endif; ?>
 </section>
-<?= $this->endSection() ?>
+<?php $this->endSection(); ?>

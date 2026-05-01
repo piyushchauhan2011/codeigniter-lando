@@ -1,6 +1,6 @@
-<?= $this->extend('tutorial/layout') ?>
+<?php $this->extend('tutorial/layout'); ?>
 
-<?= $this->section('content') ?>
+<?php $this->section('content'); ?>
 <section class="card">
     <h2>Hello Route + Controller + View</h2>
     <p>Welcome, <strong><?= esc($name) ?></strong>!</p>
@@ -16,4 +16,4 @@
     <button id="greet-btn" class="btn">Run JavaScript</button>
     <p id="greet-output" class="muted"></p>
 </section>
-<?= $this->endSection() ?>
+<?php $this->endSection(); ?>
