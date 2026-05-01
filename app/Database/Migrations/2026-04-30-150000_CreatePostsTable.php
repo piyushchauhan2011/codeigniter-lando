@@ -2,9 +2,8 @@
 
 namespace App\Database\Migrations;
 
-use CodeIgniter\Database\Migration;
 
-class CreatePostsTable extends Migration
+class CreatePostsTable extends AppMigration
 {
     public function up()
     {

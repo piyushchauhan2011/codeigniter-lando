@@ -23,6 +23,14 @@ use CodeIgniter\HotReloader\HotReloader;
  *      Events::on('create', [$myInstance, 'myMethod']);
  */
 
+Events::on('job_application_submitted', static function (int $jobId, int $seekerUserId): void {
+    log_message(
+        'info',
+        'Job application submitted job_id={job} seeker_user_id={seeker}',
+        ['job' => $jobId, 'seeker' => $seekerUserId],
+    );
+});
+
 Events::on('pre_system', static function (): void {
     if (ENVIRONMENT !== 'testing') {
         if (ini_get('zlib.output_compression')) {
