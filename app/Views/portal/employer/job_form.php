@@ -1,14 +1,14 @@
 <?php $this->extend('portal/layout'); ?>
 
 <?php $this->section('content'); ?>
-<section class="card">
+<section class="portal-card">
     <h2><?= esc($title) ?></h2>
 
     <?php if (! empty($errors)): ?>
-        <div class="flash-error"><ul><?php foreach ($errors as $err): ?><li><?= esc(is_array($err) ? implode(' ', $err) : $err) ?></li><?php endforeach; ?></ul></div>
+        <div class="portal-flash portal-flash--error"><ul><?php foreach ($errors as $err): ?><li><?= esc(is_array($err) ? implode(' ', $err) : $err) ?></li><?php endforeach; ?></ul></div>
     <?php endif; ?>
 
-    <form method="post" action="<?= portal_url($job ? 'employer/jobs/' . (int) $job['id'] : 'employer/jobs') ?>" class="form">
+    <form method="post" action="<?= portal_url($job ? 'employer/jobs/' . (int) $job['id'] : 'employer/jobs') ?>" class="portal-form">
         <?= csrf_field() ?>
         <label for="title">Title</label>
         <input id="title" name="title" value="<?= esc(old('title', $job['title'] ?? '')) ?>" required>
@@ -47,7 +47,7 @@
             <?php endforeach; ?>
         </select>
 
-        <button type="submit" class="btn"><?= $job ? 'Update job' : 'Create job' ?></button>
+        <button type="submit" class="portal-button"><?= $job ? 'Update job' : 'Create job' ?></button>
     </form>
 </section>
 <?php $this->endSection(); ?>

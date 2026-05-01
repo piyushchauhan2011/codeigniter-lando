@@ -1,15 +1,20 @@
 @use "../abstracts/variables" as *;
 
-.muted-link {
+/* Utilities / primitives */
+.portal-text-muted {
+  color: $color-gray-500;
+}
+
+.portal-link--muted {
   opacity: 0.85;
 }
 
-.inline-logout {
+.portal-page__logout {
   display: inline;
   margin: 0;
 }
 
-.link-btn {
+.portal-page__logout-button {
   background: none;
   border: none;
   color: $portal-nav-link;
@@ -24,7 +29,7 @@
   }
 }
 
-.link-danger {
+.portal-link-danger {
   background: none;
   border: none;
   color: $color-danger;
@@ -34,11 +39,77 @@
   padding: 0;
 }
 
-.btn.secondary {
-  background: $color-gray-600;
+.portal-button {
+  background: $color-accent-primary;
+  color: $color-white;
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+  width: fit-content;
+  font: inherit;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  box-sizing: border-box;
+
+  &--secondary {
+    background: $color-gray-600;
+  }
+
+  &--small {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
 }
 
-.btn.small {
-  padding: 6px 10px;
-  font-size: 13px;
+.portal-inline-form {
+  display: inline;
+}
+
+.portal-flash {
+  padding: 10px;
+  border-radius: 6px;
+
+  &--success {
+    background: $color-success-bg;
+    color: $color-success-text;
+  }
+
+  &--error {
+    background: $color-error-bg;
+    color: $color-error-text;
+  }
+}
+
+.portal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.portal-form input,
+.portal-form textarea,
+.portal-form select {
+  border: 1px solid $color-gray-300;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.portal-card {
+  background: $color-white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 8%);
+
+  &--auth {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  &--nested {
+    margin-top: 16px;
+    background: $color-gray-50;
+  }
 }

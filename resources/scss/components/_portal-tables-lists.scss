@@ -12,48 +12,57 @@
     text-align: left;
     vertical-align: top;
   }
-
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-  }
 }
 
-.cover-row td {
+.portal-table__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.portal-table__row--cover td {
   background: #fafafa;
 }
 
-.inline-status {
+.portal-inline-status {
   display: flex;
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.portal-auth-card {
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.role-fieldset {
+.portal-fieldset {
   border: 1px solid $color-gray-200;
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 12px;
 }
 
+.portal-fieldset__legend {
+  padding: 0 4px;
+}
+
 .portal-list {
   padding-left: 18px;
 }
 
-.pagination {
+.portal-pagination__list {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 16px;
   font-size: 14px;
+  list-style: none;
+  padding: 0;
+}
+
+.portal-pagination__item {
+  margin: 0;
+}
+
+.portal-pagination__item--active a {
+  font-weight: 700;
 }
 
 .portal-local-time {

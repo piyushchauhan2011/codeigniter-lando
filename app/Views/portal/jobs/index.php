@@ -2,14 +2,14 @@
 
 <?php $this->section('content'); ?>
 <section
-    class="card"
+    class="portal-card"
     data-jobs-index-root
     data-api-banner-template="<?= esc(lang('Portal.api_jobs_banner'), 'attr') ?>"
     data-api-banner-error="<?= esc(lang('Portal.api_jobs_banner_error'), 'attr') ?>"
 >
     <h2><?= esc($title) ?></h2>
-    <p class="muted"><?= esc(lang('Portal.filters_bookmark_hint')) ?></p>
-    <p class="job-api-banner muted" data-job-api-banner hidden>
+    <p class="portal-text-muted"><?= esc(lang('Portal.filters_bookmark_hint')) ?></p>
+    <p class="job-api-banner portal-text-muted" data-job-api-banner hidden>
         <span data-job-api-banner-text></span>
     </p>
 
@@ -38,7 +38,7 @@
                 <?php endforeach; ?>
             </select>
         </label>
-        <button type="submit" class="btn"><?= esc(lang('Portal.filter_search')) ?></button>
+        <button type="submit" class="portal-button"><?= esc(lang('Portal.filter_search')) ?></button>
     </form>
 
     <?php if ($jobs === []): ?>
@@ -59,7 +59,7 @@
                 <?= view_cell(\App\Cells\JobCardCell::class, ['job' => $job]) ?>
             <?php endforeach; ?>
         </div>
-        <?= $pager->only(['q', 'location', 'employment_type', 'category_id'])->links('default', 'default_full') ?>
+        <?= $pager->only(['q', 'location', 'employment_type', 'category_id'])->links('default', 'portal_full') ?>
     <?php endif; ?>
 </section>
 <?php $this->endSection(); ?>

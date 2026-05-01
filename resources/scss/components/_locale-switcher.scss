@@ -1,5 +1,6 @@
 @use "../abstracts/variables" as *;
 
+/* Block: locale switcher */
 .locale-switcher {
   display: inline-flex;
   align-items: stretch;
@@ -32,7 +33,7 @@
     z-index: 1;
   }
 
-  &.is-active {
+  &--active {
     background: $color-accent-bright;
     color: $color-white;
   }

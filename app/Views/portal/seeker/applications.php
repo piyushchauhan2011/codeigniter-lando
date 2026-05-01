@@ -1,7 +1,7 @@
 <?php $this->extend('portal/layout'); ?>
 
 <?php $this->section('content'); ?>
-<section class="card">
+<section class="portal-card">
     <h2><?= esc($title) ?></h2>
 
     <?php if ($applications === []): ?>
