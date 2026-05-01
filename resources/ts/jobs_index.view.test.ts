@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Backbone } from "./backbone_setup";
-import { bootJobsIndex } from "./jobs_index";
+import { bootJobsIndex } from "./jobs";
 
 describe("bootJobsIndex (DOM + mocked sync)", () => {
   afterEach(() => {

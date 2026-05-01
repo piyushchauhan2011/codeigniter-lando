@@ -1,0 +1,78 @@
+@use "../abstracts/variables" as *;
+
+.portal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th,
+  td {
+    border-bottom: 1px solid $color-gray-200;
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+}
+
+.portal-table__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.portal-table__row--cover td {
+  background: #fafafa;
+}
+
+.portal-inline-status {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.portal-fieldset {
+  border: 1px solid $color-gray-200;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.portal-fieldset__legend {
+  padding: 0 4px;
+}
+
+.portal-list {
+  padding-left: 18px;
+}
+
+.portal-pagination__list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  font-size: 14px;
+  list-style: none;
+  padding: 0;
+}
+
+.portal-pagination__item {
+  margin: 0;
+}
+
+.portal-pagination__item--active a {
+  font-weight: 700;
+}
+
+.portal-local-time {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid $color-gray-200;
+  font-size: 14px;
+
+  &__value {
+    font-variant-numeric: tabular-nums;
+    margin-left: 4px;
+  }
+}

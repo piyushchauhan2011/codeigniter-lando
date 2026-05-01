@@ -1,10 +1,10 @@
 <?php $this->extend('portal/layout'); ?>
 
 <?php $this->section('content'); ?>
-<section class="card">
+<section class="portal-card">
     <h2><?= esc($title) ?></h2>
-    <p><a class="btn" href="<?= portal_url('seeker/profile') ?>">Edit profile</a>
-        <a class="btn secondary" href="<?= portal_url('seeker/applications') ?>">Applications</a></p>
+    <p><a class="portal-button" href="<?= portal_url('seeker/profile') ?>">Edit profile</a>
+        <a class="portal-button portal-button--secondary" href="<?= portal_url('seeker/applications') ?>">Applications</a></p>
 
     <?php if ($applications === []): ?>
         <p>No applications yet.</p>

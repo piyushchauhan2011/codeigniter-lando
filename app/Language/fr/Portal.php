@@ -55,4 +55,10 @@ return [
     'client_filter_label'   => 'Filtrer cette page par type',
     'client_filter_aria'    => 'Filtrer les cartes de cette page par type de contrat',
     'client_filter_any'     => 'Toutes sur cette page',
+
+    'auth_sign_in_heading' => 'Connexion',
+    'auth_email'           => 'Adresse e-mail',
+    'auth_password'        => 'Mot de passe',
+    'auth_submit_sign_in'  => 'Se connecter',
+    'auth_no_account'      => 'Pas de compte ?',
 ];

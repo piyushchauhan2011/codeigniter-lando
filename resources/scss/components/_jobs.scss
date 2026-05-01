@@ -1,0 +1,98 @@
+@use "../abstracts/variables" as *;
+
+/* Blocks: jobs index & detail */
+.job-api-banner {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+.job-client-toolbar {
+  margin-top: 12px;
+  font-size: 14px;
+
+  label {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+.job-search-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    gap: 6px;
+  }
+}
+
+.job-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.job-card {
+  border: 1px solid $color-gray-200;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fafafa;
+}
+
+.job-card__title {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+}
+
+.job-card__meta {
+  margin: 0;
+}
+
+.job-card__salary {
+  font-size: 14px;
+  margin: 6px 0 0;
+}
+
+.job-card__salary-label {
+  font-weight: inherit;
+}
+
+.job-card__posted {
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.job-card__posted-label {
+  font-weight: inherit;
+}
+
+.job-detail__summary {
+  margin: 0;
+}
+
+.job-detail__posted {
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.job-detail__posted-label {
+  font-weight: inherit;
+}
+
+.job-detail__body {
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.company-profile__logo {
+  max-height: 64px;
+}
+
+.applications-table__cover-letter {
+  margin-top: 6px;
+  font-size: 14px;
+}

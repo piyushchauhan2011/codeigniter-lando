@@ -1,10 +1,10 @@
 <?php $this->extend('portal/layout'); ?>
 
 <?php $this->section('content'); ?>
-<section class="card">
+<section class="portal-card">
     <h2><?= esc($title) ?></h2>
-    <p><a class="btn" href="<?= portal_url('employer/jobs/new') ?>">Post a job</a>
-        <a class="btn secondary" href="<?= portal_url('employer/profile') ?>">Company profile</a></p>
+    <p><a class="portal-button" href="<?= portal_url('employer/jobs/new') ?>">Post a job</a>
+        <a class="portal-button portal-button--secondary" href="<?= portal_url('employer/profile') ?>">Company profile</a></p>
 
     <?php if ($jobs === []): ?>
         <p>No jobs yet.</p>
@@ -16,13 +16,13 @@
                 <tr>
                     <td><?= esc($job['title']) ?></td>
                     <td><?= esc($job['status']) ?></td>
-                    <td class="actions">
+                    <td class="portal-table__actions">
                         <a href="<?= portal_url('jobs/' . (int) $job['id']) ?>">View</a>
                         <a href="<?= portal_url('employer/jobs/' . (int) $job['id'] . '/edit') ?>">Edit</a>
                         <a href="<?= portal_url('employer/jobs/' . (int) $job['id'] . '/applications') ?>">Applicants</a>
                         <form method="post" action="<?= portal_url('employer/jobs/' . (int) $job['id'] . '/delete') ?>" onsubmit="return confirm('Delete this job?');">
                             <?= csrf_field() ?>
-                            <button type="submit" class="link-danger">Delete</button>
+                            <button type="submit" class="portal-link-danger">Delete</button>
                         </form>
                     </td>
                 </tr>

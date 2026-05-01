@@ -1,0 +1,50 @@
+@use "../abstracts/variables" as *;
+
+/* Block: portal shell (layout) */
+.portal-page {
+  min-height: 100vh;
+}
+
+.portal-page__header {
+  background: $color-gray-900;
+  color: $color-white;
+  padding: 12px 24px;
+}
+
+.portal-page__header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.portal-page__brand {
+  color: $portal-header-text;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.portal-page__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.portal-page__nav-link {
+  color: $portal-nav-link;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid $portal-nav-link;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+.portal-page__main {
+  max-width: 960px;
+  margin: 24px auto;
+  padding: 0 16px;
+}

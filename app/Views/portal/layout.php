@@ -16,49 +16,49 @@ $urlFr    = $pl->siteUrlForLocale('fr');
     <link rel="stylesheet" href="<?= esc(base_url('assets/dist/css/tutorialStyle.css'), 'attr') ?>">
     <link rel="stylesheet" href="<?= esc(base_url('assets/dist/css/portal.css'), 'attr') ?>">
 </head>
-<body class="portal-body">
-<header class="site-header portal-header">
-    <div class="portal-header-inner">
-        <strong><a href="<?= portal_url('jobs') ?>" class="portal-brand"><?= esc(lang('Portal.nav_brand')) ?></a></strong>
-        <nav class="portal-nav" aria-label="Main">
-            <a href="<?= portal_url('jobs') ?>"><?= esc(lang('Portal.nav_browse')) ?></a>
-            <a href="<?= portal_url('contact') ?>"><?= esc(lang('Portal.nav_contact')) ?></a>
+<body class="portal-page">
+<header class="portal-page__header">
+    <div class="portal-page__header-inner">
+        <strong><a href="<?= portal_url('jobs') ?>" class="portal-page__brand"><?= esc(lang('Portal.nav_brand')) ?></a></strong>
+        <nav class="portal-page__nav" aria-label="Main">
+            <a class="portal-page__nav-link" href="<?= portal_url('jobs') ?>"><?= esc(lang('Portal.nav_browse')) ?></a>
+            <a class="portal-page__nav-link" href="<?= portal_url('contact') ?>"><?= esc(lang('Portal.nav_contact')) ?></a>
             <?php if (session()->get(\App\Libraries\PortalAuth::SESSION_USER_ID)): ?>
-                <a href="<?= portal_url('dashboard') ?>"><?= esc(lang('Portal.nav_dashboard')) ?></a>
+                <a class="portal-page__nav-link" href="<?= portal_url('dashboard') ?>"><?= esc(lang('Portal.nav_dashboard')) ?></a>
                 <?php if (session()->get(\App\Libraries\PortalAuth::SESSION_ROLE) === 'employer'): ?>
-                    <a href="<?= portal_url('employer') ?>"><?= esc(lang('Portal.nav_employer')) ?></a>
+                    <a class="portal-page__nav-link" href="<?= portal_url('employer') ?>"><?= esc(lang('Portal.nav_employer')) ?></a>
                 <?php endif; ?>
                 <?php if (session()->get(\App\Libraries\PortalAuth::SESSION_ROLE) === 'seeker'): ?>
-                    <a href="<?= portal_url('seeker') ?>"><?= esc(lang('Portal.nav_seeker')) ?></a>
+                    <a class="portal-page__nav-link" href="<?= portal_url('seeker') ?>"><?= esc(lang('Portal.nav_seeker')) ?></a>
                 <?php endif; ?>
-                <form action="<?= portal_url('logout') ?>" method="post" class="inline-logout">
+                <form action="<?= portal_url('logout') ?>" method="post" class="portal-page__logout">
                     <?= csrf_field() ?>
-                    <button type="submit" class="link-btn"><?= esc(lang('Portal.nav_sign_out')) ?></button>
+                    <button type="submit" class="portal-page__logout-button"><?= esc(lang('Portal.nav_sign_out')) ?></button>
                 </form>
             <?php else: ?>
-                <a href="<?= portal_url('login') ?>"><?= esc(lang('Portal.nav_sign_in')) ?></a>
-                <a href="<?= portal_url('register') ?>"><?= esc(lang('Portal.nav_register')) ?></a>
+                <a class="portal-page__nav-link" href="<?= portal_url('login') ?>"><?= esc(lang('Portal.nav_sign_in')) ?></a>
+                <a class="portal-page__nav-link" href="<?= portal_url('register') ?>"><?= esc(lang('Portal.nav_register')) ?></a>
             <?php endif; ?>
-            <a href="<?= site_url('/') ?>" class="muted-link"><?= esc(lang('Portal.nav_home')) ?></a>
+            <a href="<?= site_url('/') ?>" class="portal-page__nav-link portal-link--muted"><?= esc(lang('Portal.nav_home')) ?></a>
             <div class="locale-switcher" role="group" aria-label="<?= esc(lang('Portal.locale_en') . ' / ' . lang('Portal.locale_fr'), 'attr') ?>">
-                <a href="<?= esc($urlEn, 'attr') ?>" class="locale-switcher__btn <?= $isEn ? 'is-active' : '' ?>" hreflang="en" lang="en"><?= esc(lang('Portal.locale_en')) ?></a>
-                <a href="<?= esc($urlFr, 'attr') ?>" class="locale-switcher__btn <?= $isFr ? 'is-active' : '' ?>" hreflang="fr" lang="fr"><?= esc(lang('Portal.locale_fr')) ?></a>
+                <a href="<?= esc($urlEn, 'attr') ?>" class="locale-switcher__btn<?= $isEn ? ' locale-switcher__btn--active' : '' ?>" hreflang="en" lang="en"><?= esc(lang('Portal.locale_en')) ?></a>
+                <a href="<?= esc($urlFr, 'attr') ?>" class="locale-switcher__btn<?= $isFr ? ' locale-switcher__btn--active' : '' ?>" hreflang="fr" lang="fr"><?= esc(lang('Portal.locale_fr')) ?></a>
             </div>
         </nav>
     </div>
 </header>
 
-<main class="container portal-main">
+<main class="portal-page__main">
     <?php if (session()->getFlashdata('message')): ?>
-        <p class="flash-success"><?= esc(session()->getFlashdata('message')) ?></p>
+        <p class="portal-flash portal-flash--success"><?= esc(session()->getFlashdata('message')) ?></p>
     <?php endif; ?>
     <?php if (session()->getFlashdata('error')): ?>
-        <p class="flash-error"><?= esc(session()->getFlashdata('error')) ?></p>
+        <p class="portal-flash portal-flash--error"><?= esc(session()->getFlashdata('error')) ?></p>
     <?php endif; ?>
 
     <?= $this->renderSection('content') ?>
 
-    <p class="portal-local-time muted" id="portal-local-time" hidden>
+    <p class="portal-local-time portal-text-muted" id="portal-local-time" hidden>
         <span class="portal-local-time__label"><?= esc(lang('Portal.local_time_label')) ?>:</span>
         <span class="portal-local-time__value" data-portal-local-clock></span>
     </p>

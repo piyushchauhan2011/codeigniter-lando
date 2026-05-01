@@ -1,0 +1,36 @@
+// Design tokens shared by portal and tutorial bundles.
+
+// Neutrals
+$color-white: #fff;
+$color-gray-50: #f9fafb;
+$color-gray-100: #f3f4f6;
+$color-gray-200: #e5e7eb;
+$color-gray-300: #d1d5db;
+$color-gray-400: #9ca3af;
+$color-gray-500: #6b7280;
+$color-gray-600: #4b5563;
+$color-gray-700: #374151;
+$color-gray-800: #1f2937;
+$color-gray-900: #111827;
+
+// Accents
+$color-accent-light: #93c5fd;
+$color-accent-primary: #2563eb;
+$color-accent-bright: #3b82f6;
+
+// Semantic
+$color-danger: #b91c1c;
+$color-success-bg: #dcfce7;
+$color-success-text: #166534;
+$color-error-bg: #fee2e2;
+$color-error-text: #991b1b;
+
+// Tutorial shell
+$tutorial-page-bg: #f5f7fb;
+
+// Portal — derived
+$portal-nav-link: $color-accent-light;
+$portal-header-text: $color-white;
+$portal-locale-border: rgb(147 197 253 / 45%);
+$portal-locale-bg: rgb(17 24 39 / 65%);
+$portal-locale-bg-hover: rgb(55 65 81 / 90%);

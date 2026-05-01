@@ -14,7 +14,7 @@ class Auth extends BaseController
     public function login(): string
     {
         return view('portal/auth/login', [
-            'title' => 'Sign in',
+            'title' => lang('Portal.auth_sign_in_heading'),
         ]);
     }
 
