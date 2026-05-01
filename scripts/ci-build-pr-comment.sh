@@ -8,6 +8,9 @@
 #   COVERAGE_TXT (default: build/coverage-text.txt) — PR head summary from PHPUnit --coverage-text
 #   build/phpmetrics-summary.json
 #
+# Optional PHPUnit split (unit vs feature):
+#   PHPUNIT_JUNIT (default: build/phpunit-junit.xml) — from composer test:coverage --log-junit
+#
 # Optional for +/- lines vs PR base:
 #   BASE_COVERAGE_TXT (default: build/base-coverage-text.txt if readable)
 #   BASE_SHA (optional, short label in table)
@@ -72,6 +75,16 @@ if [[ -n "${GITHUB_SERVER_URL:-}" && -n "${GITHUB_REPOSITORY:-}" && -n "${GITHUB
 	RUN_LINK="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 fi
 
+PHPUNIT_JUNIT="${PHPUNIT_JUNIT:-${ROOT}/build/phpunit-junit.xml}"
+PHPUNIT_UNIT_TESTS=0
+PHPUNIT_UNIT_ASSERTIONS=0
+PHPUNIT_FEATURE_TESTS=0
+PHPUNIT_FEATURE_ASSERTIONS=0
+if [[ -f "$PHPUNIT_JUNIT" ]]; then
+	eval "$(php "${ROOT}/scripts/ci-phpunit-junit-split.php" "$PHPUNIT_JUNIT")"
+fi
+PHPUNIT_SPLIT_TOTAL=$((PHPUNIT_UNIT_TESTS + PHPUNIT_FEATURE_TESTS))
+
 SIGN_MARK_LINE_DELTA() {
 	local d=$((PR_COV - BASE_COV))
 	if ((d > 0)); then echo "+${d}"; elif ((d < 0)); then echo "${d}"; else echo "0"; fi
@@ -120,6 +133,15 @@ PP_DELTA_STR() {
 		echo "| **${COVERAGE_PR_LABEL}** | ${PR_COV} | ${PR_TOT} | ${PR_PCT}% |"
 	fi
 	echo ""
+	if [[ -f "$PHPUNIT_JUNIT" && "${PHPUNIT_SPLIT_TOTAL:-0}" -gt 0 ]]; then
+		echo "### PHPUnit — unit vs feature"
+		echo ""
+		echo "| Layer | Tests | Assertions | Role |"
+		echo "| :--- | ---: | ---: | :--- |"
+		echo "| **Unit** (\`tests/unit/\`) | ${PHPUNIT_UNIT_TESTS} | ${PHPUNIT_UNIT_ASSERTIONS} | Fast, isolated checks (no full app/HTTP boot in this repo’s suite). |"
+		echo "| **Feature / integration** (\`tests/feature/\`) | ${PHPUNIT_FEATURE_TESTS} | ${PHPUNIT_FEATURE_ASSERTIONS} | Full stack: CodeIgniter bootstrap, HTTP via \`FeatureTestTrait\`, database + migrations where tests use \`DatabaseTestTrait\`. |"
+		echo ""
+	fi
 	echo "<details>"
 	echo "<summary>PHPUnit text summary (PR head, <code>app/</code> filter)</summary>"
 	echo ""
