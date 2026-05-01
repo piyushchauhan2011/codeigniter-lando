@@ -12,7 +12,7 @@
         <p class="muted">Resume on file (stored securely).</p>
     <?php endif; ?>
 
-    <form method="post" action="<?= site_url('seeker/profile') ?>" class="form" enctype="multipart/form-data">
+    <form method="post" action="<?= portal_url('seeker/profile') ?>" class="form" enctype="multipart/form-data">
         <?= csrf_field() ?>
         <label for="headline">Headline</label>
         <input id="headline" name="headline" value="<?= esc(old('headline', $profile['headline'] ?? '')) ?>">

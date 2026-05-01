@@ -3,8 +3,8 @@
 <?php $this->section('content'); ?>
 <section class="card">
     <h2><?= esc($title) ?></h2>
-    <p><a class="btn" href="<?= site_url('seeker/profile') ?>">Edit profile</a>
-        <a class="btn secondary" href="<?= site_url('seeker/applications') ?>">Applications</a></p>
+    <p><a class="btn" href="<?= portal_url('seeker/profile') ?>">Edit profile</a>
+        <a class="btn secondary" href="<?= portal_url('seeker/applications') ?>">Applications</a></p>
 
     <?php if ($applications === []): ?>
         <p>No applications yet.</p>

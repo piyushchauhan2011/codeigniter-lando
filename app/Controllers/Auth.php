@@ -41,9 +41,9 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
         }
 
-        Services::portalAuth()->login($user['id'], $user['email'], $user['role']);
+        Services::portalAuth()->login((int) $user['id'], (string) $user['email'], (string) $user['role']);
 
-        return redirect()->to(site_url('dashboard'))->with('message', 'Welcome back.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('message', 'Welcome back.');
     }
 
     public function attemptRegister()
@@ -93,13 +93,13 @@ class Auth extends BaseController
 
         Services::portalAuth()->login($userId, $email, $role);
 
-        return redirect()->to(site_url('dashboard'))->with('message', 'Account created.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('message', 'Account created.');
     }
 
     public function logout()
     {
         Services::portalAuth()->logout();
 
-        return redirect()->to(site_url('jobs'))->with('message', 'Signed out.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('jobs')))->with('message', 'Signed out.');
     }
 }

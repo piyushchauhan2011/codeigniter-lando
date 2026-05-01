@@ -16,7 +16,7 @@ class PortalAuthFilter implements FilterInterface
         $auth = Services::portalAuth();
 
         if (! $auth->check()) {
-            return redirect()->to(site_url('login'))->with('error', 'Please sign in to continue.');
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('login')))->with('error', 'Please sign in to continue.');
         }
 
         return null;

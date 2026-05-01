@@ -16,7 +16,7 @@ class PortalSeekerFilter implements FilterInterface
         $auth = Services::portalAuth();
 
         if (! $auth->isSeeker()) {
-            return redirect()->to(site_url('dashboard'))->with('error', 'Job seeker account required.');
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('error', 'Job seeker account required.');
         }
 
         return null;

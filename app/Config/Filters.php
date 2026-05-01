@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Filters\LocaleFilter;
 use App\Filters\PortalAuthFilter;
 use App\Filters\PortalEmployerFilter;
 use App\Filters\PortalGuestFilter;
@@ -29,6 +30,7 @@ class Filters extends BaseFilters
      * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
+        'locale'        => LocaleFilter::class,
         'auth'          => PortalAuthFilter::class,
         'guest'         => PortalGuestFilter::class,
         'employer'      => PortalEmployerFilter::class,
@@ -114,5 +116,25 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'locale' => [
+            'before' => [
+                'jobs',
+                'jobs/*',
+                'contact',
+                'login',
+                'register',
+                'logout',
+                'dashboard',
+                'employer',
+                'employer/*',
+                'seeker',
+                'seeker/*',
+                'fr',
+                'fr/*',
+                'en',
+                'en/*',
+            ],
+        ],
+    ];
 }

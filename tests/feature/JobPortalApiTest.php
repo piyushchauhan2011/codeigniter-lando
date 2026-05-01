@@ -29,6 +29,14 @@ final class JobPortalApiTest extends CIUnitTestCase
         self::assertStringContainsString('application/json', $result->response()->getHeaderLine('Content-Type'));
         $json = json_decode((string) $result->response()->getBody(), true);
         self::assertIsArray($json);
-        self::assertNotEmpty($json);
+        self::assertNotEmpty($json['jobs'] ?? null);
+        $first = $json['jobs'][0];
+        self::assertArrayHasKey('created_at_iso', $first);
+        self::assertIsString($first['created_at_iso']);
+        self::assertNotSame('', $first['created_at_iso']);
+        self::assertMatchesRegularExpression(
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/',
+            $first['created_at_iso'],
+        );
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\ContactMessageModel;
+use Config\Services;
 
 class Contact extends BaseController
 {
@@ -38,6 +39,6 @@ class Contact extends BaseController
 
         log_message('info', 'Contact message stored from {email}', ['email' => $this->request->getPost('email')]);
 
-        return redirect()->to(site_url('contact'))->with('message', 'Thanks — your message was received.');
+        return redirect()->to(site_url(Services::portalLocale()->localizePath('contact')))->with('message', 'Thanks — your message was received.');
     }
 }

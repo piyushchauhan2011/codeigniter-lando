@@ -1,0 +1,252 @@
+// Portal layout & job UI (built via Vite entry resources/ts/portal.ts)
+
+.portal-body {
+  min-height: 100vh;
+}
+
+.portal-header {
+  padding: 12px 24px;
+}
+
+.portal-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.portal-brand {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.portal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+
+  a {
+    color: #93c5fd;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid #93c5fd;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+}
+
+.portal-main {
+  max-width: 960px;
+}
+
+.muted-link {
+  opacity: 0.85;
+}
+
+.inline-logout {
+  display: inline;
+  margin: 0;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #93c5fd;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+  }
+}
+
+.locale-switcher {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(147, 197, 253, 0.45);
+  margin-left: 4px;
+}
+
+.locale-switcher__btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: rgba(17, 24, 39, 0.65);
+  text-decoration: none !important;
+  line-height: 1.2;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(55, 65, 81, 0.9);
+    color: #fff;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px #93c5fd;
+    z-index: 1;
+  }
+
+  &.is-active {
+    background: #3b82f6;
+    color: #fff;
+  }
+}
+
+.job-search-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    gap: 6px;
+  }
+}
+
+.job-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.job-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fafafa;
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+  }
+
+  .salary {
+    font-size: 14px;
+    margin: 6px 0 0;
+  }
+}
+
+.posted-at {
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.nested-card {
+  margin-top: 16px;
+  background: #f9fafb;
+}
+
+.job-detail .job-body {
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.portal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th,
+  td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+}
+
+.link-danger {
+  background: none;
+  border: none;
+  color: #b91c1c;
+  cursor: pointer;
+  text-decoration: underline;
+  font: inherit;
+  padding: 0;
+}
+
+.btn.secondary {
+  background: #4b5563;
+}
+
+.company-logo {
+  max-height: 64px;
+}
+
+.portal-auth-card {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.role-fieldset {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.cover-letter {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.cover-row td {
+  background: #fafafa;
+}
+
+.inline-status {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn.small {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.portal-list {
+  padding-left: 18px;
+}
+
+.pagination {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.portal-local-time {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+
+  &__value {
+    font-variant-numeric: tabular-nums;
+    margin-left: 4px;
+  }
+}

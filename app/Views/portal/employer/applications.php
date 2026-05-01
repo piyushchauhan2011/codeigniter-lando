@@ -3,7 +3,7 @@
 <?php $this->section('content'); ?>
 <section class="card">
     <h2><?= esc($title) ?></h2>
-    <p><a href="<?= site_url('employer') ?>">← Back to dashboard</a></p>
+    <p><a href="<?= portal_url('employer') ?>">← Back to dashboard</a></p>
 
     <?php if ($applications === []): ?>
         <p>No applicants yet.</p>
@@ -23,7 +23,7 @@
                     <td><?= esc($app['seeker_email']) ?><br><span class="muted"><?= esc($app['seeker_headline'] ?? '') ?></span></td>
                     <td><?= esc($app['created_at'] ?? '') ?></td>
                     <td>
-                        <form method="post" action="<?= site_url('employer/applications/' . (int) $app['id'] . '/status') ?>" class="inline-status">
+                        <form method="post" action="<?= portal_url('employer/applications/' . (int) $app['id'] . '/status') ?>" class="inline-status">
                             <?= csrf_field() ?>
                             <select name="status">
                                 <?php foreach (['submitted', 'shortlisted', 'rejected'] as $st): ?>
@@ -35,7 +35,7 @@
                     </td>
                     <td>
                         <?php if (! empty($app['resume_path'])): ?>
-                            <a href="<?= site_url('employer/applications/' . (int) $app['id'] . '/resume') ?>">Resume</a>
+                            <a href="<?= portal_url('employer/applications/' . (int) $app['id'] . '/resume') ?>">Resume</a>
                         <?php else: ?>
                             <span class="muted">No file</span>
                         <?php endif; ?>
