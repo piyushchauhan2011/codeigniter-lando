@@ -71,6 +71,9 @@ jobs:
       - name: Oxlint
         run: pnpm lint
 
+      - name: Stylelint
+        run: pnpm lint:css
+
       - name: Vitest
         run: pnpm test
 
