@@ -14,13 +14,18 @@
     "format:check": "oxfmt --check resources",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test",
     "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site playwright test",
-    "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test"
+    "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test",
+    "test:e2e:spark": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "latest",
+    "@types/backbone": "^1.4.23",
+    "@types/jquery": "^4.0.0",
     "@types/node": "^25.6.0",
+    "@types/underscore": "^1.13.0",
+    "happy-dom": "^20.9.0",
     "oxfmt": "latest",
     "oxlint": "latest",
     "sass": "latest",
@@ -29,5 +34,10 @@
     "typescript": "latest",
     "vite": "latest",
     "vitest": "latest"
+  },
+  "dependencies": {
+    "backbone": "^1.6.1",
+    "jquery": "^4.0.0",
+    "underscore": "^1.13.8"
   }
 }

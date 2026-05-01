@@ -49,4 +49,10 @@ return [
     'jobs_none'           => 'Aucune offre ne correspond.',
     'placeholder_keywords' => 'Titre ou description',
     'placeholder_location' => 'Ville / télétravail',
+
+    'api_jobs_banner'       => 'Catalogue en direct : {count} offre(s) publiée(s) selon l’API.',
+    'api_jobs_banner_error' => 'Impossible de charger le décompte des offres via l’API.',
+    'client_filter_label'   => 'Filtrer cette page par type',
+    'client_filter_aria'    => 'Filtrer les cartes de cette page par type de contrat',
+    'client_filter_any'     => 'Toutes sur cette page',
 ];

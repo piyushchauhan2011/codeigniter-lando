@@ -106,6 +106,22 @@
   }
 }
 
+.job-api-banner {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+.job-client-toolbar {
+  margin-top: 12px;
+  font-size: 14px;
+
+  label {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
 .job-search-form {
   display: grid;
   gap: 12px;

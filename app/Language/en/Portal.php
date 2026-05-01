@@ -49,4 +49,10 @@ return [
     'jobs_none'           => 'No matching jobs.',
     'placeholder_keywords' => 'Title or description',
     'placeholder_location' => 'City / remote',
+
+    'api_jobs_banner'       => 'Live catalog: {count} published opening(s) reported by the API.',
+    'api_jobs_banner_error' => 'Could not load live job count from the API.',
+    'client_filter_label'   => 'Filter this page by type',
+    'client_filter_aria'    => 'Filter job cards on this page by employment type',
+    'client_filter_any'     => 'All on this page',
 ];

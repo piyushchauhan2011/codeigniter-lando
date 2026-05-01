@@ -147,6 +147,25 @@ lando info
 curl -vkI "https://my-first-lamp-app.lndo.site/"
 ```
 
+### Front-end build and Playwright (Lando)
+
+After **`lando start`** and a correct **`app.baseURL`** in `.env`, build assets and run tests from the project root:
+
+```bash
+pnpm install
+pnpm run build
+pnpm test
+pnpm test:e2e
+```
+
+**`pnpm test:e2e`** points Playwright at **`https://my-first-lamp-app.lndo.site`** and sets **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** for the Lando dev certificate. Override the origin if yours differs (see **`lando info`**):
+
+```bash
+PLAYWRIGHT_BASE_URL=https://your-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 pnpm exec playwright test
+```
+
+To run Playwright against a locally managed **`php spark serve`** instead (no Lando), use **`pnpm test:e2e:spark`**.
+
 ## 9) Debugging PHP with VS Code / Cursor (Xdebug + Lando)
 
 This repo **gitignores** the **`.vscode/`** directory so editor settings stay local. Each developer should create their own **`launch.json`** (see below).
