@@ -56,6 +56,21 @@ jobs:
       - name: Build frontend assets
         run: pnpm build
 
+      - name: Create .env for Lando
+        run: |
+          cat > .env <<'EOF'
+          CI_ENVIRONMENT = development
+          app.baseURL = 'https://my-first-lamp-app.lndo.site/'
+          app.forceGlobalSecureRequests = true
+          app.indexPage = ''
+          database.default.hostname = database
+          database.default.database = lamp
+          database.default.username = lamp
+          database.default.password = lamp
+          database.default.DBDriver = MySQLi
+          database.default.port = 3306
+          EOF
+
       - name: Start Lando
         run: lando start
 
@@ -105,6 +120,9 @@ jobs:
             sleep 10
           done
           exit 1
+
+      - name: Run database migrations
+        run: lando php spark migrate --all
 
       - name: Install Chromium (Playwright)
         run: pnpm exec playwright install --with-deps chromium
