@@ -1,6 +1,6 @@
 import "../scss/portal.scss";
 
-import { bootJobsIndex } from "./jobs_index";
+import { bootJobsIndex } from "./jobs";
 import { initLocalClock } from "./portal_clock";
 
 export { formatPortalLocalPreview } from "./portal_clock";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { jobCardMatchesFilter, parseJobsApiPayload } from "./jobs_index_core";
+import { jobCardMatchesFilter, parseJobsApiPayload } from "./jobs/core";
 
 describe("parseJobsApiPayload", () => {
   it("returns jobs from a valid API envelope", () => {

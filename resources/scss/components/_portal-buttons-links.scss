@@ -1,0 +1,44 @@
+@use "../abstracts/variables" as *;
+
+.muted-link {
+  opacity: 0.85;
+}
+
+.inline-logout {
+  display: inline;
+  margin: 0;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: $portal-nav-link;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid $portal-nav-link;
+    outline-offset: 2px;
+  }
+}
+
+.link-danger {
+  background: none;
+  border: none;
+  color: $color-danger;
+  cursor: pointer;
+  text-decoration: underline;
+  font: inherit;
+  padding: 0;
+}
+
+.btn.secondary {
+  background: $color-gray-600;
+}
+
+.btn.small {
+  padding: 6px 10px;
+  font-size: 13px;
+}

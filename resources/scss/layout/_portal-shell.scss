@@ -1,0 +1,45 @@
+@use "../abstracts/variables" as *;
+
+.portal-body {
+  min-height: 100vh;
+}
+
+.portal-header {
+  padding: 12px 24px;
+}
+
+.portal-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.portal-brand {
+  color: $portal-header-text;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.portal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+
+  a {
+    color: $portal-nav-link;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid $portal-nav-link;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+}
+
+.portal-main {
+  max-width: 960px;
+}

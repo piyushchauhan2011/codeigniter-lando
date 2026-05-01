@@ -1,0 +1,39 @@
+@use "../abstracts/variables" as *;
+
+.locale-switcher {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid $portal-locale-border;
+  margin-left: 4px;
+}
+
+.locale-switcher__btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  background: $portal-locale-bg;
+  text-decoration: none !important;
+  line-height: 1.2;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: $portal-locale-bg-hover;
+    color: $color-white;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px $portal-nav-link;
+    z-index: 1;
+  }
+
+  &.is-active {
+    background: $color-accent-bright;
+    color: $color-white;
+  }
+}

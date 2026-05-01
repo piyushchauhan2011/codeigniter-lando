@@ -1,3 +1,5 @@
+@use "abstracts/variables" as *;
+
 * {
   box-sizing: border-box;
 }
@@ -5,18 +7,18 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f5f7fb;
-  color: #1f2937;
+  background: $tutorial-page-bg;
+  color: $color-gray-800;
 }
 
 .site-header {
-  background: #111827;
-  color: #fff;
+  background: $color-gray-900;
+  color: $color-white;
   padding: 16px 24px;
 }
 
 .site-header nav a {
-  color: #93c5fd;
+  color: $color-accent-light;
   margin-right: 12px;
   text-decoration: none;
 }
@@ -28,14 +30,14 @@ body {
 }
 
 .card {
-  background: #fff;
+  background: $color-white;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 4px 14px rgb(0 0 0 / 8%);
 }
 
 .post {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid $color-gray-200;
   padding-top: 12px;
   margin-top: 12px;
 }
@@ -48,15 +50,15 @@ body {
 
 input,
 textarea {
-  border: 1px solid #d1d5db;
+  border: 1px solid $color-gray-300;
   border-radius: 6px;
   padding: 10px;
   font-size: 14px;
 }
 
 .btn {
-  background: #2563eb;
-  color: #fff;
+  background: $color-accent-primary;
+  color: $color-white;
   border: 0;
   border-radius: 6px;
   padding: 10px 14px;
@@ -65,19 +67,19 @@ textarea {
 }
 
 .flash-success {
-  background: #dcfce7;
-  color: #166534;
+  background: $color-success-bg;
+  color: $color-success-text;
   padding: 10px;
   border-radius: 6px;
 }
 
 .flash-error {
-  background: #fee2e2;
-  color: #991b1b;
+  background: $color-error-bg;
+  color: $color-error-text;
   padding: 10px;
   border-radius: 6px;
 }
 
 .muted {
-  color: #6b7280;
+  color: $color-gray-500;
 }
