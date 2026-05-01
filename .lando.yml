@@ -13,6 +13,8 @@ services:
   appserver:
     xdebug: "debug,develop,coverage"
     scanner: false   # required to skip appserver URL probes (e.g. 127.0.0.1:8000)
+    config:
+      php: .lando/php.ini
 
   database:
     # Default lamp probe uses mysql with -p and hits host `database`; it often logs
