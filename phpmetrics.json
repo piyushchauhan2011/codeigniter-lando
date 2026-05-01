@@ -1,0 +1,7 @@
+{
+    "includes": ["app", "system", "tests", "scripts"],
+    "excludes": ["ThirdParty"],
+    "report": {
+        "html": "build/phpmetrics/"
+    }
+}

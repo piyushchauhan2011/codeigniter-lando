@@ -1,6 +1,6 @@
-<?= $this->extend('tutorial/layout') ?>
+<?php $this->extend('tutorial/layout'); ?>
 
-<?= $this->section('content') ?>
+<?php $this->section('content'); ?>
 <section class="card">
     <h2>Create Post (Form + Validation)</h2>
 
@@ -39,4 +39,4 @@
         <button type="submit" class="btn">Save Post</button>
     </form>
 </section>
-<?= $this->endSection() ?>
+<?php $this->endSection(); ?>
