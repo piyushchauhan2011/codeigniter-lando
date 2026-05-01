@@ -13,7 +13,7 @@ Copy `env` to `.env` if needed, then set:
 
 ```ini
 CI_ENVIRONMENT = development
-app.baseURL = 'https://my-first-lamp-app.lndo.site:8443/'
+app.baseURL = 'https://my-first-lamp-app.lndo.site/'
 app.forceGlobalSecureRequests = true
 app.indexPage = ''
 database.default.hostname = database

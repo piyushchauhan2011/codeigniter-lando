@@ -15,8 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site:8080 playwright test",
-    "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site:8443 PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test"
+    "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site playwright test",
+    "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test"
   },
   "devDependencies": {
     "@playwright/test": "latest",

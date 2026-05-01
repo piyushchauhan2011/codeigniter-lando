@@ -2,11 +2,18 @@ name: my-first-lamp-app
 recipe: lamp
 config:
   webroot: public
-  php: '8.2'
+  php: "8.2"
 
+# Global flag; LAMP still scans appserver URLs unless the service overrides below.
 scanner: false
 
 services:
+  # PHPUnit: composer test:coverage / test:coverage:html need xdebug.mode to include
+  # "coverage" (xdebug: true alone is only "debug"). Rebuild: lando rebuild -y
+  appserver:
+    xdebug: "debug,develop,coverage"
+    scanner: false   # required to skip appserver URL probes (e.g. 127.0.0.1:8000)
+
   database:
     # Default lamp probe uses mysql with -p and hits host `database`; it often logs
     # several benign connection-refused retries + mysqld stderr noise on cold start.
