@@ -7,6 +7,8 @@ namespace App\Controllers;
 use App\Models\EmployerProfileModel;
 use App\Models\JobApplicationModel;
 use App\Models\JobCategoryModel;
+use App\Models\JobModel;
+use Config\Services;
 
 class Employer extends BaseController
 {
@@ -62,10 +64,9 @@ class Employer extends BaseController
 
         $file = $this->request->getFile('logo');
         if ($file !== null && $file->isValid() && ! $file->hasMoved()) {
-            if (! $this->validateData(
-                ['logo' => $file],
-                ['logo' => 'uploaded[logo]|max_size[logo,2048]|ext_in[logo,png,jpg,jpeg,webp]'],
-            )) {
+            if (! $this->validate([
+                'logo' => 'uploaded[logo]|max_size[logo,2048]|ext_in[logo,png,jpg,jpeg,webp]',
+            ])) {
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
 
