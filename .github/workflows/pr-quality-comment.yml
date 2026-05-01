@@ -1,0 +1,85 @@
+# Posts (and updates) one PR comment with PHPUnit coverage + PhpMetrics on each push to the PR branch.
+
+name: PR quality comment
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+concurrency:
+  group: pr-quality-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr-quality-comment:
+    name: Coverage and metrics comment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+          coverage: pcov
+          extensions: intl, mbstring
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.composer/cache
+            vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run unit tests with coverage (PR head)
+        run: |
+          mkdir -p build
+          composer test:coverage
+          cp -f build/coverage-text.txt build/pr-coverage-text.txt
+
+      - name: Baseline coverage (merge target / PR base)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: bash scripts/ci-cover-pr-base.sh
+
+      - name: Run PhpMetrics on PR head (summary JSON)
+        run: |
+          mkdir -p build
+          vendor/bin/phpmetrics app,scripts --report-summary-json=build/phpmetrics-summary.json
+
+      - name: Build PR comment markdown
+        env:
+          GITHUB_SHA: ${{ github.event.pull_request.head.sha }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          COVERAGE_TXT: ${{ github.workspace }}/build/pr-coverage-text.txt
+          BASE_COVERAGE_TXT: ${{ github.workspace }}/build/base-coverage-text.txt
+          COVERAGE_PR_LABEL: This PR
+          COVERAGE_BASE_LABEL: PR base (target branch)
+        run: bash scripts/ci-build-pr-comment.sh build/pr-comment.md
+
+      - name: Post or update sticky PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: ci-php-quality-report
+          path: build/pr-comment.md
