@@ -57,9 +57,10 @@ class JobsApi extends ResourceController
     private function withIsoTimestamps(array $job): array
     {
         foreach (['created_at', 'updated_at'] as $field) {
-            if (! empty($job[$field])) {
+            $value = $job[$field] ?? null;
+            if (is_string($value) && $value !== '') {
                 try {
-                    $job[$field . '_iso'] = Time::parse((string) $job[$field], 'UTC')->format('c');
+                    $job[$field . '_iso'] = Time::parse($value, 'UTC')->format('c');
                 } catch (Throwable) {
                     $job[$field . '_iso'] = null;
                 }

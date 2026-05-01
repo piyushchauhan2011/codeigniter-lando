@@ -41,7 +41,7 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
         }
 
-        Services::portalAuth()->login((int) $user['id'], (string) $user['email'], (string) $user['role']);
+        Services::portalAuth()->login($user['id'], $user['email'], $user['role']);
 
         return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('message', 'Welcome back.');
     }

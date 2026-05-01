@@ -78,7 +78,8 @@ class PortalLocale
         }
 
         $segments = explode('/', $path);
-        if ($segments !== [] && ($segments[0] === 'fr' || $segments[0] === 'en')) {
+        $first      = $segments[0];
+        if ($first === 'fr' || $first === 'en') {
             array_shift($segments);
         }
 

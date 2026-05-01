@@ -14,7 +14,7 @@
             <?php if ($salaryMax !== ''): ?> — <?= esc(lang('Portal.salary_up_to')) ?> <?= esc($salaryMax) ?><?php endif; ?>
         </p>
     <?php endif; ?>
-    <?php if (! empty($job['created_at'])): ?>
-        <p class="posted-at muted"><span class="posted-at__label"><?= esc(lang('Portal.posted_label')) ?>:</span> <?= esc(portal_localized_datetime((string) $job['created_at'])) ?></p>
+    <?php if (isset($job['created_at']) && is_string($job['created_at']) && $job['created_at'] !== ''): ?>
+        <p class="posted-at muted"><span class="posted-at__label"><?= esc(lang('Portal.posted_label')) ?>:</span> <?= esc(portal_localized_datetime($job['created_at'])) ?></p>
     <?php endif; ?>
 </article>

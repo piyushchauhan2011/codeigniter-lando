@@ -23,11 +23,13 @@ class LocaleFilter implements FilterInterface
 {
     /**
      * @param list<string>|null $arguments
+     *
+     * @return RequestInterface|ResponseInterface|string|null
      */
     public function before(RequestInterface $request, $arguments = null)
     {
         if (! $request instanceof IncomingRequest) {
-            return;
+            return null;
         }
 
         $path = trim($request->getPath(), '/');
@@ -36,12 +38,15 @@ class LocaleFilter implements FilterInterface
         $locale = Services::portalLocale()->getLocale();
         $request->setLocale($locale);
         service('language')->setLocale($locale);
+
+        return null;
     }
 
     /**
      * @param list<string>|null $arguments
      */
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null): ?ResponseInterface
     {
+        return null;
     }
 }
