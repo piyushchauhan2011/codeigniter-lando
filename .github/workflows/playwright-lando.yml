@@ -63,7 +63,10 @@ jobs:
           app.baseURL = 'https://my-first-lamp-app.lndo.site/'
           app.forceGlobalSecureRequests = true
           app.indexPage = ''
-          database.default.hostname = myfirstlampapp_database_1
+          # Same hostname Lando documents in `lando info` → internal_connection.host (`database`).
+          # That alias and the Compose container name (e.g. myfirstlampapp_database_1) resolve to
+          # the same IP inside the appserver; prefer the service alias so this stays portable.
+          database.default.hostname = database
           database.default.database = lamp
           database.default.username = lamp
           database.default.password = lamp
