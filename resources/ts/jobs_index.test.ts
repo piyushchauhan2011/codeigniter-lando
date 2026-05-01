@@ -11,8 +11,20 @@ describe("parseJobsApiPayload", () => {
       ],
     });
     expect(rows).toEqual([
-      { id: 1, employment_type: "full_time", title: "Dev", location: undefined, company_name: undefined },
-      { id: 2, employment_type: undefined, title: "Ops", location: undefined, company_name: undefined },
+      {
+        id: 1,
+        employment_type: "full_time",
+        title: "Dev",
+        location: undefined,
+        company_name: undefined,
+      },
+      {
+        id: 2,
+        employment_type: undefined,
+        title: "Ops",
+        location: undefined,
+        company_name: undefined,
+      },
     ]);
   });
 

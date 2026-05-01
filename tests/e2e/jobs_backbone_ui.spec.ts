@@ -1,7 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 import { ensureBackboneFilterHarness } from "./helpers/backbone_jobs_harness";
-import { mockJobsApiGet, readJobsApiFixture } from "./helpers/jobs_api_mock";
+import {
+  expectJobsApiBannerCount,
+  JOBS_API_GET_URL_RE,
+  mockJobsApiGet,
+  readJobsApiFixture,
+} from "./helpers/jobs_api_mock";
 
 test.describe("Backbone jobs index view (UI)", () => {
   test.beforeEach(async ({ page }) => {
@@ -12,9 +17,7 @@ test.describe("Backbone jobs index view (UI)", () => {
     const fixture = readJobsApiFixture();
     await page.goto("/jobs");
 
-    await expect(
-      page.getByText(`Live catalog: ${fixture.jobs.length} published opening(s) reported by the API.`),
-    ).toBeVisible();
+    await expectJobsApiBannerCount(page, fixture.jobs.length);
 
     await ensureBackboneFilterHarness(page);
 
@@ -50,12 +53,10 @@ test.describe("Backbone jobs index view (UI)", () => {
       ],
     };
 
-    await page.unroute("**/api/jobs");
+    await page.unroute(JOBS_API_GET_URL_RE);
     await mockJobsApiGet(page, threeJobs);
     await page.goto("/jobs");
 
-    await expect(
-      page.getByText("Live catalog: 3 published opening(s) reported by the API."),
-    ).toBeVisible();
+    await expectJobsApiBannerCount(page, 3);
   });
 });

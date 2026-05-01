@@ -56,7 +56,9 @@ const JobsIndexView = Backbone.View.extend({
   onApiError(this: JobsIndexViewType) {
     const $banner = this.$("[data-job-api-banner]");
     const $text = this.$("[data-job-api-banner-text]");
-    const errTpl = String(this.$el.attr("data-api-banner-error") ?? "Could not load live job count.");
+    const errTpl = String(
+      this.$el.attr("data-api-banner-error") ?? "Could not load live job count.",
+    );
     $text.text(errTpl);
     $banner.prop("hidden", false);
   },
