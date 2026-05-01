@@ -14,6 +14,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: "Summary — what this job runs"
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ## PHP checks
+
+          Steps run in order (same as locally):
+
+          | Step | Command | If it fails |
+          | --- | --- | --- |
+          | 1. PHP syntax | `composer ci:php:lint` | Fix parse/syntax errors; file paths are in the log |
+          | 2. PHPStan | `composer phpstan:check` | Fix types; run the same command locally |
+          | 3. PHPUnit | `composer test` | Fix or add tests; use `composer test` to reproduce |
+
+          **Tip:** Open the **Summary** tab on this workflow run for pass/fail wrap-up and copy-paste commands.
+          EOF
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -43,12 +59,66 @@ jobs:
       - name: PHP unit tests
         run: composer test
 
+      - name: "Summary — PHP checks passed"
+        if: success()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ### Result — PHP
+
+          | Check | Status |
+          | --- | --- |
+          | PHP syntax lint | Passed |
+          | PHPStan | Passed |
+          | PHPUnit | Passed |
+
+          Reproduce locally:
+
+          ```bash
+          composer ci:php:lint && composer phpstan:check && composer test
+          ```
+          EOF
+
+      - name: "Summary — PHP checks failed (how to fix)"
+        if: failure()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ### Result — PHP — **failed**
+
+          1. Scroll **up** in this job log and find the **first step with a red X**.
+          2. Run the matching command on your machine (see table in “what this job runs” above).
+
+          | If the failing step was… | Run locally |
+          | --- | --- |
+          | PHP syntax lint | `composer ci:php:lint` |
+          | PHP static analysis | `composer phpstan:check` |
+          | PHP unit tests | `composer test` |
+
+          After fixing, push again; this job must pass before merge.
+          EOF
+
   frontend-checks:
     name: Frontend checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: "Summary — what this job runs"
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ## Frontend checks
+
+          | Step | Command | If it fails |
+          | --- | --- | --- |
+          | Typecheck | `pnpm typecheck` | Fix TS errors (see log); often missing types or imports |
+          | Formatter | `pnpm format:check` | Run `pnpm format` and commit |
+          | Oxlint (JS/TS) | `pnpm lint` | Fix issues or run `pnpm lint` locally |
+          | Stylelint (SCSS) | `pnpm lint:css` | Run `pnpm lint:css:fix` where safe, then review |
+          | Vitest | `pnpm test` | Fix failing tests; run `pnpm test` |
+          | Vite build | `pnpm build` | Fix bundle/compile errors |
+
+          **One-liner (lint everything):** `pnpm lint:all` (Oxlint + Stylelint).
+          EOF
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -79,3 +149,49 @@ jobs:
 
       - name: Build frontend assets
         run: pnpm build
+
+      - name: "Summary — frontend checks passed"
+        if: success()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ### Result — frontend
+
+          | Check | Status |
+          | --- | --- |
+          | TypeScript (`tsc`) | Passed |
+          | Oxfmt (format check) | Passed |
+          | Oxlint | Passed |
+          | Stylelint | Passed |
+          | Vitest | Passed |
+          | Vite build | Passed |
+
+          Reproduce locally:
+
+          ```bash
+          pnpm install
+          pnpm typecheck && pnpm format:check && pnpm lint:all && pnpm test && pnpm build
+          ```
+          EOF
+
+      - name: "Summary — frontend checks failed (how to fix)"
+        if: failure()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ### Result — frontend — **failed**
+
+          1. Find the **first failed step** above (red X).
+          2. Use the matching command from the “what this job runs” table in this Summary.
+
+          Quick fixes:
+
+          | Failing step | Try locally |
+          | --- | --- |
+          | Type check | `pnpm typecheck` |
+          | Format check | `pnpm format` then `pnpm format:check` |
+          | Oxlint | `pnpm lint` |
+          | Stylelint | `pnpm lint:css` or `pnpm lint:css:fix` |
+          | Vitest | `pnpm test` |
+          | Build | `pnpm build` |
+
+          **All frontend lint:** `pnpm lint:all`
+          EOF

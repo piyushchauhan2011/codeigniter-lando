@@ -150,6 +150,31 @@ PP_DELTA_STR() {
 		cat "$METRICS_JSON"
 		echo '```'
 	fi
+
+	echo ""
+	echo "### CI checks — run locally"
+	echo ""
+	if [[ -n "${GITHUB_REPOSITORY:-}" ]]; then
+		echo "Commands mirror **[.github/workflows/ci.yml](https://github.com/${GITHUB_REPOSITORY}/blob/main/.github/workflows/ci.yml)** (PHP 8.2 + Node 22 / pnpm)."
+	else
+		echo "Commands mirror **.github/workflows/ci.yml** (PHP 8.2 + Node 22 / pnpm)."
+	fi
+	echo ""
+	echo "| Job | What | Command |"
+	echo "| --- | --- | --- |"
+	echo "| PHP | Syntax | \`composer ci:php:lint\` |"
+	echo "| PHP ✓ | Static analysis | \`composer phpstan:check\` |"
+	echo "| PHP ✓ | Tests | \`composer test\` |"
+	echo "| Frontend | TypeScript | \`pnpm typecheck\` |"
+	echo "| Frontend ✓ | Format | \`pnpm format:check\` (fix: \`pnpm format\`) |"
+	echo "| Frontend ✓ | JS/TS lint | \`pnpm lint\` |"
+	echo "| Frontend ✓ | SCSS lint | \`pnpm lint:css\` (fix: \`pnpm lint:css:fix\`) |"
+	echo "| Frontend ✓ | All linters | \`pnpm lint:all\` |"
+	echo "| Frontend ✓ | Vitest | \`pnpm test\` |"
+	echo "| Frontend ✓ | Production build | \`pnpm build\` |"
+	echo ""
+	echo "**Reading CI results:** open the PR’s *Checks* tab → job → **Summary** for pass/fail wrap-up and troubleshooting tables."
+	echo ""
 } >"$OUT"
 
 echo "Wrote ${OUT}"
