@@ -8,6 +8,8 @@ use CodeIgniter\Validation\StrictRules\FileRules;
 use CodeIgniter\Validation\StrictRules\FormatRules;
 use CodeIgniter\Validation\StrictRules\Rules;
 
+use App\Validation\PortalUserRules;
+
 class Validation extends BaseConfig
 {
     // --------------------------------------------------------------------
@@ -18,14 +20,12 @@ class Validation extends BaseConfig
      * Stores the classes that contain the
      * rules that are available.
      *
-     * @var list<string>
+     * Populated in {@see __construct()} so `PortalUserRules::class` is not in a
+     * property default (avoids "Constant expression contains invalid operations").
+     *
+     * @var list<class-string>
      */
-    public array $ruleSets = [
-        Rules::class,
-        FormatRules::class,
-        FileRules::class,
-        CreditCardRules::class,
-    ];
+    public array $ruleSets = [];
 
     /**
      * Specifies the views that are used to display the
@@ -37,6 +37,19 @@ class Validation extends BaseConfig
         'list'   => 'CodeIgniter\Validation\Views\list',
         'single' => 'CodeIgniter\Validation\Views\single',
     ];
+
+    public function __construct()
+    {
+        $this->ruleSets = [
+            PortalUserRules::class,
+            Rules::class,
+            FormatRules::class,
+            FileRules::class,
+            CreditCardRules::class,
+        ];
+
+        parent::__construct();
+    }
 
     // --------------------------------------------------------------------
     // Rules
@@ -54,7 +67,7 @@ class Validation extends BaseConfig
         'password'         => 'required|min_length[10]',
         'password_confirm' => 'required|matches[password]',
         'role'             => 'required|in_list[employer,seeker]',
-        'company_name'     => 'permit_empty|required_if[role,employer]|min_length[2]|max_length[160]',
+        'company_name'     => 'company_name_for_registration[_]',
     ];
 
     /** @var array<string, string> */
