@@ -5,7 +5,7 @@ export default defineConfig({
   build: {
     outDir: "public/assets/dist",
     emptyOutDir: true,
-    sourcemap: false,
+    sourcemap: true,
     rollupOptions: {
       input: {
         tutorial: "resources/ts/tutorial.ts",
