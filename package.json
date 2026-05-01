@@ -14,7 +14,7 @@
     "format:check": "oxfmt --check resources",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test",
+    "test:e2e": "bash -c 'if [ -z \"${PLAYWRIGHT_BASE_URL-}\" ]; then export PLAYWRIGHT_BASE_URL=\"https://my-first-lamp-app.lndo.site\"; export PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1; fi; exec playwright test'",
     "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site playwright test",
     "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test",
     "test:e2e:spark": "playwright test"

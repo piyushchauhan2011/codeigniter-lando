@@ -116,4 +116,4 @@ jobs:
           if [[ "${{ steps.lando.outputs.ignore-https }}" == "true" ]]; then
             export PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1
           fi
-          pnpm exec playwright test
+          pnpm test:e2e

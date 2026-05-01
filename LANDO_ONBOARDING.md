@@ -158,7 +158,7 @@ pnpm test
 pnpm test:e2e
 ```
 
-**`pnpm test:e2e`** points Playwright at **`https://my-first-lamp-app.lndo.site`** and sets **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** for the Lando dev certificate. Override the origin if yours differs (see **`lando info`**):
+**`pnpm test:e2e`** defaults to **`https://my-first-lamp-app.lndo.site`** and **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** when **`PLAYWRIGHT_BASE_URL`** is unset (Lando dev certificate). If **`PLAYWRIGHT_BASE_URL`** is already set—**`lando info`** URLs in CI, or your own origin—it is left as-is; set **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** yourself when using HTTPS with the Lando CA. Override the origin if yours differs (see **`lando info`**):
 
 ```bash
 PLAYWRIGHT_BASE_URL=https://your-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 pnpm exec playwright test
@@ -166,7 +166,7 @@ PLAYWRIGHT_BASE_URL=https://your-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 
 
 To run Playwright against a locally managed **`php spark serve`** instead (no Lando), use **`pnpm test:e2e:spark`**.
 
-The **GitHub Actions** workflow [`.github/workflows/playwright-lando.yml`](.github/workflows/playwright-lando.yml) picks a **`https://`** appserver URL from **`lando info`** when available (same idea as **`pnpm test:e2e`**) and sets **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** for the Lando certificate. Plain **`http://`** is only used if HTTPS is not listed.
+The **GitHub Actions** workflow [`.github/workflows/playwright-lando.yml`](.github/workflows/playwright-lando.yml) exports **`PLAYWRIGHT_BASE_URL`** (from **`lando info`**) and, for HTTPS, **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS`**, then runs **`pnpm test:e2e`**—so CI and local use the same script. It prefers a **`https://`** appserver URL when available; plain **`http://`** is only used if HTTPS is not listed.
 
 ## 9) Debugging PHP with VS Code / Cursor (Xdebug + Lando)
 
