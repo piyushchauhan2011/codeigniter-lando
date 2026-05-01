@@ -2,6 +2,10 @@
 
 namespace Config;
 
+use App\Filters\PortalAuthFilter;
+use App\Filters\PortalEmployerFilter;
+use App\Filters\PortalGuestFilter;
+use App\Filters\PortalSeekerFilter;
 use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
@@ -25,6 +29,10 @@ class Filters extends BaseFilters
      * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
+        'auth'          => PortalAuthFilter::class,
+        'guest'         => PortalGuestFilter::class,
+        'employer'      => PortalEmployerFilter::class,
+        'seeker'        => PortalSeekerFilter::class,
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
@@ -71,11 +79,11 @@ class Filters extends BaseFilters
      * }
      */
     public array $globals = [
-        'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
-        ],
+        'before' => ENVIRONMENT === 'testing'
+            ? []
+            : [
+                'csrf',
+            ],
         'after' => [
             // 'honeypot',
             // 'secureheaders',

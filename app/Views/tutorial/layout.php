@@ -14,6 +14,7 @@
     <header class="site-header">
         <h1>CodeIgniter Learning Playground</h1>
         <nav>
+            <a href="<?= site_url('/jobs') ?>">Job Portal</a>
             <a href="<?= site_url('/hello') ?>">Hello</a>
             <a href="<?= site_url('/posts') ?>">Posts</a>
             <a href="<?= site_url('/posts/new') ?>">Create Post</a>

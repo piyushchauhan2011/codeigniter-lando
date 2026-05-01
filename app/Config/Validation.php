@@ -41,4 +41,58 @@ class Validation extends BaseConfig
     // --------------------------------------------------------------------
     // Rules
     // --------------------------------------------------------------------
+
+    /** @var array<string, string> */
+    public array $portal_login = [
+        'email'    => 'required|valid_email',
+        'password' => 'required',
+    ];
+
+    /** @var array<string, string> */
+    public array $portal_register = [
+        'email'            => 'required|valid_email|is_unique[portal_users.email]',
+        'password'         => 'required|min_length[10]',
+        'password_confirm' => 'required|matches[password]',
+        'role'             => 'required|in_list[employer,seeker]',
+        'company_name'     => 'permit_empty|required_if[role,employer]|min_length[2]|max_length[160]',
+    ];
+
+    /** @var array<string, string> */
+    public array $portal_job_form = [
+        'title'            => 'required|min_length[3]|max_length[180]',
+        'description'      => 'required|min_length[20]',
+        'employment_type'  => 'required|in_list[full_time,part_time,contract]',
+        'location'         => 'required|max_length[160]',
+        'salary_min'       => 'permit_empty|integer|greater_than_equal_to[0]',
+        'salary_max'       => 'permit_empty|integer|greater_than_equal_to[0]',
+        'category_id'      => 'permit_empty|integer',
+        'status'           => 'required|in_list[draft,published,closed]',
+    ];
+
+    /** @var array<string, string> */
+    public array $portal_employer_profile = [
+        'company_name' => 'required|min_length[2]|max_length[160]',
+        'website'      => 'permit_empty|max_length[255]',
+        'description'  => 'permit_empty|max_length[4000]',
+    ];
+
+    /** @var array<string, string> */
+    public array $portal_seeker_profile = [
+        'headline' => 'permit_empty|max_length[160]',
+        'bio'      => 'permit_empty|max_length[4000]',
+        'skills'   => 'permit_empty|max_length[2000]',
+    ];
+
+    /** @var array<string, string> */
+    public array $portal_contact = [
+        'name'    => 'required|max_length[120]',
+        'email'   => 'required|valid_email',
+        'subject' => 'required|max_length[180]',
+        'body'    => 'required|min_length[10]|max_length[8000]',
+    ];
+
+    /** @var array<string, string> */
+    public array $portal_apply = [
+        'cover_letter' => 'required|min_length[20]|max_length[8000]',
+    ];
 }
