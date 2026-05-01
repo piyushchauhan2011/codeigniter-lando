@@ -1,0 +1,70 @@
+# Posts (and updates) one PR comment with PHPUnit coverage + PhpMetrics on each push to the PR branch.
+
+name: PR quality comment
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+concurrency:
+  group: pr-quality-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr-quality-comment:
+    name: Coverage and metrics comment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+          coverage: pcov
+          extensions: intl, mbstring
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.composer/cache
+            vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run unit tests with coverage
+        run: |
+          mkdir -p build
+          composer test:coverage
+
+      - name: Run PhpMetrics (summary JSON)
+        run: |
+          mkdir -p build
+          vendor/bin/phpmetrics app,scripts --report-summary-json=build/phpmetrics-summary.json
+
+      - name: Build PR comment markdown
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: bash scripts/ci-build-pr-comment.sh build/pr-comment.md
+
+      - name: Post or update sticky PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: ci-php-quality-report
+          path: build/pr-comment.md

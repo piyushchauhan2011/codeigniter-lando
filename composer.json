@@ -125,7 +125,8 @@
         "phpstan:check": "vendor/bin/phpstan analyse -c phpstan.neon --verbose --ansi --memory-limit=512M",
         "sa": "@analyze",
         "style": "@cs-fix",
-        "test": "phpunit"
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-filter app --coverage-clover build/coverage.xml --coverage-text=build/coverage-text.txt --only-summary-for-coverage-text"
     },
     "scripts-descriptions": {
         "analyze": "Run static analysis",
@@ -134,6 +135,7 @@
         "metrics": "Run PhpMetrics",
         "phpstan:baseline": "Run PHPStan then dump all errors to baseline",
         "phpstan:check": "Run PHPStan with support for identifiers",
-        "test": "Run unit tests"
+        "test": "Run unit tests",
+        "test:coverage": "Run unit tests with Clover + text summary (requires pcov or Xdebug)"
     }
 }
