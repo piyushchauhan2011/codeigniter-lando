@@ -23,12 +23,16 @@ use CodeIgniter\HotReloader\HotReloader;
  *      Events::on('create', [$myInstance, 'myMethod']);
  */
 
-Events::on('job_application_submitted', static function (int $jobId, int $seekerUserId): void {
+Events::on('job_application_submitted', static function (mixed ...$args): mixed {
+    $jobId        = (int) ($args[0] ?? 0);
+    $seekerUserId = (int) ($args[1] ?? 0);
     log_message(
         'info',
         'Job application submitted job_id={job} seeker_user_id={seeker}',
         ['job' => $jobId, 'seeker' => $seekerUserId],
     );
+
+    return null;
 });
 
 Events::on('pre_system', static function (): void {

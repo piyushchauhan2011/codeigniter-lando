@@ -14,7 +14,7 @@ class PortalUserModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['email', 'password_hash', 'role'];
+    protected $allowedFields    = ['id', 'email', 'password_hash', 'role'];
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
     protected $useTimestamps      = true;

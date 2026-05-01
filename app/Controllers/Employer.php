@@ -80,7 +80,7 @@ class Employer extends BaseController
             $data['logo_path'] = 'job_portal/logos/' . $newName;
         }
 
-        model(EmployerProfileModel::class, false)->update((int) $profile['id'], $data);
+        model(EmployerProfileModel::class, false)->update($profile['id'], $data);
 
         return redirect()->to(site_url('employer/profile'))->with('message', 'Profile updated.');
     }
@@ -253,7 +253,7 @@ class Employer extends BaseController
             return redirect()->to(site_url('employer'))->with('error', 'Not allowed.');
         }
 
-        $relative = (string) ($app['resume_path'] ?? '');
+        $relative = $app['resume_path'];
         if ($relative === '') {
             return redirect()->back()->with('error', 'No resume on file.');
         }

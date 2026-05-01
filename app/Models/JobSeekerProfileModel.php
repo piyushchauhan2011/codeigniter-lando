@@ -12,6 +12,6 @@ class JobSeekerProfileModel extends Model
     protected $primaryKey     = 'id';
     protected $returnType     = 'array';
     protected $protectFields  = true;
-    protected $allowedFields  = ['user_id', 'headline', 'bio', 'skills', 'resume_path'];
+    protected $allowedFields  = ['id', 'user_id', 'headline', 'bio', 'skills', 'resume_path'];
     protected $useTimestamps  = true;
 }

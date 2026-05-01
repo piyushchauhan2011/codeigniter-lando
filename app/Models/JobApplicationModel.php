@@ -62,6 +62,6 @@ class JobApplicationModel extends Model
             ->where('job_applications.seeker_user_id', $seekerUserId)
             ->first();
 
-        return $row ?: null;
+        return $row !== null ? $row : null;
     }
 }

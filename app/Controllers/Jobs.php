@@ -55,7 +55,7 @@ class Jobs extends BaseController
         if ($auth->check() && $auth->isSeeker()) {
             $applied  = model(JobApplicationModel::class)->hasApplied($jobId, (int) $auth->id());
             $saved    = model(SavedJobModel::class)->isSaved((int) $auth->id(), $jobId);
-            $canApply = ! $applied && ($job['status'] ?? '') === 'published';
+            $canApply = ! $applied && $job['status'] === 'published';
         }
 
         $errors = session()->getFlashdata('errors');

@@ -67,7 +67,7 @@ class JobModel extends Model
         }
 
         $catId = $filters['category_id'] ?? '';
-        if ($catId !== '' && $catId !== null && ctype_digit((string) $catId)) {
+        if ($catId !== '' && ctype_digit((string) $catId)) {
             $this->where('portal_jobs.category_id', (int) $catId);
         }
 

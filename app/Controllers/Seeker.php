@@ -78,7 +78,7 @@ class Seeker extends BaseController
             $data['resume_path'] = 'job_portal/resumes/' . $newName;
         }
 
-        model(JobSeekerProfileModel::class, false)->update((int) $profile['id'], $data);
+        model(JobSeekerProfileModel::class, false)->update($profile['id'], $data);
 
         return redirect()->to(site_url('seeker/profile'))->with('message', 'Profile updated.');
     }
@@ -100,7 +100,7 @@ class Seeker extends BaseController
         $auth = Services::portalAuth();
 
         $job = model(JobModel::class, false)->find($jobId);
-        if ($job === null || ($job['status'] ?? '') !== 'published') {
+        if ($job === null || $job['status'] !== 'published') {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 

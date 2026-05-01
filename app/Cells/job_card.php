@@ -3,10 +3,14 @@
     <p class="muted">
         <?= esc($job['company_name'] ?? 'Company') ?> · <?= esc($job['location'] ?? '') ?> · <?= esc(str_replace('_', '-', (string) ($job['employment_type'] ?? ''))) ?>
     </p>
-    <?php if (! empty($job['salary_min']) || ! empty($job['salary_max'])): ?>
+    <?php
+        $salaryMin = isset($job['salary_min']) ? (string) $job['salary_min'] : '';
+        $salaryMax = isset($job['salary_max']) ? (string) $job['salary_max'] : '';
+        ?>
+    <?php if ($salaryMin !== '' || $salaryMax !== ''): ?>
         <p class="salary">
-            <?php if (! empty($job['salary_min'])): ?>From <?= esc((string) $job['salary_min']) ?><?php endif; ?>
-            <?php if (! empty($job['salary_max'])): ?> — up to <?= esc((string) $job['salary_max']) ?><?php endif; ?>
+            <?php if ($salaryMin !== ''): ?>From <?= esc($salaryMin) ?><?php endif; ?>
+            <?php if ($salaryMax !== ''): ?> — up to <?= esc($salaryMax) ?><?php endif; ?>
         </p>
     <?php endif; ?>
 </article>

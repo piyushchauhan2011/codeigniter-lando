@@ -18,7 +18,7 @@ class JobsApi extends ResourceController
             ->orderBy('created_at', 'DESC')
             ->findAll(100);
 
-        return $this->respond($rows);
+        return $this->respond(['jobs' => $rows]);
     }
 
     public function show($id = null)
@@ -33,6 +33,6 @@ class JobsApi extends ResourceController
             return $this->failNotFound('Job not found');
         }
 
-        return $this->respond($row);
+        return $this->respond(['job' => $row]);
     }
 }

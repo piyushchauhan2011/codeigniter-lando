@@ -22,7 +22,8 @@ class PortalSeekerFilter implements FilterInterface
         return null;
     }
 
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null): void
+    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null): ?ResponseInterface
     {
+        return null;
     }
 }

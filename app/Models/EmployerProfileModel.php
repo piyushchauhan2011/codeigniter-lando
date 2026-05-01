@@ -12,6 +12,6 @@ class EmployerProfileModel extends Model
     protected $primaryKey     = 'id';
     protected $returnType     = 'array';
     protected $protectFields  = true;
-    protected $allowedFields  = ['user_id', 'company_name', 'website', 'description', 'logo_path'];
+    protected $allowedFields  = ['id', 'user_id', 'company_name', 'website', 'description', 'logo_path'];
     protected $useTimestamps  = true;
 }
