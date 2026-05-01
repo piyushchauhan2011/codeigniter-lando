@@ -55,4 +55,10 @@ return [
     'client_filter_label'   => 'Filter this page by type',
     'client_filter_aria'    => 'Filter job cards on this page by employment type',
     'client_filter_any'     => 'All on this page',
+
+    'auth_sign_in_heading' => 'Sign in',
+    'auth_email'           => 'Email',
+    'auth_password'        => 'Password',
+    'auth_submit_sign_in'  => 'Sign in',
+    'auth_no_account'      => 'No account?',
 ];

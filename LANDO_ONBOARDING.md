@@ -158,6 +158,22 @@ pnpm test
 pnpm test:e2e
 ```
 
+### Local front-end workflow (Lando + Vite `dist`)
+
+**`pnpm dev` (Vite’s HTTP dev server) is not used** here: PHP is served only by Lando, and views load scripts from **`public/assets/dist/`**.
+
+Instead, keep a watch running while you edit TS/SCSS:
+
+- **`pnpm run watch`** — **`vite build --watch`** with **`VITE_FULL_CSS_MAP=1`**. Each save rebuilds **JavaScript** (Rollup **`build.sourcemap`**) and **CSS**, then the Sass post-step writes **`portal.css.map`** / **`tutorialStyle.css.map`** so Chrome can jump to **`resources/scss/...`**.
+- **`pnpm run watch:fast`** — same watcher **without** those `.css.map` files (a bit less I/O if you do not need SCSS debugging).
+
+Because **`portal.ts` imports `portal.scss`**, one Rollup graph drives both outputs. There is no separate “CSS-only” or “JS-only” watcher unless we duplicated pipelines and risked two writers clobbering **`portal.css`**.
+
+**Lando** serves PHP at e.g. `https://my-first-lamp-app.lndo.site/`; [app/Views/portal/layout.php](app/Views/portal/layout.php) does not point at a Vite dev URL—only at **`public/assets/dist/`**. Run **`pnpm run watch`** alongside **`lando start`**, use the Lando origin in the browser, and reload after saves.
+
+One-off builds: **`pnpm build`** (CI/default) or **`pnpm build:cssmap`** when you only need a mapped CSS pass without starting the watcher.
+
+
 **`pnpm test:e2e`** defaults to **`https://my-first-lamp-app.lndo.site`** and **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** when **`PLAYWRIGHT_BASE_URL`** is unset (Lando dev certificate). If **`PLAYWRIGHT_BASE_URL`** is already set—**`lando info`** URLs in CI, or your own origin—it is left as-is; set **`PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1`** yourself when using HTTPS with the Lando CA. Override the origin if yours differs (see **`lando info`**):
 
 ```bash

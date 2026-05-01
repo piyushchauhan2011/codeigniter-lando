@@ -16,14 +16,14 @@
 
     <form method="post" action="<?= portal_url('login') ?>" class="form">
         <?= csrf_field() ?>
-        <label for="email">Email</label>
+        <label for="email"><?= esc(lang('Portal.auth_email')) ?></label>
         <input id="email" name="email" type="email" value="<?= esc(old('email') ?? '') ?>" required>
 
-        <label for="password">Password</label>
+        <label for="password"><?= esc(lang('Portal.auth_password')) ?></label>
         <input id="password" name="password" type="password" required>
 
-        <button type="submit" class="btn">Sign in</button>
+        <button type="submit" class="btn"><?= esc(lang('Portal.auth_submit_sign_in')) ?></button>
     </form>
-    <p class="muted">No account? <a href="<?= portal_url('register') ?>">Register</a></p>
+    <p class="muted"><?= esc(lang('Portal.auth_no_account')) ?> <a href="<?= portal_url('register') ?>"><?= esc(lang('Portal.nav_register')) ?></a></p>
 </section>
 <?php $this->endSection(); ?>

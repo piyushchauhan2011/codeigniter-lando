@@ -50,8 +50,10 @@ Information on running the CodeIgniter test suite can be found in the [README.md
 ## Frontend Tooling (pnpm + Vite + TS + SCSS)
 
 - Install frontend dependencies: `pnpm install`
-- Start Vite dev server: `pnpm dev`
-- Build deployable assets: `pnpm build`
+- Watch & rebuild **TypeScript + SCSS** into `public/assets/dist` with **JS and `.scss` source maps**: `pnpm watch` (uses `VITE_FULL_CSS_MAP=1`; Lando + Chrome DevTools–friendly).
+- Same watch **without** Sass `.map` files (slightly less work per save): `pnpm watch:fast`
+- One-off production-style bundle: `pnpm build`
+- One-off bundle **with** `.css.map` for SCSS debugging: `pnpm build:cssmap`
 - Typecheck: `pnpm typecheck`
 - Format check (oxfmt): `pnpm format:check`
 - Lint (oxlint): `pnpm lint`
