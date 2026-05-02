@@ -9,7 +9,7 @@ declare(strict_types=1);
  *
  * Run via: lando php scripts/ci-wait-mysql.php
  */
-$host = 'myfirstlampapp_database_1';
+$host = 'database';
 $user = 'lamp';
 $pass = 'lamp';
 $db = 'lamp';

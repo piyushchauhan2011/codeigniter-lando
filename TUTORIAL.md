@@ -27,7 +27,13 @@ database.default.port = 3306
 ## 2) Run migration
 
 ```bash
-lando php spark migrate
+lando php spark migrate --all
+```
+
+Use `--all` because the job portal authentication tables come from CodeIgniter Shield. To load demo portal users, roles, jobs, and applications data, run:
+
+```bash
+lando php spark db:seed JobPortalDemoSeeder
 ```
 
 ## 3) Open pages

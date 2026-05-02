@@ -41,7 +41,7 @@ class CreateJobApplicationsTable extends AppMigration
         $this->forge->addKey('id', true);
         $this->forge->addUniqueKey(['job_id', 'seeker_user_id']);
         $this->forge->addForeignKey('job_id', 'portal_jobs', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->addForeignKey('seeker_user_id', 'portal_users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('seeker_user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('job_applications');
     }
 

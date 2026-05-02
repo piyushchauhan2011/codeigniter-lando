@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Filters;
 
 use CodeIgniter\Filters\FilterInterface;
+use CodeIgniter\Shield\Config\Services as ShieldServices;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Shield\Config\Services as ShieldServices;
 use Config\Services;
 
-class PortalEmployerFilter implements FilterInterface
+class PortalAdminFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null): ResponseInterface|string|null
     {
-        if (! ShieldServices::auth()->user()?->inGroup('employer')) {
-            return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('error', 'Employer account required.');
+        if (! ShieldServices::auth()->user()?->can('admin.access')) {
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('error', 'Admin account required.');
         }
 
         return null;

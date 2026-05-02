@@ -47,6 +47,17 @@ Information on running the CodeIgniter test suite can be found in the [README.md
 - Static analysis: `composer phpstan:check`
 - Unit tests: `composer test`
 
+## Job Portal Auth With Shield
+
+The job portal uses [CodeIgniter Shield](https://github.com/codeigniter4/shield) for session login, remember-me, email verification, and authorization groups.
+
+- Demo accounts after seeding: `employer@example.test`, `seeker@example.test`, and `admin@example.test`; password for all three is `password123`.
+- Groups map directly to portal areas: `employer` can manage jobs, `seeker` can apply/save jobs, and `admin` can open `/admin`.
+- Local email verification uses `App\Auth\LearningEmailActivator`: the verification code appears on the verification page and is also written to the CodeIgniter log, so no SMTP server is needed for learning.
+- Run migrations with `--all` so Shield package tables are created together with app tables: `lando php spark migrate --all`.
+- Fresh local setup: `lando php spark migrate --all && lando php spark db:seed JobPortalDemoSeeder`.
+- If your local learning database already ran the old `portal_users` migrations, use the full Shield portal reset in [LANDO_ONBOARDING.md](LANDO_ONBOARDING.md) before seeding so the new Shield foreign keys are created cleanly.
+
 ## Frontend Tooling (pnpm + Vite + TS + SCSS)
 
 - Install frontend dependencies: `pnpm install`

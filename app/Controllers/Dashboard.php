@@ -12,6 +12,10 @@ class Dashboard extends BaseController
     {
         $auth = Services::portalAuth();
 
+        if ($auth->isAdmin()) {
+            return redirect()->to(site_url(Services::portalLocale()->localizePath('admin')));
+        }
+
         if ($auth->isEmployer()) {
             return redirect()->to(site_url(Services::portalLocale()->localizePath('employer')));
         }

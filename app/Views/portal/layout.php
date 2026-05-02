@@ -7,6 +7,7 @@ $isEn     = in_array($pl->getUrlPrefix(), ['', 'en'], true);
 $isFr     = $pl->getUrlPrefix() === 'fr';
 $urlEn    = $pl->siteUrlForLocale('en');
 $urlFr    = $pl->siteUrlForLocale('fr');
+$auth     = \Config\Services::portalAuth();
 ?>
 <html lang="<?= esc($locale, 'attr') ?>" data-locale="<?= esc($locale, 'attr') ?>" data-app-timezone="<?= esc($appTz, 'attr') ?>">
 <head>
@@ -23,12 +24,15 @@ $urlFr    = $pl->siteUrlForLocale('fr');
         <nav class="portal-page__nav" aria-label="Main">
             <a class="portal-page__nav-link" href="<?= portal_url('jobs') ?>"><?= esc(lang('Portal.nav_browse')) ?></a>
             <a class="portal-page__nav-link" href="<?= portal_url('contact') ?>"><?= esc(lang('Portal.nav_contact')) ?></a>
-            <?php if (session()->get(\App\Libraries\PortalAuth::SESSION_USER_ID)): ?>
+            <?php if ($auth->check()): ?>
                 <a class="portal-page__nav-link" href="<?= portal_url('dashboard') ?>"><?= esc(lang('Portal.nav_dashboard')) ?></a>
-                <?php if (session()->get(\App\Libraries\PortalAuth::SESSION_ROLE) === 'employer'): ?>
+                <?php if ($auth->isAdmin()): ?>
+                    <a class="portal-page__nav-link" href="<?= portal_url('admin') ?>">Admin</a>
+                <?php endif; ?>
+                <?php if ($auth->isEmployer()): ?>
                     <a class="portal-page__nav-link" href="<?= portal_url('employer') ?>"><?= esc(lang('Portal.nav_employer')) ?></a>
                 <?php endif; ?>
-                <?php if (session()->get(\App\Libraries\PortalAuth::SESSION_ROLE) === 'seeker'): ?>
+                <?php if ($auth->isSeeker()): ?>
                     <a class="portal-page__nav-link" href="<?= portal_url('seeker') ?>"><?= esc(lang('Portal.nav_seeker')) ?></a>
                 <?php endif; ?>
                 <form action="<?= portal_url('logout') ?>" method="post" class="portal-page__logout">

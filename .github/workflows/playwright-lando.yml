@@ -66,7 +66,7 @@ jobs:
           app.forceGlobalSecureRequests = true
           app.indexPage = ''
           # Same hostname Lando documents in `lando info` → internal_connection.host (`database`).
-          database.default.hostname = myfirstlampapp_database_1
+          database.default.hostname = database
           database.default.database = lamp
           database.default.username = lamp
           database.default.password = lamp
@@ -86,13 +86,17 @@ jobs:
           echo "$JSON" | head -c 12000
           echo
           echo "::endgroup::"
+          LOCAL_HTTPS=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^https://localhost(:[0-9]+)?/?$"))' | head -n1)
+          LOCAL_HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://localhost(:[0-9]+)?/?$"))' | head -n1)
           HTTPS=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^https://"))' | head -n1)
           HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://"))' | head -n1)
-          URL="${HTTPS:-}"
+          # GitHub-hosted runners can be flaky resolving *.lndo.site; the localhost
+          # proxy URL from `lando info` is the most direct readiness target.
+          URL="${LOCAL_HTTPS:-${LOCAL_HTTP:-${HTTPS:-}}}"
           IGNORE="false"
-          if [[ -n "$URL" ]]; then
+          if [[ "$URL" == https://* ]]; then
             IGNORE="true"
-          else
+          elif [[ -z "$URL" ]]; then
             URL="${HTTP:-}"
           fi
           if [[ -z "$URL" ]]; then
@@ -104,23 +108,12 @@ jobs:
           echo "base-url=$BASE" >> "$GITHUB_OUTPUT"
           echo "ignore-https=$IGNORE" >> "$GITHUB_OUTPUT"
 
-      - name: Wait for CodeIgniter /hello route
+      - name: Update app baseURL to resolved Lando URL
         run: |
           set -euo pipefail
-          BASE="${{ steps.lando.outputs.base-url }}"
-          CURL=(curl -fsS)
-          if [[ "$BASE" == https://* ]]; then
-            CURL+=(--insecure)
-          fi
-          for i in $(seq 1 48); do
-            if "${CURL[@]}" "${BASE}/hello" >/dev/null 2>&1; then
-              echo "Ready after poll $i"
-              exit 0
-            fi
-            echo "waiting for ${BASE}/hello ..."
-            sleep 10
-          done
-          exit 1
+          BASE="${{ steps.lando.outputs.base-url }}/"
+          php -r '$path = ".env"; $base = $argv[1]; $env = file_get_contents($path); $env = preg_replace("/^app\.baseURL\s*=.*$/m", "app.baseURL = " . var_export($base, true), $env); file_put_contents($path, $env);' "$BASE"
+          grep '^app\.baseURL' .env
 
       - name: Wait until MySQL accepts connections from appserver
         run: |
@@ -131,6 +124,41 @@ jobs:
         run: |
           set -euo pipefail
           lando php spark migrate --all
+
+      - name: Wait for CodeIgniter /hello route
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.lando.outputs.base-url }}"
+          CURL=(curl -sS --connect-timeout 5)
+          if [[ "$BASE" == https://* ]]; then
+            CURL+=(--insecure)
+          fi
+          for i in $(seq 1 48); do
+            CODE=$("${CURL[@]}" -o /tmp/hello-response.txt -w '%{http_code}' "${BASE}/hello" || true)
+            if [[ "$CODE" == "200" ]]; then
+              echo "Ready after poll $i"
+              exit 0
+            fi
+            echo "waiting for ${BASE}/hello ... status=${CODE:-curl-failed}"
+            if [[ "$i" == "1" || "$i" == "48" ]]; then
+              echo "::group::/hello response sample"
+              head -c 2000 /tmp/hello-response.txt || true
+              echo
+              echo "::endgroup::"
+            fi
+            sleep 10
+          done
+          echo "::group::CodeIgniter logs"
+          ls -la writable/logs || true
+          for f in writable/logs/log-*.log; do
+            echo "--- $f"
+            tail -n 120 "$f" || true
+          done
+          echo "::endgroup::"
+          echo "::group::Apache error log"
+          lando ssh -s appserver -c 'tail -n 120 /var/log/apache2/error.log' || true
+          echo "::endgroup::"
+          exit 1
 
       - name: Enable Tasks (Settings DB)
         run: lando php spark tasks:enable

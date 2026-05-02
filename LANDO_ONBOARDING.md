@@ -128,10 +128,66 @@ lando php spark cache:clear
 Run migrations:
 
 ```bash
-lando php spark migrate
+lando php spark migrate --all
 ```
 
-### D) “Healthcheck … FAILED … Can’t connect to MySQL” during `lando start`
+Shield auth tables live in a Composer package, so `--all` is required. Seed the job portal demo users and jobs with:
+
+```bash
+lando php spark db:seed JobPortalDemoSeeder
+```
+
+### D) Full Shield portal reset
+
+If your local database already ran older portal migrations, or if you want to test the Shield-backed portal from a clean slate, wipe the local Lando environment and rebuild it:
+
+```bash
+# From repo root
+cd /home/piyush/Downloads/codeigniter-tutorial
+
+# Stop and destroy the local Lando environment, including database data
+lando stop
+lando destroy -y
+
+# Start fresh
+lando start
+
+# Install deps if needed
+composer install
+pnpm install
+
+# Build frontend assets
+pnpm build
+
+# Clear CI4 caches
+lando php spark cache:clear
+
+# Run app + Shield package migrations
+lando php spark migrate --all
+
+# Seed demo Shield users, groups, jobs, profiles
+lando php spark db:seed JobPortalDemoSeeder
+```
+
+Then open your Lando URL, usually:
+
+```text
+https://my-first-lamp-app.lndo.site/jobs
+```
+
+Demo logins:
+
+```text
+seeker@example.test / password123
+employer@example.test / password123
+admin@example.test / password123
+```
+
+Try `/login`, `/register`, `/dashboard`, `/seeker`, `/employer`, and `/admin`.
+
+For registration, the email verification code is shown on the verification page and also logged locally, so no SMTP setup is needed. If old sessions behave oddly after the reset, clear browser cookies for the Lando site.
+
+### E) “Healthcheck … FAILED … Can’t connect to MySQL” during `lando start`
 
 MySQL binds its port a few seconds after the container boots. Early healthcheck probes can log **ERROR 2003 (connection refused)** and **mysql’s “password on the command line” warning** until the daemon is accepting connections. After a short retry loop you should still see **`✔ Healthcheck … database …`**.
 

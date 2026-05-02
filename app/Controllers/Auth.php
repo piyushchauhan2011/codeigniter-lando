@@ -6,7 +6,12 @@ namespace App\Controllers;
 
 use App\Models\EmployerProfileModel;
 use App\Models\JobSeekerProfileModel;
-use App\Models\PortalUserModel;
+use CodeIgniter\Events\Events;
+use CodeIgniter\HTTP\RedirectResponse;
+use CodeIgniter\Shield\Authentication\Authenticators\Session;
+use CodeIgniter\Shield\Config\Services as ShieldServices;
+use CodeIgniter\Shield\Exceptions\ValidationException;
+use CodeIgniter\Shield\Models\UserModel;
 use Config\Services;
 
 class Auth extends BaseController
@@ -31,19 +36,25 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $email = (string) $this->request->getPost('email');
-        $user  = model(PortalUserModel::class, false)->where('email', $email)->first();
+        /** @var Session $authenticator */
+        $authenticator = ShieldServices::auth()->setAuthenticator('session')->getAuthenticator();
+        $result        = $authenticator->remember((bool) $this->request->getPost('remember'))->attempt([
+            'email'    => (string) $this->request->getPost('email'),
+            'password' => (string) $this->request->getPost('password'),
+        ]);
 
-        if (
-            $user === null
-            || ! password_verify((string) $this->request->getPost('password'), $user['password_hash'])
-        ) {
-            return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
+        if (! $result->isOK()) {
+            return redirect()->back()->withInput()->with('error', $result->reason());
         }
 
-        Services::portalAuth()->login($user['id'], $user['email'], $user['role']);
+        if ($authenticator->hasAction()) {
+            return redirect()->route('auth-action-show')->withCookies();
+        }
 
-        return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('message', 'Welcome back.');
+        return redirect()
+            ->to(site_url(Services::portalLocale()->localizePath('dashboard')))
+            ->with('message', 'Welcome back.')
+            ->withCookies();
     }
 
     public function attemptRegister()
@@ -55,23 +66,35 @@ class Auth extends BaseController
         $role  = (string) $this->request->getPost('role');
         $email = (string) $this->request->getPost('email');
 
-        $db = db_connect();
+        /** @var UserModel $userModel */
+        $userModel = model(UserModel::class, false);
+        $user      = $userModel->createNewUser([
+            'active'   => 0,
+            'email'    => $email,
+            'password' => (string) $this->request->getPost('password'),
+        ]);
+
+        $authDbGroup = config('Auth')->DBGroup;
+        $db          = $authDbGroup !== null ? db_connect($authDbGroup) : db_connect();
         $db->transStart();
 
-        $userModel = model(PortalUserModel::class, false);
-        $userId    = $userModel->insert([
-            'email'         => $email,
-            'password_hash' => password_hash((string) $this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role'          => $role,
-        ], true);
+        try {
+            $userModel->save($user);
+        } catch (ValidationException) {
+            $db->transRollback();
 
-        if (! is_numeric($userId)) {
+            return redirect()->back()->withInput()->with('errors', $userModel->errors());
+        }
+
+        $user = $userModel->findById($userModel->getInsertID());
+        if ($user === null) {
             $db->transRollback();
 
             return redirect()->back()->withInput()->with('error', 'Could not create account.');
         }
 
-        $userId = (int) $userId;
+        $user->addGroup($role);
+        $userId = (int) $user->id;
 
         if ($role === 'employer') {
             model(EmployerProfileModel::class, false)->insert([
@@ -91,14 +114,25 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'Registration failed. Please try again.');
         }
 
-        Services::portalAuth()->login($userId, $email, $role);
+        Events::trigger('register', $user);
+
+        /** @var Session $authenticator */
+        $authenticator = ShieldServices::auth()->setAuthenticator('session')->getAuthenticator();
+        $authenticator->startLogin($user);
+
+        if ($authenticator->startUpAction('register', $user)) {
+            return redirect()->route('auth-action-show');
+        }
+
+        $user->activate();
+        $authenticator->completeLogin($user);
 
         return redirect()->to(site_url(Services::portalLocale()->localizePath('dashboard')))->with('message', 'Account created.');
     }
 
-    public function logout()
+    public function logout(): RedirectResponse
     {
-        Services::portalAuth()->logout();
+        ShieldServices::auth()->logout();
 
         return redirect()->to(site_url(Services::portalLocale()->localizePath('jobs')))->with('message', 'Signed out.');
     }

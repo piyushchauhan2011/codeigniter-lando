@@ -42,10 +42,10 @@ class JobApplicationModel extends Model
     {
         return model(static::class, false)
             ->select(
-                'job_applications.*, portal_jobs.title AS job_title, job_seeker_profiles.headline AS seeker_headline, portal_users.email AS seeker_email',
+                'job_applications.*, portal_jobs.title AS job_title, job_seeker_profiles.headline AS seeker_headline, auth_identities.secret AS seeker_email',
             )
             ->join('portal_jobs', 'portal_jobs.id = job_applications.job_id')
-            ->join('portal_users', 'portal_users.id = job_applications.seeker_user_id')
+            ->join('auth_identities', "auth_identities.user_id = job_applications.seeker_user_id AND auth_identities.type = 'email_password'")
             ->join('job_seeker_profiles', 'job_seeker_profiles.user_id = job_applications.seeker_user_id', 'left')
             ->where('job_applications.job_id', $jobId)
             ->where('portal_jobs.employer_user_id', $employerUserId)

@@ -27,7 +27,7 @@ class Services extends BaseService
             return static::getSharedInstance('portalAuth');
         }
 
-        return new PortalAuth(service('session'));
+        return new PortalAuth();
     }
 
     public static function portalLocale(bool $getShared = true): PortalLocale

@@ -22,6 +22,11 @@
         <label for="password"><?= esc(lang('Portal.auth_password')) ?></label>
         <input id="password" name="password" type="password" required>
 
+        <label>
+            <input name="remember" type="checkbox" value="1" <?= old('remember') ? 'checked' : '' ?>>
+            Remember me on this device
+        </label>
+
         <button type="submit" class="portal-button"><?= esc(lang('Portal.auth_submit_sign_in')) ?></button>
     </form>
     <p class="portal-text-muted"><?= esc(lang('Portal.auth_no_account')) ?> <a href="<?= portal_url('register') ?>"><?= esc(lang('Portal.nav_register')) ?></a></p>
