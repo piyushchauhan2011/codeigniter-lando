@@ -13,6 +13,8 @@
         <span data-job-api-banner-text></span>
     </p>
 
+    <?= view_cell(\FeaturedJobs\Cells\FeaturedJobsCell::class, ['limit' => 3]) ?>
+
     <form method="get" action="<?= portal_url('jobs') ?>" class="job-search-form">
         <label><?= esc(lang('Portal.filter_keywords')) ?>
             <input type="text" name="q" value="<?= esc((string) ($filters['q'] ?? '')) ?>" placeholder="<?= esc(lang('Portal.placeholder_keywords'), 'attr') ?>">
