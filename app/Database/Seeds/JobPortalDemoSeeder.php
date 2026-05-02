@@ -11,6 +11,8 @@ class JobPortalDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        $now = date('Y-m-d H:i:s');
+
         $categories = [
             ['slug' => 'engineering', 'name' => 'Engineering'],
             ['slug' => 'sales', 'name' => 'Sales'],
@@ -18,12 +20,7 @@ class JobPortalDemoSeeder extends Seeder
         ];
 
         foreach ($categories as $row) {
-            $this->db->table('job_categories')->insert([
-                'slug'       => $row['slug'],
-                'name'       => $row['name'],
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
+            $this->ensureCategory($row['slug'], $row['name'], $now);
         }
 
         $engineeringId = (int) $this->db->table('job_categories')->where('slug', 'engineering')->get()->getRow('id');
@@ -32,26 +29,9 @@ class JobPortalDemoSeeder extends Seeder
         $seekerId   = $this->createShieldUser('seeker@example.test', 'password123', 'seeker');
         $this->createShieldUser('admin@example.test', 'password123', 'admin');
 
-        $this->db->table('employer_profiles')->insert([
-            'user_id'      => $employerId,
-            'company_name' => 'Demo Corp',
-            'website'      => 'https://example.test',
-            'description'  => 'Demo employer used for learning.',
-            'verified'     => 1,
-            'created_at'   => date('Y-m-d H:i:s'),
-            'updated_at'   => date('Y-m-d H:i:s'),
-        ]);
-
-        $this->db->table('job_seeker_profiles')->insert([
-            'user_id'   => $seekerId,
-            'headline'  => 'PHP developer learning CI4',
-            'bio'       => 'Building a job portal tutorial project.',
-            'skills'    => 'PHP, MySQL, HTML',
-            'created_at'=> date('Y-m-d H:i:s'),
-            'updated_at'=> date('Y-m-d H:i:s'),
-        ]);
-
-        $this->db->table('portal_jobs')->insert([
+        $this->ensureEmployerProfile($employerId, $now);
+        $this->ensureSeekerProfile($seekerId, $now);
+        $this->ensureJob([
             'employer_user_id' => $employerId,
             'category_id'      => $engineeringId > 0 ? $engineeringId : null,
             'title'            => 'Senior PHP Engineer',
@@ -61,11 +41,10 @@ class JobPortalDemoSeeder extends Seeder
             'salary_min'       => 80000,
             'salary_max'       => 120000,
             'status'           => 'published',
-            'created_at'       => date('Y-m-d H:i:s'),
-            'updated_at'       => date('Y-m-d H:i:s'),
+            'created_at'       => $now,
+            'updated_at'       => $now,
         ]);
-
-        $this->db->table('portal_jobs')->insert([
+        $this->ensureJob([
             'employer_user_id' => $employerId,
             'category_id'      => null,
             'title'            => 'Part-time Technical Writer',
@@ -75,8 +54,8 @@ class JobPortalDemoSeeder extends Seeder
             'salary_min'       => null,
             'salary_max'       => null,
             'status'           => 'published',
-            'created_at'       => date('Y-m-d H:i:s'),
-            'updated_at'       => date('Y-m-d H:i:s'),
+            'created_at'       => $now,
+            'updated_at'       => $now,
         ]);
     }
 
@@ -84,6 +63,14 @@ class JobPortalDemoSeeder extends Seeder
     {
         /** @var UserModel $users */
         $users = model(UserModel::class, false);
+        $user  = $users->findByCredentials(['email' => $email]);
+        if ($user !== null) {
+            $user->addGroup($group);
+            $user->activate();
+
+            return (int) $user->id;
+        }
+
         $user  = $users->createNewUser([
             'active'   => 0,
             'email'    => $email,
@@ -101,5 +88,73 @@ class JobPortalDemoSeeder extends Seeder
         $user->activate();
 
         return (int) $user->id;
+    }
+
+    private function ensureCategory(string $slug, string $name, string $now): void
+    {
+        $existing = $this->db->table('job_categories')->where('slug', $slug)->get()->getRowArray();
+        if ($existing !== null) {
+            return;
+        }
+
+        $this->db->table('job_categories')->insert([
+            'slug'       => $slug,
+            'name'       => $name,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+    }
+
+    private function ensureEmployerProfile(int $employerId, string $now): void
+    {
+        $existing = $this->db->table('employer_profiles')->where('user_id', $employerId)->get()->getRowArray();
+        if ($existing !== null) {
+            return;
+        }
+
+        $this->db->table('employer_profiles')->insert([
+            'user_id'      => $employerId,
+            'company_name' => 'Demo Corp',
+            'website'      => 'https://example.test',
+            'description'  => 'Demo employer used for learning.',
+            'verified'     => 1,
+            'created_at'   => $now,
+            'updated_at'   => $now,
+        ]);
+    }
+
+    private function ensureSeekerProfile(int $seekerId, string $now): void
+    {
+        $existing = $this->db->table('job_seeker_profiles')->where('user_id', $seekerId)->get()->getRowArray();
+        if ($existing !== null) {
+            return;
+        }
+
+        $this->db->table('job_seeker_profiles')->insert([
+            'user_id'    => $seekerId,
+            'headline'   => 'PHP developer learning CI4',
+            'bio'        => 'Building a job portal tutorial project.',
+            'skills'     => 'PHP, MySQL, HTML',
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+    }
+
+    /**
+     * @param array<string, int|string|null> $job
+     */
+    private function ensureJob(array $job): void
+    {
+        $existing = $this->db->table('portal_jobs')
+            ->where('employer_user_id', $job['employer_user_id'])
+            ->where('title', $job['title'])
+            ->get()
+            ->getRowArray();
+
+        if ($existing !== null) {
+            return;
+        }
+
+        $this->db->table('portal_jobs')->insert($job);
     }
 }

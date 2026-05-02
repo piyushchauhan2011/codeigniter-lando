@@ -21,6 +21,8 @@ Thumbs.db
 /writable/debugbar/*
 /writable/logs/*
 /writable/uploads/*
+/rustfs_data/
+/rustfs_logs/
 
 # Keep writable subdirectories
 !/writable/cache/index.html

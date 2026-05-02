@@ -41,6 +41,7 @@ class Autoload extends AutoloadConfig
         APP_NAMESPACE => APPPATH,
         'FeaturedJobs' => ROOTPATH . 'featured_jobs',
         'PerformanceLab' => ROOTPATH . 'performance_lab',
+        'DatabaseLab' => ROOTPATH . 'database_lab',
     ];
 
     /**
