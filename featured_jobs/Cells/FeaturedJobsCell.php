@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FeaturedJobs\Cells;
 
 use CodeIgniter\View\Cells\Cell;
+use Config\Services;
 use FeaturedJobs\Models\FeaturedJobModel;
 
 class FeaturedJobsCell extends Cell
@@ -17,7 +18,7 @@ class FeaturedJobsCell extends Cell
 
         return $this->view('featured_jobs', [
             'jobs'        => $jobs,
-            'learningUrl' => site_url('learning/modules/featured-jobs'),
+            'learningUrl' => site_url(Services::portalLocale()->localizePath('learning/modules/featured-jobs')),
         ]);
     }
 }

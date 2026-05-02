@@ -24,7 +24,7 @@ $auth     = \Config\Services::portalAuth();
         <nav class="portal-page__nav" aria-label="Main">
             <a class="portal-page__nav-link" href="<?= portal_url('jobs') ?>"><?= esc(lang('Portal.nav_browse')) ?></a>
             <a class="portal-page__nav-link" href="<?= portal_url('contact') ?>"><?= esc(lang('Portal.nav_contact')) ?></a>
-            <a class="portal-page__nav-link" href="<?= site_url('learning/modules/featured-jobs') ?>"><?= esc(lang('FeaturedJobs.nav_learning')) ?></a>
+            <a class="portal-page__nav-link" href="<?= site_url($pl->localizePath('learning/modules/featured-jobs')) ?>"><?= esc(lang('FeaturedJobs.nav_learning')) ?></a>
             <?php if ($auth->check()): ?>
                 <a class="portal-page__nav-link" href="<?= portal_url('dashboard') ?>"><?= esc(lang('Portal.nav_dashboard')) ?></a>
                 <?php if ($auth->isAdmin()): ?>
