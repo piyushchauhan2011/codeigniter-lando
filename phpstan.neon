@@ -3,9 +3,11 @@ parameters:
     paths:
         - app
         - performance_lab
+        - database_lab
         - tests
     excludePaths:
         - app/Views
         - performance_lab/Views
+        - database_lab/Views
     bootstrapFiles:
         - phpstan-bootstrap.php
