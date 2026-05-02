@@ -2,6 +2,8 @@
 
 namespace Config;
 
+use App\Libraries\ObjectStorage\AwsS3ObjectStorageClient;
+use App\Libraries\ObjectStorage\ObjectStorageClientInterface;
 use App\Libraries\PortalAuth;
 use App\Libraries\PortalLocale;
 use CodeIgniter\Config\BaseService;
@@ -37,5 +39,14 @@ class Services extends BaseService
         }
 
         return new PortalLocale();
+    }
+
+    public static function objectStorage(bool $getShared = true): ObjectStorageClientInterface
+    {
+        if ($getShared) {
+            return static::getSharedInstance('objectStorage');
+        }
+
+        return new AwsS3ObjectStorageClient(config(ObjectStorage::class));
     }
 }

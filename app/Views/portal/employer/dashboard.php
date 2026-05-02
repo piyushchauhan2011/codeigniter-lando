@@ -56,6 +56,7 @@
                     <td class="portal-table__actions">
                         <a href="<?= portal_url('jobs/' . $jobId) ?>">View</a>
                         <a href="<?= portal_url('employer/jobs/' . $jobId . '/edit') ?>">Edit</a>
+                        <a href="<?= portal_url('employer/jobs/' . $jobId . '/assets') ?>">Assets</a>
                         <a href="<?= portal_url('employer/jobs/' . $jobId . '/applications') ?>">Applicants</a>
                         <form method="post" action="<?= portal_url('employer/jobs/' . $jobId . '/delete') ?>" onsubmit="return confirm('Delete this job?');">
                             <?= csrf_field() ?>

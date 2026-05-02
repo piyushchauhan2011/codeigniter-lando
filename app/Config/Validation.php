@@ -110,4 +110,9 @@ class Validation extends BaseConfig
     public array $portal_apply = [
         'cover_letter' => 'required|min_length[20]|max_length[8000]',
     ];
+
+    /** @var array<string, string> */
+    public array $portal_job_asset_upload = [
+        'asset' => 'uploaded[asset]|max_size[asset,5120]|ext_in[asset,png,jpg,jpeg,webp,pdf,doc,docx,txt]',
+    ];
 }

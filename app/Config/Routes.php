@@ -43,11 +43,15 @@ $portalRoutes = static function (RouteCollection $routes): void {
         $routes->get('jobs/(:num)/edit', 'Employer::editJob/$1');
         $routes->post('jobs/(:num)', 'Employer::updateJob/$1');
         $routes->post('jobs/(:num)/delete', 'Employer::deleteJob/$1');
+        $routes->get('jobs/(:num)/assets', 'EmployerAssets::index/$1');
+        $routes->post('jobs/(:num)/assets', 'EmployerAssets::create/$1');
         $routes->post('jobs/(:num)/feature-payment', 'EmployerPayments::create/$1');
         $routes->get('jobs/(:num)/applications', 'Employer::applications/$1');
         $routes->get('payments/(:num)', 'EmployerPayments::show/$1');
         $routes->post('applications/(:num)/status', 'Employer::updateApplicationStatus/$1');
         $routes->get('applications/(:num)/resume', 'Employer::downloadResume/$1');
+        $routes->get('assets/(:num)/signed-url', 'EmployerAssets::signedUrl/$1');
+        $routes->post('assets/(:num)/delete', 'EmployerAssets::delete/$1');
     });
 
     $routes->group('seeker', ['filter' => ['auth', 'seeker']], static function (RouteCollection $routes): void {
