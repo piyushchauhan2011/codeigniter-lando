@@ -1,11 +1,18 @@
+import path from "node:path";
+
 import { expect, test } from "@playwright/test";
 
 /**
  * Full-stack check: demo seeker submits an application (fires Events → queue push).
  * CI runs `queue:work` after this spec to process `notify-employer-application`.
+ *
+ * Note: Demo seed does not set seeker resume_path; Seeker::apply requires a resume
+ * (profile or upload). We attach a minimal PDF via the apply form.
  */
 test.describe("Queue trigger via portal", () => {
   test("seeker signs in and applies to seeded job", async ({ page }) => {
+    const resumePdf = path.join(process.cwd(), "tests/e2e/fixtures/ci-resume.pdf");
+
     await page.goto("/login");
     await page.locator("#email").fill("seeker@example.test");
     await page.locator("#password").fill("password123");
@@ -19,8 +26,9 @@ test.describe("Queue trigger via portal", () => {
     await page.locator("#cover_letter").fill(
       "I am excited about this role and bring solid PHP experience for your team.",
     );
+    await page.locator("#resume").setInputFiles(resumePdf);
     await page.getByRole("button", { name: "Submit application" }).click();
 
-    await expect(page.getByText("Application submitted.", { exact: true })).toBeVisible();
+    await expect(page.locator(".portal-flash--success")).toContainText("Application submitted.");
   });
 });
