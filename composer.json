@@ -13,6 +13,7 @@
         "php": "^8.2",
         "ext-intl": "*",
         "ext-mbstring": "*",
+        "aws/aws-sdk-php": "^3.379",
         "codeigniter4/queue": "^1.0",
         "codeigniter4/shield": "^1.3",
         "codeigniter4/tasks": "^1.0",

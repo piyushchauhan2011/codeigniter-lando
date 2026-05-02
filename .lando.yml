@@ -56,11 +56,32 @@ services:
         ADMINER_DEFAULT_SERVER: database
     scanner: false
 
+  rustfs:
+    type: compose
+    app_mount: false
+    services:
+      image: rustfs/rustfs:latest
+      command: rustfs
+      user: root
+      ports:
+        - "9000"
+        - "9001"
+      environment:
+        RUSTFS_ACCESS_KEY: rustfsadmin
+        RUSTFS_SECRET_KEY: rustfsadmin
+      volumes:
+        - rustfs_data:/data
+        - rustfs_logs:/logs
+    scanner: false
+
 proxy:
   rabbitmq:
     - rabbitmq.my-first-lamp-app.lndo.site:15672
   adminer:
     - adminer.my-first-lamp-app.lndo.site:8080
+  rustfs:
+    - rustfs.my-first-lamp-app.lndo.site:9001
+    - rustfs-api.my-first-lamp-app.lndo.site:9000
 
 tooling:
   queue-work:

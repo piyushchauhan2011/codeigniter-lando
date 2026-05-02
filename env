@@ -67,3 +67,16 @@
 #--------------------------------------------------------------------
 
 # logger.threshold = 4
+
+#--------------------------------------------------------------------
+# OBJECT STORAGE / RUSTFS S3 DEMO
+#--------------------------------------------------------------------
+
+# objectStorage.endpoint = 'http://rustfs:9000'
+# objectStorage.publicEndpoint = 'http://rustfs-api.my-first-lamp-app.lndo.site:8000'
+# objectStorage.region = 'us-east-1'
+# objectStorage.accessKey = 'rustfsadmin'
+# objectStorage.secretKey = 'rustfsadmin'
+# objectStorage.bucket = 'job-portal-assets'
+# objectStorage.signedUrlTtl = 300
+# objectStorage.usePathStyleEndpoint = true
