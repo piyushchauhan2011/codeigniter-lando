@@ -30,6 +30,26 @@ services:
       retries: 30
       delay: 2500
 
+  redis:
+    type: compose
+    app_mount: false
+    services:
+      image: redis:7-alpine
+      command: redis-server --appendonly no
+      ports:
+        - "6379"
+    scanner: false
+
+  memcached:
+    type: compose
+    app_mount: false
+    services:
+      image: memcached:1.6-alpine
+      command: memcached -m 64
+      ports:
+        - "11211"
+    scanner: false
+
   rabbitmq:
     type: compose
     app_mount: false
