@@ -66,7 +66,7 @@ jobs:
           app.forceGlobalSecureRequests = true
           app.indexPage = ''
           # Same hostname Lando documents in `lando info` → internal_connection.host (`database`).
-          database.default.hostname = myfirstlampapp_database_1
+          database.default.hostname = database
           database.default.database = lamp
           database.default.username = lamp
           database.default.password = lamp
