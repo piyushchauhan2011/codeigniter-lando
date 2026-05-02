@@ -48,7 +48,7 @@ final class JobPortalQueueAndTasksTest extends CIUnitTestCase
     public function testNotifyEmployerJobCanBePushedProcessedAndRemoved(): void
     {
         $jobId    = (int) $this->db->table('portal_jobs')->select('id')->where('title', 'Senior PHP Engineer')->get()->getRow('id');
-        $seekerId = (int) $this->db->table('portal_users')->select('id')->where('email', 'seeker@example.test')->get()->getRow('id');
+        $seekerId = $this->userIdForEmail('seeker@example.test');
 
         self::assertGreaterThan(0, $jobId);
         self::assertGreaterThan(0, $seekerId);
@@ -79,7 +79,7 @@ final class JobPortalQueueAndTasksTest extends CIUnitTestCase
     public function testJobApplicationSubmittedEventEnqueuesNotifyEmployerJob(): void
     {
         $jobId    = (int) $this->db->table('portal_jobs')->select('id')->where('title', 'Senior PHP Engineer')->get()->getRow('id');
-        $seekerId = (int) $this->db->table('portal_users')->select('id')->where('email', 'seeker@example.test')->get()->getRow('id');
+        $seekerId = $this->userIdForEmail('seeker@example.test');
 
         Events::trigger('job_application_submitted', $jobId, $seekerId);
 
@@ -106,5 +106,15 @@ final class JobPortalQueueAndTasksTest extends CIUnitTestCase
         $runner->run();
 
         $this->assertLogContains('info', '[Job portal housekeeping] published_jobs=');
+    }
+
+    private function userIdForEmail(string $email): int
+    {
+        return (int) $this->db->table('auth_identities')
+            ->select('user_id')
+            ->where('type', 'email_password')
+            ->where('secret', $email)
+            ->get()
+            ->getRow('user_id');
     }
 }

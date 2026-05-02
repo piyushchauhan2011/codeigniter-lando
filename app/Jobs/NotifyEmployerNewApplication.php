@@ -6,8 +6,8 @@ namespace App\Jobs;
 
 use App\Models\JobModel;
 use App\Models\JobSeekerProfileModel;
-use App\Models\PortalUserModel;
 use CodeIgniter\Queue\BaseJob;
+use CodeIgniter\Shield\Models\UserModel;
 
 class NotifyEmployerNewApplication extends BaseJob
 {
@@ -31,12 +31,12 @@ class NotifyEmployerNewApplication extends BaseJob
 
         $employerUserId = (int) $job['employer_user_id'];
 
-        $employer = model(PortalUserModel::class, false)->find($employerUserId);
-        $seeker   = model(PortalUserModel::class, false)->find($seekerUserId);
+        $employer = model(UserModel::class, false)->findById($employerUserId);
+        $seeker   = model(UserModel::class, false)->findById($seekerUserId);
         $profile  = model(JobSeekerProfileModel::class, false)->where('user_id', $seekerUserId)->first();
 
-        $employerEmail = $employer['email'] ?? 'unknown';
-        $seekerEmail   = $seeker['email'] ?? 'unknown';
+        $employerEmail = $employer->email ?? 'unknown';
+        $seekerEmail   = $seeker->email ?? 'unknown';
         $headline      = $profile['headline'] ?? '';
 
         log_message(

@@ -9,6 +9,7 @@ use CodeIgniter\Validation\StrictRules\FormatRules;
 use CodeIgniter\Validation\StrictRules\Rules;
 
 use App\Validation\PortalUserRules;
+use CodeIgniter\Shield\Authentication\Passwords\ValidationRules as ShieldPasswordRules;
 
 class Validation extends BaseConfig
 {
@@ -42,6 +43,7 @@ class Validation extends BaseConfig
     {
         $this->ruleSets = [
             PortalUserRules::class,
+            ShieldPasswordRules::class,
             Rules::class,
             FormatRules::class,
             FileRules::class,
@@ -63,8 +65,8 @@ class Validation extends BaseConfig
 
     /** @var array<string, string> */
     public array $portal_register = [
-        'email'            => 'required|valid_email|is_unique[portal_users.email]',
-        'password'         => 'required|min_length[10]',
+        'email'            => 'required|valid_email|is_unique[auth_identities.secret]',
+        'password'         => 'required|strong_password[]',
         'password_confirm' => 'required|matches[password]',
         'role'             => 'required|in_list[employer,seeker]',
         'company_name'     => 'company_name_for_registration[_]',

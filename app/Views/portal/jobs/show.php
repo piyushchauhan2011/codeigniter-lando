@@ -1,6 +1,7 @@
 <?php $this->extend('portal/layout'); ?>
 
 <?php $this->section('content'); ?>
+<?php $auth = \Config\Services::portalAuth(); ?>
 <section class="portal-card">
     <article class="job-detail">
         <h2><?= esc($job['title']) ?></h2>
@@ -18,7 +19,7 @@
         <div class="job-detail__body"><?= nl2br(esc($job['description'])) ?></div>
     </article>
 
-    <?php if (session()->get(\App\Libraries\PortalAuth::SESSION_ROLE) === 'seeker'): ?>
+    <?php if ($auth->isSeeker()): ?>
         <section class="portal-card portal-card--nested">
             <h3>Actions</h3>
             <form method="post" action="<?= portal_url('seeker/jobs/' . (int) $job['id'] . '/save') ?>" class="portal-inline-form">
@@ -43,7 +44,7 @@
                 <p class="portal-flash portal-flash--success">You have already applied to this role.</p>
             <?php endif; ?>
         </section>
-    <?php elseif (! session()->get(\App\Libraries\PortalAuth::SESSION_USER_ID)): ?>
+    <?php elseif (! $auth->check()): ?>
         <p><a href="<?= portal_url('login') ?>">Sign in</a> as a job seeker to apply or save jobs.</p>
     <?php endif; ?>
 </section>

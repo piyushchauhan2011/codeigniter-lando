@@ -128,7 +128,13 @@ lando php spark cache:clear
 Run migrations:
 
 ```bash
-lando php spark migrate
+lando php spark migrate --all
+```
+
+Shield auth tables live in a Composer package, so `--all` is required. Seed the job portal demo users and jobs with:
+
+```bash
+lando php spark db:seed JobPortalDemoSeeder
 ```
 
 ### D) “Healthcheck … FAILED … Can’t connect to MySQL” during `lando start`

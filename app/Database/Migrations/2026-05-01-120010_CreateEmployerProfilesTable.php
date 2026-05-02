@@ -44,7 +44,7 @@ class CreateEmployerProfilesTable extends AppMigration
         ]);
         $this->forge->addKey('id', true);
         $this->forge->addUniqueKey('user_id');
-        $this->forge->addForeignKey('user_id', 'portal_users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('employer_profiles');
     }
 

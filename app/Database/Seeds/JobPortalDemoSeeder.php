@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
+use CodeIgniter\Shield\Models\UserModel;
 
 class JobPortalDemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
-
         $categories = [
             ['slug' => 'engineering', 'name' => 'Engineering'],
             ['slug' => 'sales', 'name' => 'Sales'],
@@ -29,23 +28,9 @@ class JobPortalDemoSeeder extends Seeder
 
         $engineeringId = (int) $this->db->table('job_categories')->where('slug', 'engineering')->get()->getRow('id');
 
-        $this->db->table('portal_users')->insert([
-            'email'         => 'employer@example.test',
-            'password_hash' => $passwordHash,
-            'role'          => 'employer',
-            'created_at'    => date('Y-m-d H:i:s'),
-            'updated_at'    => date('Y-m-d H:i:s'),
-        ]);
-        $employerId = (int) $this->db->insertID();
-
-        $this->db->table('portal_users')->insert([
-            'email'         => 'seeker@example.test',
-            'password_hash' => $passwordHash,
-            'role'          => 'seeker',
-            'created_at'    => date('Y-m-d H:i:s'),
-            'updated_at'    => date('Y-m-d H:i:s'),
-        ]);
-        $seekerId = (int) $this->db->insertID();
+        $employerId = $this->createShieldUser('employer@example.test', 'password123', 'employer');
+        $seekerId   = $this->createShieldUser('seeker@example.test', 'password123', 'seeker');
+        $this->createShieldUser('admin@example.test', 'password123', 'admin');
 
         $this->db->table('employer_profiles')->insert([
             'user_id'      => $employerId,
@@ -93,5 +78,28 @@ class JobPortalDemoSeeder extends Seeder
             'created_at'       => date('Y-m-d H:i:s'),
             'updated_at'       => date('Y-m-d H:i:s'),
         ]);
+    }
+
+    private function createShieldUser(string $email, string $password, string $group): int
+    {
+        /** @var UserModel $users */
+        $users = model(UserModel::class, false);
+        $user  = $users->createNewUser([
+            'active'   => 0,
+            'email'    => $email,
+            'password' => $password,
+        ]);
+
+        $users->save($user);
+
+        $user = $users->findById($users->getInsertID());
+        if ($user === null) {
+            throw new \RuntimeException('Unable to create demo Shield user: ' . $email);
+        }
+
+        $user->addGroup($group);
+        $user->activate();
+
+        return (int) $user->id;
     }
 }

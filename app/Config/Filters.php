@@ -3,6 +3,7 @@
 namespace Config;
 
 use App\Filters\LocaleFilter;
+use App\Filters\PortalAdminFilter;
 use App\Filters\PortalAuthFilter;
 use App\Filters\PortalEmployerFilter;
 use App\Filters\PortalGuestFilter;
@@ -33,6 +34,7 @@ class Filters extends BaseFilters
         'locale'        => LocaleFilter::class,
         'auth'          => PortalAuthFilter::class,
         'guest'         => PortalGuestFilter::class,
+        'admin'         => PortalAdminFilter::class,
         'employer'      => PortalEmployerFilter::class,
         'seeker'        => PortalSeekerFilter::class,
         'csrf'          => CSRF::class,
@@ -126,6 +128,8 @@ class Filters extends BaseFilters
                 'register',
                 'logout',
                 'dashboard',
+                'admin',
+                'admin/*',
                 'employer',
                 'employer/*',
                 'seeker',

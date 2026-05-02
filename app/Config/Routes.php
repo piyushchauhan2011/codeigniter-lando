@@ -1,6 +1,7 @@
 <?php
 
 use CodeIgniter\Router\RouteCollection;
+use CodeIgniter\Shield\Config\Services as ShieldServices;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
@@ -27,6 +28,10 @@ $portalRoutes = static function (RouteCollection $routes): void {
     $routes->group('', ['filter' => 'auth'], static function (RouteCollection $routes): void {
         $routes->post('logout', 'Auth::logout');
         $routes->get('dashboard', 'Dashboard::index');
+    });
+
+    $routes->group('admin', ['filter' => ['auth', 'admin']], static function (RouteCollection $routes): void {
+        $routes->get('/', 'Admin::dashboard');
     });
 
     $routes->group('employer', ['filter' => ['auth', 'employer']], static function (RouteCollection $routes): void {
@@ -56,6 +61,8 @@ $portalRoutes = static function (RouteCollection $routes): void {
 $portalRoutes($routes);
 $routes->group('fr', $portalRoutes);
 $routes->group('en', $portalRoutes);
+
+ShieldServices::auth()->routes($routes, ['except' => ['register', 'login', 'logout', 'magic-link']]);
 
 $routes->group('api', ['namespace' => 'App\Controllers\Api'], static function (RouteCollection $routes): void {
     $routes->resource('jobs', ['controller' => 'JobsApi', 'only' => ['index', 'show']]);

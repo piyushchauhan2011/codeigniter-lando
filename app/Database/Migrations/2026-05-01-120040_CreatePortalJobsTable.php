@@ -64,7 +64,7 @@ class CreatePortalJobsTable extends AppMigration
         $this->forge->addKey('status');
         $this->forge->addKey('location');
         $this->forge->addKey('employment_type');
-        $this->forge->addForeignKey('employer_user_id', 'portal_users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('employer_user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('category_id', 'job_categories', 'id', 'SET NULL', 'CASCADE');
         $this->forge->createTable('portal_jobs');
     }

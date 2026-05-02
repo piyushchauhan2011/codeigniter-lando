@@ -6,8 +6,8 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = '';
-    public string $fromName   = '';
+    public string $fromEmail  = 'no-reply@jobportal.test';
+    public string $fromName   = 'Job Portal Learning App';
     public string $recipients = '';
 
     /**
