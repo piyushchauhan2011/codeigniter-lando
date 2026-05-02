@@ -48,6 +48,14 @@ Information on running the CodeIgniter test suite can be found in the [README.md
 - Static analysis: `composer phpstan:check`
 - Unit tests: `composer test`
 
+## Git Branch Cleanup
+
+Delete all local branches except `main` while leaving remote branches untouched:
+
+```bash
+git branch --format='%(refname:short)' | xargs -I {} sh -c '[ "{}" = main ] || git branch -D "{}"'
+```
+
 ## Job Portal Auth With Shield
 
 The job portal uses [CodeIgniter Shield](https://github.com/codeigniter4/shield) for session login, remember-me, email verification, and authorization groups.
