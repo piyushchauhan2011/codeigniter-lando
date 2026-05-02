@@ -20,6 +20,7 @@
     "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site playwright test",
     "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test",
     "test:e2e:spark": "playwright test",
+    "test:e2e:queue-tasks": "playwright test tests/e2e/queue_tasks_integration.spec.ts",
     "deploy:local:up": "make deploy-local-up",
     "deploy:local:wait": "make deploy-local-wait-ssh",
     "deploy:local:down": "make deploy-local-down",

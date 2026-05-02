@@ -5,6 +5,7 @@ namespace Config;
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\FrameworkException;
 use CodeIgniter\HotReloader\HotReloader;
+use CodeIgniter\Queue\Config\Services as QueueServices;
 
 /*
  * --------------------------------------------------------------------
@@ -26,11 +27,11 @@ use CodeIgniter\HotReloader\HotReloader;
 Events::on('job_application_submitted', static function (mixed ...$args): mixed {
     $jobId        = (int) ($args[0] ?? 0);
     $seekerUserId = (int) ($args[1] ?? 0);
-    log_message(
-        'info',
-        'Job application submitted job_id={job} seeker_user_id={seeker}',
-        ['job' => $jobId, 'seeker' => $seekerUserId],
-    );
+
+    QueueServices::queue()->push('default', 'notify-employer-application', [
+        'job_id'           => $jobId,
+        'seeker_user_id'   => $seekerUserId,
+    ]);
 
     return null;
 });

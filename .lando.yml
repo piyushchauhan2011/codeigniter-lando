@@ -29,3 +29,13 @@ services:
         - "--silent"
       retries: 30
       delay: 2500
+
+tooling:
+  queue-work:
+    service: appserver
+    cmd: php spark queue:work default
+    description: Run the queue worker for the default queue (same as lando php spark queue:work default)
+  tasks-run:
+    service: appserver
+    cmd: php spark tasks:run
+    description: Run due scheduled tasks (use --task name for a single named task)

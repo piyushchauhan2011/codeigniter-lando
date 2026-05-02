@@ -13,6 +13,8 @@
         "php": "^8.2",
         "ext-intl": "*",
         "ext-mbstring": "*",
+        "codeigniter4/queue": "^1.0",
+        "codeigniter4/tasks": "^1.0",
         "laminas/laminas-escaper": "^2.18",
         "psr/log": "^3.0"
     },
