@@ -40,6 +40,7 @@ class Autoload extends AutoloadConfig
     public $psr4 = [
         APP_NAMESPACE => APPPATH,
         'FeaturedJobs' => ROOTPATH . 'featured_jobs',
+        'PerformanceLab' => ROOTPATH . 'performance_lab',
     ];
 
     /**

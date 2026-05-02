@@ -7,6 +7,29 @@ This guide uses the job portal app to explain practical performance topics:
 - Database indexes and `EXPLAIN`
 - Lazy loading, eager loading, and the N+1 query problem
 
+## Interactive Performance Lab
+
+The app includes a hands-on lab at:
+
+```text
+/learning/modules/performance-lab
+```
+
+Use it after seeding the job portal demo data:
+
+```bash
+lando php spark migrate --all
+lando php spark db:seed JobPortalDemoSeeder
+```
+
+The lab shows:
+
+- The active CodeIgniter cache handler and cache key settings
+- A cached page endpoint beside an uncached endpoint
+- Fragment/object cache hit/miss behavior for job categories and public job lists
+- Generated SQL and `EXPLAIN` output for the public job listing query
+- A lazy-loading N+1 demo beside an eager-loading joined query
+
 ## Local Cache Services
 
 The Lando stack includes cache services for learning:
@@ -311,4 +334,4 @@ Another possible N+1 in a job portal is listing jobs and then loading each emplo
 3. Open `/jobs` and `/jobs/{id}` while watching the Debug Toolbar database query count.
 4. Run the `EXPLAIN` examples in Adminer against the Lando database.
 5. Add one composite index in a local throwaway database, rerun `EXPLAIN`, and compare `key`, `rows`, and `Extra`.
-6. Compare the eager-loaded seeker application query with the bad N+1 pattern to see how query counts grow.
+6. Open `/learning/modules/performance-lab` and compare the lazy and eager loading demos side by side.
