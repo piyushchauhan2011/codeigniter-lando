@@ -22,7 +22,7 @@ rsync -a \
   --exclude "writable/debugbar/*" \
   --exclude "writable/logs/*" \
   --exclude "writable/uploads/*" \
-  --exclude "dist" \
+  --exclude "/dist" \
   ./ "${STAGE_DIR}/${APP_NAME}/"
 
 tar -czf "${DIST_DIR}/${ARCHIVE_NAME}" -C "${STAGE_DIR}" "${APP_NAME}"

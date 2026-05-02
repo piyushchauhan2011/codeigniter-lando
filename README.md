@@ -117,6 +117,75 @@ export DEPLOY_SSH_TARGET=deploy@YOUR_DROPLET
 export DEPLOY_APP_ROOT=/var/www/codeigniter-tutorial
 ```
 
+Optional SSH config file (non-default port or identity path): `export DEPLOY_SSH_CONFIG=/abs/path/to/ssh_config`
+
+### Local Docker rehearsal (SSH + Apache like a tiny VPS)
+
+[`docker/deploy-local/docker-compose.yml`](docker/deploy-local/docker-compose.yml) runs a **`deploy-target`** container (PHP 8.2 + Apache + OpenSSH). From the repo root:
+
+```bash
+./scripts/deploy-local-up.sh   # generates docker/deploy-local/.ssh/, shared.env, ssh_config; compose up
+```
+
+If **`init-shared`** fails with **`Connection reset`** right after startup, **`sshd`** may still be booting — run **`make deploy-local-wait-ssh`** (or **`pnpm deploy:local:wait`**), or use **`make deploy-local-demo`**, which waits automatically.
+
+One-shot rehearsal using the published **`v0.0.1`** artifact (downloads tarball, then deploys via SCP — same layout as DigitalOcean):
+
+```bash
+make deploy-local-demo
+# equivalent: pnpm deploy:local:demo
+```
+
+Override URL/path for another release:  
+`make deploy-local-demo DEPLOY_LOCAL_RELEASE_URL='https://github.com/OWNER/REPO/releases/download/vX.Y.Z/codeigniter-tutorial-vX.Y.Z.tar.gz' DEPLOY_LOCAL_ARTIFACT=dist/releases/codeigniter-tutorial-vX.Y.Z.tar.gz`
+
+Open **`http://127.0.0.1:9080/hello`** after a successful deploy.
+
+**Unstyled `/hello` (CSS/JS 404)?** Older packaged releases omitted `public/assets/dist/**` because [`scripts/package-release.sh`](scripts/package-release.sh) used `rsync --exclude dist`, which excluded **every** directory named `dist`, including **`public/assets/dist`**. Tags built after that fix include assets. Deploy from your workspace instead:
+
+```bash
+make deploy-local-demo-built
+# equivalent: pnpm deploy:local:demo:built
+```
+
+That uses **pnpm only** (frozen lockfile). To mirror **[`.github/workflows/release.yml`](.github/workflows/release.yml)** locally (`composer install --no-dev`, `pnpm install --no-frozen-lockfile`, `pnpm build`, checks, [`scripts/package-release.sh`](scripts/package-release.sh)), then deploy into Docker:
+
+```bash
+make deploy-local-demo-ci
+# equivalent: pnpm deploy:local:demo:ci
+```
+
+Tarball defaults to **`dist/codeigniter-tutorial-local-release.tar.gz`**. Override suffix:  
+`make deploy-local-demo-ci RELEASE_ARTIFACT_TAG=v0.0.9-local`
+
+Tarball **only** (no Docker): `./scripts/build-release-artifact-local.sh my-tag` or `RELEASE_ARTIFACT_TAG=my-tag pnpm deploy:local:build:release-ci`.
+
+**Manual equivalent** (compose up first, then local tarball):
+
+```bash
+export DEPLOY_SSH_TARGET=deploy@codeigniter-local-deploy
+export DEPLOY_SSH_CONFIG="$(pwd)/docker/deploy-local/ssh_config"
+export DEPLOY_APP_ROOT=/srv/codeigniter-tutorial
+export DEPLOY_APACHE_CMD='sudo apachectl graceful'
+export DEPLOY_SMOKE_URL=http://127.0.0.1/hello   # curl runs inside the container (Apache listens on :80 there)
+
+./scripts/deploy-digitalocean.sh init-shared
+docker compose -f docker/deploy-local/docker-compose.yml exec -u root deploy-target \
+  chown -R www-data:www-data /srv/codeigniter-tutorial/shared/writable
+
+./scripts/package-release.sh dev-local
+./scripts/deploy-digitalocean.sh deploy ./dist/codeigniter-tutorial-dev-local.tar.gz --label local
+make deploy-local-migrate
+```
+
+The **`docker/deploy-local`** Compose stack starts **MySQL** together with PHP (`hostname` **`mysql`** inside Docker; **`127.0.0.1:3307`** on your machine for `mysql` CLI / GUI tools). [`docker/deploy-local/shared.env.example`](docker/deploy-local/shared.env.example) wires **`database.default.*`** for that database.
+
+After any **`deploy`** into the container, run **`make deploy-local-migrate`** (or **`pnpm deploy:local:migrate`**) once so portal tables exist — otherwise **`/jobs`** reports a database connection or schema error.
+
+[`docker/deploy-local/shared.env`](docker/deploy-local/shared.env) sets **`app.indexPage`** empty so links use **`/contact`** instead of **`/index.php/contact`** while Apache still rewrites requests to **`public/index.php`** (see **`App::$indexPage`** in [`app/Config/App.php`](app/Config/App.php)).
+
+Teardown: [`scripts/deploy-local-down.sh`](scripts/deploy-local-down.sh) or `docker compose -f docker/deploy-local/docker-compose.yml down`
+
 One-time filesystem prep on the Droplet:
 
 ```bash
@@ -126,6 +195,8 @@ sudo chown -R www-data:www-data "${DEPLOY_APP_ROOT}/shared/writable"
 ```
 
 Adjust `sudo chown`/user to match whoever runs PHP/Apache on your Droplet (often `www-data` on Debian/Ubuntu).
+
+When **`mod_rewrite`** maps requests to **`public/index.php`** (normal Apache setup), put **`app.indexPage =`** (empty) in **`shared/.env`** so generated links use **`/contact`** instead of **`/index.php/contact`**.
 
 Push a tagged release (`v*`) → download URL from GitHub Releases.
 
@@ -143,6 +214,7 @@ Environment knobs:
 
 | Variable | Purpose |
 | --- | --- |
+| `DEPLOY_SSH_CONFIG` | Optional `-F` path for **ssh**(1) / **scp**(1) (non-default port, identity file). |
 | `DEPLOY_KEEP_RELEASES` | Default **5**. Oldest dormant folders prune after each successful deploy. |
 | `DEPLOY_APACHE` | `false` skips reload scripts (manual restarts instead). |
 | `DEPLOY_APACHE_CMD` | Override auto-detected graceful reload commands. Requires passwordless `sudo`. |

@@ -19,7 +19,18 @@
     "test:e2e": "bash -c 'if [ -z \"${PLAYWRIGHT_BASE_URL-}\" ]; then export PLAYWRIGHT_BASE_URL=\"https://my-first-lamp-app.lndo.site\"; export PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1; fi; exec playwright test'",
     "test:e2e:lando:http": "PLAYWRIGHT_BASE_URL=http://my-first-lamp-app.lndo.site playwright test",
     "test:e2e:lando:https": "PLAYWRIGHT_BASE_URL=https://my-first-lamp-app.lndo.site PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1 playwright test",
-    "test:e2e:spark": "playwright test"
+    "test:e2e:spark": "playwright test",
+    "deploy:local:up": "make deploy-local-up",
+    "deploy:local:wait": "make deploy-local-wait-ssh",
+    "deploy:local:down": "make deploy-local-down",
+    "deploy:local:fetch": "make deploy-local-fetch-artifact",
+    "deploy:local:deploy:url": "make deploy-local-deploy-url",
+    "deploy:local:deploy:file": "make deploy-local-deploy-file",
+    "deploy:local:demo": "make deploy-local-demo",
+    "deploy:local:demo:built": "make deploy-local-demo-built",
+    "deploy:local:build:release-ci": "make deploy-local-build-release-ci",
+    "deploy:local:demo:ci": "make deploy-local-demo-ci",
+    "deploy:local:migrate": "make deploy-local-migrate"
   },
   "devDependencies": {
     "@playwright/test": "latest",

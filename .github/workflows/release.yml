@@ -41,6 +41,11 @@ jobs:
       - name: Build frontend assets
         run: pnpm build
 
+      - name: Verify packaged frontend output exists
+        run: |
+          test -f public/assets/dist/css/tutorialStyle.css
+          test -f public/assets/dist/js/tutorial.js
+
       - name: Package release
         run: ./scripts/package-release.sh "${GITHUB_REF_NAME}"
 

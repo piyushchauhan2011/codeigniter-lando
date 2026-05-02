@@ -7,6 +7,7 @@
 #   DEPLOY_APP_ROOT     Absolute path ON THE SERVER (e.g. /var/www/codeigniter-tutorial)
 #
 # Optional env:
+#   DEPLOY_SSH_CONFIG=/abs/path/to/ssh_config   # ssh -F / scp -F (local rehearsals)
 #   DEPLOY_KEEP_RELEASES=5
 #   DEPLOY_APACHE=false
 #   DEPLOY_APACHE_CMD='sudo systemctl reload apache2'
@@ -53,20 +54,24 @@ _require_app_root() {
 }
 
 _invoke_remote_env() {
-  ssh -o "StrictHostKeyChecking=${DEPLOY_STRICT_HOST_KEY_CHECKING:-accept-new}" \
-    "${DEPLOY_SSH_TARGET}" env \
-      DEPLOY_CLI_COMMAND="${DEPLOY_CLI_COMMAND}" \
-      DEPLOY_APP_ROOT="${DEPLOY_APP_ROOT}" \
-      DEPLOY_KEEP_RELEASES="${DEPLOY_KEEP_RELEASES:-5}" \
-      DEPLOY_APACHE_CMD="${DEPLOY_APACHE_CMD:-}" \
-      DEPLOY_APACHE="${DEPLOY_APACHE:-}" \
-      DEPLOY_SMOKE_URL="${DEPLOY_SMOKE_URL:-}" \
-      DEPLOY_PKG_TOP_DIR="${DEPLOY_PKG_TOP_DIR:-codeigniter-tutorial}" \
-      REMOTE_TARBALL_DOWNLOAD_URL="${REMOTE_TARBALL_DOWNLOAD_URL:-}" \
-      REMOTE_TARBALL_LOCAL_PATH="${REMOTE_TARBALL_LOCAL_PATH:-}" \
-      REMOTE_DEPLOY_LABEL="${REMOTE_DEPLOY_LABEL:-}" \
-      REMOTE_TARBALL_DELETE_AFTER_DEPLOY="${REMOTE_TARBALL_DELETE_AFTER_DEPLOY:-1}" \
-    bash -s -- <"${REMOTE_BODY}"
+  local -a ssh_cfg=()
+  [[ -n "${DEPLOY_SSH_CONFIG:-}" ]] && ssh_cfg=( -F "${DEPLOY_SSH_CONFIG}" )
+  # Pipe exports + remote script so values with spaces are not broken by ssh's remote-shell parsing.
+  {
+    printf 'export DEPLOY_CLI_COMMAND=%q\n' "${DEPLOY_CLI_COMMAND}"
+    printf 'export DEPLOY_APP_ROOT=%q\n' "${DEPLOY_APP_ROOT}"
+    printf 'export DEPLOY_KEEP_RELEASES=%q\n' "${DEPLOY_KEEP_RELEASES:-5}"
+    printf 'export DEPLOY_APACHE_CMD=%q\n' "${DEPLOY_APACHE_CMD:-}"
+    printf 'export DEPLOY_APACHE=%q\n' "${DEPLOY_APACHE:-}"
+    printf 'export DEPLOY_SMOKE_URL=%q\n' "${DEPLOY_SMOKE_URL:-}"
+    printf 'export DEPLOY_PKG_TOP_DIR=%q\n' "${DEPLOY_PKG_TOP_DIR:-codeigniter-tutorial}"
+    printf 'export REMOTE_TARBALL_DOWNLOAD_URL=%q\n' "${REMOTE_TARBALL_DOWNLOAD_URL:-}"
+    printf 'export REMOTE_TARBALL_LOCAL_PATH=%q\n' "${REMOTE_TARBALL_LOCAL_PATH:-}"
+    printf 'export REMOTE_DEPLOY_LABEL=%q\n' "${REMOTE_DEPLOY_LABEL:-}"
+    printf 'export REMOTE_TARBALL_DELETE_AFTER_DEPLOY=%q\n' "${REMOTE_TARBALL_DELETE_AFTER_DEPLOY:-1}"
+    cat "${REMOTE_BODY}"
+  } | ssh "${ssh_cfg[@]}" -o "StrictHostKeyChecking=${DEPLOY_STRICT_HOST_KEY_CHECKING:-accept-new}" \
+      "${DEPLOY_SSH_TARGET}" bash -s --
 }
 
 CMD="${1:-}"
@@ -117,7 +122,9 @@ case "${CMD}" in
     elif [[ -f "${SOURCE}" ]]; then
       TMP="/tmp/ci-release-upload-$$-${RANDOM}.tar.gz"
       printf '%s\n' "Uploading ${SOURCE} -> ${DEPLOY_SSH_TARGET}:${TMP}" >&2
-      scp -q "${SOURCE}" "${DEPLOY_SSH_TARGET}:${TMP}"
+      scp_cfg=()
+      [[ -n "${DEPLOY_SSH_CONFIG:-}" ]] && scp_cfg=( -F "${DEPLOY_SSH_CONFIG}" )
+      scp "${scp_cfg[@]}" -q "${SOURCE}" "${DEPLOY_SSH_TARGET}:${TMP}"
       export REMOTE_TARBALL_LOCAL_PATH="${TMP}"
     else
       printf '%s\n' "deploy SOURCE must be an http(s) URL or existing local tarball path." >&2
