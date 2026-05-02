@@ -25,7 +25,7 @@ jobs:
           | --- | --- | --- |
           | 1. PHP syntax | `composer ci:php:lint` | Fix parse/syntax errors; file paths are in the log |
           | 2. PHPStan | `composer phpstan:check` | Fix types; run the same command locally |
-          | 3. PHPUnit | `composer test` | Fix or add tests; use `composer test` to reproduce |
+          | 3. PHPUnit | `composer test` | Fix or add tests; includes job portal HTTP tests plus queue/tasks integration (`JobPortalQueueAndTasksTest`) |
 
           **Tip:** Open the **Summary** tab on this workflow run for pass/fail wrap-up and copy-paste commands.
           EOF
