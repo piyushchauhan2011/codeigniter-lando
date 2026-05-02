@@ -1,0 +1,47 @@
+# Local rehearsal for scripts/deploy-digitalocean.sh → deploy-remote-body.sh
+# Usage: ../../scripts/deploy-local-up.sh
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ci4
+      MYSQL_USER: lamp
+      MYSQL_PASSWORD: lamp
+    ports:
+      - "3307:3306"
+    command:
+      [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+      ]
+    networks:
+      - deploy-local
+    healthcheck:
+      test:
+        ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+      start_period: 15s
+
+  deploy-target:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "2222:22"
+      - "9080:80"
+    volumes:
+      - ./.ssh/deploy.pub:/tmp/deploy.pub:ro
+      - ./shared.env:/srv/codeigniter-tutorial/shared/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - deploy-local
+
+networks:
+  deploy-local:
+    driver: bridge

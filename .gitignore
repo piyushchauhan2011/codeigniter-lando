@@ -31,3 +31,8 @@ Thumbs.db
 
 # PHPUnit (optional local cache; never commit)
 .phpunit.result.cache
+
+# Local deploy rehearsal (docker/deploy-local)
+docker/deploy-local/.ssh/
+docker/deploy-local/shared.env
+docker/deploy-local/ssh_config
