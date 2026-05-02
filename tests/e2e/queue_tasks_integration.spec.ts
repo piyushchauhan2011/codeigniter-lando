@@ -29,6 +29,10 @@ test.describe("Queue trigger via portal", () => {
     await page.locator("#resume").setInputFiles(resumePdf);
     await page.getByRole("button", { name: "Submit application" }).click();
 
-    await expect(page.locator(".portal-flash--success")).toContainText("Application submitted.");
+    // Session flash is a direct child of <main>. After apply, the job view also shows a nested
+    // `.portal-flash--success` ("already applied"), so a bare `.portal-flash--success` matches twice.
+    await expect(
+      page.locator("main.portal-page__main > .portal-flash.portal-flash--success"),
+    ).toContainText("Application submitted.");
   });
 });
