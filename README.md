@@ -56,7 +56,7 @@ The job portal uses [CodeIgniter Shield](https://github.com/codeigniter4/shield)
 - Local email verification uses `App\Auth\LearningEmailActivator`: the verification code appears on the verification page and is also written to the CodeIgniter log, so no SMTP server is needed for learning.
 - Run migrations with `--all` so Shield package tables are created together with app tables: `lando php spark migrate --all`.
 - Fresh local setup: `lando php spark migrate --all && lando php spark db:seed JobPortalDemoSeeder`.
-- If your local learning database already ran the old `portal_users` migrations, reset or refresh it before seeding so the new Shield foreign keys are created cleanly.
+- If your local learning database already ran the old `portal_users` migrations, use the full Shield portal reset in [LANDO_ONBOARDING.md](LANDO_ONBOARDING.md) before seeding so the new Shield foreign keys are created cleanly.
 
 ## Frontend Tooling (pnpm + Vite + TS + SCSS)
 
