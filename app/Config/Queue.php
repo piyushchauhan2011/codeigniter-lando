@@ -119,6 +119,15 @@ class Queue extends BaseQueue
 
     public function __construct()
     {
+        $defaultHandler = env(
+            'queue.defaultHandler',
+            ENVIRONMENT === 'testing' ? 'database' : $this->defaultHandler,
+        );
+
+        if (is_string($defaultHandler) && $defaultHandler !== '') {
+            $this->defaultHandler = $defaultHandler;
+        }
+
         $this->rabbitmq['host']     = env('queue.rabbitmq.host', $this->rabbitmq['host']);
         $this->rabbitmq['port']     = (int) env('queue.rabbitmq.port', $this->rabbitmq['port']);
         $this->rabbitmq['user']     = env('queue.rabbitmq.user', $this->rabbitmq['user']);
