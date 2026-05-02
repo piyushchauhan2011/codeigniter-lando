@@ -9,6 +9,19 @@
 >
     <h2><?= esc($title) ?></h2>
     <p class="portal-text-muted"><?= esc(lang('Portal.filters_bookmark_hint')) ?></p>
+    <p class="portal-text-muted">
+        Search engine:
+        <?php if (($searchMeta['engine'] ?? 'sql') === 'elastic'): ?>
+            <strong>Elasticsearch</strong>
+            <a href="<?= portal_url('jobs?' . http_build_query(array_filter([...$filters, 'engine' => 'sql'], static fn ($value): bool => $value !== null && $value !== ''))) ?>">Use SQL fallback</a>
+        <?php else: ?>
+            <strong>SQL</strong>
+            <a href="<?= portal_url('jobs?' . http_build_query(array_filter([...$filters, 'engine' => 'elastic'], static fn ($value): bool => $value !== null && $value !== ''))) ?>">Use Elasticsearch</a>
+        <?php endif; ?>
+    </p>
+    <?php if (! empty($searchMeta['error'])): ?>
+        <p class="portal-flash portal-flash--error">Elasticsearch was unavailable, so the listing fell back to SQL.</p>
+    <?php endif; ?>
     <p class="job-api-banner portal-text-muted" data-job-api-banner hidden>
         <span data-job-api-banner-text></span>
     </p>
@@ -40,8 +53,16 @@
                 <?php endforeach; ?>
             </select>
         </label>
+        <input type="hidden" name="engine" value="<?= esc((string) ($filters['engine'] ?? 'sql'), 'attr') ?>">
         <button type="submit" class="portal-button"><?= esc(lang('Portal.filter_search')) ?></button>
     </form>
+
+    <?php if (($searchMeta['engine'] ?? 'sql') === 'elastic' && ! empty($searchMeta['aggregations'])): ?>
+        <details class="portal-card portal-card--nested">
+            <summary>Elasticsearch aggregations</summary>
+            <pre><code><?= esc(json_encode($searchMeta['aggregations'], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR)) ?></code></pre>
+        </details>
+    <?php endif; ?>
 
     <?php if ($jobs === []): ?>
         <p><?= esc(lang('Portal.jobs_none')) ?></p>
@@ -61,7 +82,7 @@
                 <?= view_cell(\App\Cells\JobCardCell::class, ['job' => $job]) ?>
             <?php endforeach; ?>
         </div>
-        <?= $pager->only(['q', 'location', 'employment_type', 'category_id'])->links('default', 'portal_full') ?>
+        <?= $pager->only(['q', 'location', 'employment_type', 'category_id', 'engine'])->links('default', 'portal_full') ?>
     <?php endif; ?>
 </section>
 <?php $this->endSection(); ?>

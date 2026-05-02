@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Log\Handlers\JsonFileHandler;
 use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Log\Handlers\FileHandler;
 use CodeIgniter\Log\Handlers\HandlerInterface;
@@ -119,6 +120,21 @@ class Logger extends BaseConfig
              * Specify a different destination here, if desired.
              */
             'path' => '',
+        ],
+
+        JsonFileHandler::class => [
+            'handles' => [
+                'critical',
+                'alert',
+                'emergency',
+                'debug',
+                'error',
+                'info',
+                'notice',
+                'warning',
+            ],
+            'path'            => WRITEPATH . 'logs/',
+            'filePermissions' => 0644,
         ],
 
         /*
