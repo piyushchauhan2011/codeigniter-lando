@@ -72,6 +72,9 @@ jobs:
           database.default.password = lamp
           database.default.DBDriver = MySQLi
           database.default.port = 3306
+          # This workflow verifies the legacy notification queue by inspecting
+          # queue_jobs directly; local learning still defaults to RabbitMQ.
+          queue.defaultHandler = database
           EOF
 
       - name: Start Lando
