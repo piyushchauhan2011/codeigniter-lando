@@ -2,8 +2,10 @@ parameters:
     level: 5
     paths:
         - app
+        - performance_lab
         - tests
     excludePaths:
         - app/Views
+        - performance_lab/Views
     bootstrapFiles:
         - phpstan-bootstrap.php

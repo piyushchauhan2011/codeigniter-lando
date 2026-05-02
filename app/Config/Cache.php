@@ -133,6 +133,31 @@ class Cache extends BaseConfig
         'database'   => 0,
     ];
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->handler       = (string) env('cache.handler', $this->handler);
+        $this->backupHandler = (string) env('cache.backupHandler', $this->backupHandler);
+        $this->prefix        = (string) env('cache.prefix', $this->prefix);
+        $this->ttl           = (int) env('cache.ttl', $this->ttl);
+
+        $this->memcached['host']   = (string) env('cache.memcached.host', $this->memcached['host']);
+        $this->memcached['port']   = (int) env('cache.memcached.port', $this->memcached['port']);
+        $this->memcached['weight'] = (int) env('cache.memcached.weight', $this->memcached['weight']);
+        $this->memcached['raw']    = filter_var(env('cache.memcached.raw', $this->memcached['raw']), FILTER_VALIDATE_BOOL);
+
+        $password = env('cache.redis.password', $this->redis['password']);
+
+        $this->redis['host']       = (string) env('cache.redis.host', $this->redis['host']);
+        $this->redis['password']   = $password === '' ? null : $password;
+        $this->redis['port']       = (int) env('cache.redis.port', $this->redis['port']);
+        $this->redis['timeout']    = (int) env('cache.redis.timeout', $this->redis['timeout']);
+        $this->redis['async']      = filter_var(env('cache.redis.async', $this->redis['async']), FILTER_VALIDATE_BOOL);
+        $this->redis['persistent'] = filter_var(env('cache.redis.persistent', $this->redis['persistent']), FILTER_VALIDATE_BOOL);
+        $this->redis['database']   = (int) env('cache.redis.database', $this->redis['database']);
+    }
+
     /**
      * --------------------------------------------------------------------------
      * Available Cache Handlers

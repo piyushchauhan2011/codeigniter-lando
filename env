@@ -63,6 +63,29 @@
 # session.savePath = null
 
 #--------------------------------------------------------------------
+# CACHE
+#--------------------------------------------------------------------
+
+# Default: file cache in writable/cache.
+# cache.handler = file
+# cache.backupHandler = dummy
+# cache.prefix = codeigniter_tutorial_
+# cache.ttl = 60
+
+# Redis learning option. Use `predis` with Composer dev dependencies, or `redis`
+# if the PHP redis extension is installed in the appserver.
+# cache.handler = predis
+# cache.redis.host = redis
+# cache.redis.port = 6379
+# cache.redis.password =
+# cache.redis.database = 0
+
+# Memcached learning option. Requires the PHP memcached extension in appserver.
+# cache.handler = memcached
+# cache.memcached.host = memcached
+# cache.memcached.port = 11211
+
+#--------------------------------------------------------------------
 # LOGGER
 #--------------------------------------------------------------------
 
