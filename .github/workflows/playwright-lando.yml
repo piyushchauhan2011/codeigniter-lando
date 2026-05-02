@@ -1,6 +1,8 @@
 name: Playwright E2E (Lando)
 
-# Runs browser smoke tests against the real LAMP stack from .lando.yml.
+# Single job: one Lando stack + MySQL lifecycle (avoids parallel workflows racing CI resources).
+# Playwright browser tests, then queue worker + log asserts, then scheduled Tasks housekeeping.
+
 # Uses GitHub-hosted Docker + setup-lando: https://docs.lando.dev/install/gha.html
 
 on:
@@ -15,7 +17,7 @@ concurrency:
 
 jobs:
   playwright-lando:
-    name: Lando stack + Playwright
+    name: Lando + Playwright + queue/tasks verification
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -64,8 +66,6 @@ jobs:
           app.forceGlobalSecureRequests = true
           app.indexPage = ''
           # Same hostname Lando documents in `lando info` → internal_connection.host (`database`).
-          # That alias and the Compose container name (e.g. myfirstlampapp_database_1) resolve to
-          # the same IP inside the appserver; prefer the service alias so this stays portable.
           database.default.hostname = database
           database.default.database = lamp
           database.default.username = lamp
@@ -86,8 +86,6 @@ jobs:
           echo "$JSON" | head -c 12000
           echo
           echo "::endgroup::"
-          # Prefer HTTPS + ignore cert errors (same idea as pnpm test:e2e). HTTP caused flaky
-          # Playwright runs vs apps tuned for https:// in app.baseURL.
           HTTPS=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^https://"))' | head -n1)
           HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://"))' | head -n1)
           URL="${HTTPS:-}"
@@ -134,14 +132,73 @@ jobs:
           set -euo pipefail
           lando php spark migrate --all
 
+      - name: Enable Tasks (Settings DB)
+        run: lando php spark tasks:enable
+
+      - name: Seed job portal demo data
+        run: lando php spark db:seed JobPortalDemoSeeder
+
       - name: Install Chromium (Playwright)
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Run Playwright smoke tests against Lando
+      - name: Run Playwright tests against Lando
         run: |
           set -euo pipefail
           export PLAYWRIGHT_BASE_URL="${{ steps.lando.outputs.base-url }}"
           if [[ "${{ steps.lando.outputs.ignore-https }}" == "true" ]]; then
             export PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1
           fi
-          pnpm test:e2e
+          # One worker: shared Lando MySQL + session state; avoids cross-spec races.
+          pnpm exec playwright test --workers=1
+
+      - name: Drain queue worker, assert DB empty, assert log line
+        run: |
+          set -euo pipefail
+          BEFORE=$(lando mysql lamp -Nse "SELECT COUNT(*) FROM queue_jobs;")
+          echo "queue_jobs rows before worker: $BEFORE"
+          test "$BEFORE" != "0"
+          lando php spark queue:work default --stop-when-empty -max-jobs 10 -sleep 2
+          AFTER=$(lando mysql lamp -Nse "SELECT COUNT(*) FROM queue_jobs;")
+          echo "queue_jobs rows after worker: $AFTER"
+          test "$AFTER" = "0"
+
+          echo "Assert queue job wrote to application log (NotifyEmployerNewApplication)"
+          shopt -s nullglob
+          MATCH=0
+          for f in writable/logs/log-*.log; do
+            if grep -q '\[Employer notify queued\]' "$f"; then
+              MATCH=1
+              echo "Found log marker in $f (last matching lines):"
+              grep '\[Employer notify queued\]' "$f" | tail -n 5
+              break
+            fi
+          done
+          if [[ "$MATCH" -ne 1 ]]; then
+            echo "Expected log line '[Employer notify queued]' not found under writable/logs/"
+            ls -la writable/logs || true
+            exit 1
+          fi
+
+      - name: Run Tasks housekeeping and check CLI + log output
+        run: |
+          set -euo pipefail
+          OUT=$(lando php spark tasks:run --task jobportal-housekeeping 2>&1)
+          printf '%s\n' "$OUT"
+          echo "$OUT" | grep -q "published_jobs="
+
+          echo "Assert housekeeping also wrote log_message line"
+          shopt -s nullglob
+          MATCH=0
+          for f in writable/logs/log-*.log; do
+            if grep -q '\[Job portal housekeeping\] published_jobs=' "$f"; then
+              MATCH=1
+              echo "Found log marker in $f:"
+              grep '\[Job portal housekeeping\] published_jobs=' "$f" | tail -n 3
+              break
+            fi
+          done
+          if [[ "$MATCH" -ne 1 ]]; then
+            echo "Expected '[Job portal housekeeping] published_jobs=' in writable/logs/"
+            ls -la writable/logs || true
+            exit 1
+          fi
