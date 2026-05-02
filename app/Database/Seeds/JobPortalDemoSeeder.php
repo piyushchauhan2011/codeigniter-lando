@@ -33,19 +33,6 @@ class JobPortalDemoSeeder extends Seeder
         $this->ensureSeekerProfile($seekerId, $now);
         $this->ensureJob([
             'employer_user_id' => $employerId,
-            'category_id'      => null,
-            'title'            => 'Part-time Technical Writer',
-            'description'      => 'Document REST APIs and onboarding guides.',
-            'employment_type'  => 'part_time',
-            'location'         => 'Berlin',
-            'salary_min'       => null,
-            'salary_max'       => null,
-            'status'           => 'published',
-            'created_at'       => $now,
-            'updated_at'       => $now,
-        ]);
-        $this->ensureJob([
-            'employer_user_id' => $employerId,
             'category_id'      => $engineeringId > 0 ? $engineeringId : null,
             'title'            => 'Senior PHP Engineer',
             'description'      => 'Build APIs and mentor juniors. Hands-on with CI4 or similar MVC frameworks.',
@@ -53,6 +40,19 @@ class JobPortalDemoSeeder extends Seeder
             'location'         => 'Remote',
             'salary_min'       => 80000,
             'salary_max'       => 120000,
+            'status'           => 'published',
+            'created_at'       => $now,
+            'updated_at'       => $now,
+        ]);
+        $this->ensureJob([
+            'employer_user_id' => $employerId,
+            'category_id'      => null,
+            'title'            => 'Part-time Technical Writer',
+            'description'      => 'Document REST APIs and onboarding guides.',
+            'employment_type'  => 'part_time',
+            'location'         => 'Berlin',
+            'salary_min'       => null,
+            'salary_max'       => null,
             'status'           => 'published',
             'created_at'       => $now,
             'updated_at'       => $now,
