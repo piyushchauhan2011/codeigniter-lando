@@ -115,6 +115,16 @@ jobs:
           php -r '$path = ".env"; $base = $argv[1]; $env = file_get_contents($path); $env = preg_replace("/^app\.baseURL\s*=.*$/m", "app.baseURL = " . var_export($base, true), $env); file_put_contents($path, $env);' "$BASE"
           grep '^app\.baseURL' .env
 
+      - name: Wait until MySQL accepts connections from appserver
+        run: |
+          set -euo pipefail
+          lando php scripts/ci-wait-mysql.php
+
+      - name: Run database migrations
+        run: |
+          set -euo pipefail
+          lando php spark migrate --all
+
       - name: Wait for CodeIgniter /hello route
         run: |
           set -euo pipefail
@@ -138,17 +148,17 @@ jobs:
             fi
             sleep 10
           done
+          echo "::group::CodeIgniter logs"
+          ls -la writable/logs || true
+          for f in writable/logs/log-*.log; do
+            echo "--- $f"
+            tail -n 120 "$f" || true
+          done
+          echo "::endgroup::"
+          echo "::group::Apache error log"
+          lando ssh -s appserver -c 'tail -n 120 /var/log/apache2/error.log' || true
+          echo "::endgroup::"
           exit 1
-
-      - name: Wait until MySQL accepts connections from appserver
-        run: |
-          set -euo pipefail
-          lando php scripts/ci-wait-mysql.php
-
-      - name: Run database migrations
-        run: |
-          set -euo pipefail
-          lando php spark migrate --all
 
       - name: Enable Tasks (Settings DB)
         run: lando php spark tasks:enable
