@@ -5,6 +5,9 @@
 <section class="portal-card">
     <article class="job-detail">
         <h2><?= esc($job['title']) ?></h2>
+        <?php if (! empty($job['is_featured'])): ?>
+            <p class="portal-text-muted">Featured employer listing</p>
+        <?php endif; ?>
         <p class="job-detail__summary portal-text-muted">
             <?= esc($job['company_name'] ?? '') ?> · <?= esc($job['location']) ?> · <?= esc(portal_employment_label((string) ($job['employment_type'] ?? ''))) ?>
             <?php if (! empty($job['salary_min']) || ! empty($job['salary_max'])): ?>

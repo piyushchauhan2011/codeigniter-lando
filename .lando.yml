@@ -30,11 +30,51 @@ services:
       retries: 30
       delay: 2500
 
+  rabbitmq:
+    type: compose
+    app_mount: false
+    services:
+      image: rabbitmq:3-management
+      command: docker-entrypoint.sh rabbitmq-server
+      ports:
+        - "5672"
+        - "15672"
+      environment:
+        RABBITMQ_DEFAULT_USER: guest
+        RABBITMQ_DEFAULT_PASS: guest
+    scanner: false
+
+  adminer:
+    type: compose
+    app_mount: false
+    services:
+      image: adminer:latest
+      command: php -S 0.0.0.0:8080 -t /var/www/html
+      ports:
+        - "8080"
+      environment:
+        ADMINER_DEFAULT_SERVER: database
+    scanner: false
+
+proxy:
+  rabbitmq:
+    - rabbitmq.my-first-lamp-app.lndo.site:15672
+  adminer:
+    - adminer.my-first-lamp-app.lndo.site:8080
+
 tooling:
   queue-work:
     service: appserver
     cmd: php spark queue:work default
     description: Run the queue worker for the default queue (same as lando php spark queue:work default)
+  queue-work-payments:
+    service: appserver
+    cmd: php spark queue:work payments
+    description: Run the payment queue worker backed by RabbitMQ
+  queue-failed:
+    service: appserver
+    cmd: php spark queue:failed
+    description: List failed queue jobs
   tasks-run:
     service: appserver
     cmd: php spark tasks:run
