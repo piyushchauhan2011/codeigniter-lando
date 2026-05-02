@@ -22,6 +22,8 @@ class JobModel extends Model
         'salary_min',
         'salary_max',
         'status',
+        'is_featured',
+        'featured_until',
     ];
     protected $useTimestamps = true;
 
@@ -71,7 +73,8 @@ class JobModel extends Model
             $this->where('portal_jobs.category_id', (int) $catId);
         }
 
-        $this->orderBy('portal_jobs.created_at', 'DESC');
+        $this->orderBy('portal_jobs.is_featured', 'DESC')
+            ->orderBy('portal_jobs.created_at', 'DESC');
 
         return $this;
     }

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Config;
 
 use App\Jobs\NotifyEmployerNewApplication;
+use App\Jobs\ProcessFeaturedJobPayment;
 use CodeIgniter\Queue\Config\Queue as BaseQueue;
 use CodeIgniter\Queue\Handlers\DatabaseHandler;
 use CodeIgniter\Queue\Handlers\PredisHandler;
@@ -27,7 +28,7 @@ class Queue extends BaseQueue
     /**
      * Default handler.
      */
-    public string $defaultHandler = 'database';
+    public string $defaultHandler = 'rabbitmq';
 
     /**
      * Available handlers.
@@ -81,11 +82,12 @@ class Queue extends BaseQueue
      * RabbitMQ handler config.
      */
     public array $rabbitmq = [
-        'host'     => '127.0.0.1',
-        'port'     => 5672,
-        'user'     => 'guest',
-        'password' => 'guest',
-        'vhost'    => '/',
+        'host'              => 'rabbitmq',
+        'port'              => 5672,
+        'user'              => 'guest',
+        'password'          => 'guest',
+        'vhost'             => '/',
+        'publisherConfirms' => true,
     ];
 
     /**
@@ -112,6 +114,17 @@ class Queue extends BaseQueue
      */
     public array $jobHandlers = [
         'notify-employer-application' => NotifyEmployerNewApplication::class,
+        'process-featured-job-payment' => ProcessFeaturedJobPayment::class,
     ];
 
+    public function __construct()
+    {
+        $this->rabbitmq['host']     = env('queue.rabbitmq.host', $this->rabbitmq['host']);
+        $this->rabbitmq['port']     = (int) env('queue.rabbitmq.port', $this->rabbitmq['port']);
+        $this->rabbitmq['user']     = env('queue.rabbitmq.user', $this->rabbitmq['user']);
+        $this->rabbitmq['password'] = env('queue.rabbitmq.password', $this->rabbitmq['password']);
+        $this->rabbitmq['vhost']    = env('queue.rabbitmq.vhost', $this->rabbitmq['vhost']);
+
+        parent::__construct();
+    }
 }

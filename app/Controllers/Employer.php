@@ -8,6 +8,7 @@ use App\Models\EmployerProfileModel;
 use App\Models\JobApplicationModel;
 use App\Models\JobCategoryModel;
 use App\Models\JobModel;
+use App\Models\PaymentIntentModel;
 use Config\Services;
 
 class Employer extends BaseController
@@ -22,8 +23,9 @@ class Employer extends BaseController
             ->findAll();
 
         return view('portal/employer/dashboard', [
-            'title' => 'Employer dashboard',
-            'jobs'  => $jobs,
+            'title'          => 'Employer dashboard',
+            'jobs'           => $jobs,
+            'paymentIntents' => model(PaymentIntentModel::class)->latestByEmployerIndexedByJob((int) $auth->id()),
         ]);
     }
 

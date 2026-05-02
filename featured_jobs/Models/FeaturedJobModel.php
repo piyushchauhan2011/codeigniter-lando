@@ -25,6 +25,7 @@ class FeaturedJobModel extends Model
             ->join('employer_profiles', 'employer_profiles.user_id = portal_jobs.employer_user_id', 'left')
             ->join('job_categories', 'job_categories.id = portal_jobs.category_id', 'left')
             ->where('portal_jobs.status', 'published')
+            ->orderBy('portal_jobs.is_featured', 'DESC')
             ->orderBy('portal_jobs.created_at', 'DESC')
             ->limit($limit)
             ->findAll();
