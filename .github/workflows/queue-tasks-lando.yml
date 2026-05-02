@@ -1,0 +1,192 @@
+name: Queue & Tasks integration (Lando)
+
+# End-to-end check: Lando LAMP stack, Playwright submits a job application (queue push),
+# worker drains the DB queue, then tasks:run executes the housekeeping command.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: queue-tasks-lando-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  queue-tasks-lando:
+    name: Lando + Playwright queue trigger + worker + tasks
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Lando
+        uses: lando/setup-lando@v3
+        with:
+          lando-version: stable
+          telemetry: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+          coverage: none
+          extensions: intl, mbstring
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend assets
+        run: pnpm build
+
+      - name: Create .env for Lando
+        run: |
+          cat > .env <<'EOF'
+          CI_ENVIRONMENT = development
+          app.baseURL = 'https://my-first-lamp-app.lndo.site/'
+          app.forceGlobalSecureRequests = true
+          app.indexPage = ''
+          database.default.hostname = database
+          database.default.database = lamp
+          database.default.username = lamp
+          database.default.password = lamp
+          database.default.DBDriver = MySQLi
+          database.default.port = 3306
+          EOF
+
+      - name: Start Lando
+        run: lando start
+
+      - name: Resolve appserver URL for Playwright
+        id: lando
+        run: |
+          set -euo pipefail
+          JSON=$(lando info --format=json)
+          HTTPS=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^https://"))' | head -n1)
+          HTTP=$(echo "$JSON" | jq -r '.[] | (.urls[]? // empty) | select(test("^http://"))' | head -n1)
+          URL="${HTTPS:-}"
+          IGNORE="false"
+          if [[ -n "$URL" ]]; then
+            IGNORE="true"
+          else
+            URL="${HTTP:-}"
+          fi
+          if [[ -z "$URL" ]]; then
+            echo "Could not resolve appserver URL from lando info."
+            exit 1
+          fi
+          BASE="${URL%/}"
+          echo "Resolved base URL: $BASE (ignore_https_errors=$IGNORE)"
+          echo "base-url=$BASE" >> "$GITHUB_OUTPUT"
+          echo "ignore-https=$IGNORE" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for CodeIgniter /hello route
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.lando.outputs.base-url }}"
+          CURL=(curl -fsS)
+          if [[ "$BASE" == https://* ]]; then
+            CURL+=(--insecure)
+          fi
+          for i in $(seq 1 48); do
+            if "${CURL[@]}" "${BASE}/hello" >/dev/null 2>&1; then
+              echo "Ready after poll $i"
+              exit 0
+            fi
+            echo "waiting for ${BASE}/hello ..."
+            sleep 10
+          done
+          exit 1
+
+      - name: Wait until MySQL accepts connections from appserver
+        run: lando php scripts/ci-wait-mysql.php
+
+      - name: Run database migrations
+        run: lando php spark migrate --all
+
+      - name: Enable Tasks (Settings DB)
+        run: lando php spark tasks:enable
+
+      - name: Seed job portal demo data
+        run: lando php spark db:seed JobPortalDemoSeeder
+
+      - name: Install Chromium (Playwright)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright — seeker applies (enqueues notify-employer job)
+        run: |
+          set -euo pipefail
+          export PLAYWRIGHT_BASE_URL="${{ steps.lando.outputs.base-url }}"
+          if [[ "${{ steps.lando.outputs.ignore-https }}" == "true" ]]; then
+            export PLAYWRIGHT_IGNORE_HTTPS_ERRORS=1
+          fi
+          pnpm exec playwright test tests/e2e/queue_tasks_integration.spec.ts
+
+      - name: Drain queue worker, assert DB empty, assert log line
+        run: |
+          set -euo pipefail
+          BEFORE=$(lando mysql lamp -Nse "SELECT COUNT(*) FROM queue_jobs;")
+          echo "queue_jobs rows before worker: $BEFORE"
+          test "$BEFORE" != "0"
+          lando php spark queue:work default --stop-when-empty -max-jobs 10 -sleep 2
+          AFTER=$(lando mysql lamp -Nse "SELECT COUNT(*) FROM queue_jobs;")
+          echo "queue_jobs rows after worker: $AFTER"
+          test "$AFTER" = "0"
+
+          echo "Assert queue job wrote to application log (NotifyEmployerNewApplication)"
+          shopt -s nullglob
+          MATCH=0
+          for f in writable/logs/log-*.log; do
+            if grep -q '\[Employer notify queued\]' "$f"; then
+              MATCH=1
+              echo "Found log marker in $f (last matching lines):"
+              grep '\[Employer notify queued\]' "$f" | tail -n 5
+              break
+            fi
+          done
+          if [[ "$MATCH" -ne 1 ]]; then
+            echo "Expected log line '[Employer notify queued]' not found under writable/logs/"
+            ls -la writable/logs || true
+            exit 1
+          fi
+
+      - name: Run Tasks housekeeping and check CLI output
+        run: |
+          set -euo pipefail
+          OUT=$(lando php spark tasks:run --task jobportal-housekeeping 2>&1)
+          printf '%s\n' "$OUT"
+          echo "$OUT" | grep -q "published_jobs="
+
+          echo "Assert housekeeping also wrote log_message line"
+          shopt -s nullglob
+          MATCH=0
+          for f in writable/logs/log-*.log; do
+            if grep -q '\[Job portal housekeeping\] published_jobs=' "$f"; then
+              MATCH=1
+              echo "Found log marker in $f:"
+              grep '\[Job portal housekeeping\] published_jobs=' "$f" | tail -n 3
+              break
+            fi
+          done
+          if [[ "$MATCH" -ne 1 ]]; then
+            echo "Expected '[Job portal housekeeping] published_jobs=' in writable/logs/"
+            ls -la writable/logs || true
+            exit 1
+          fi
