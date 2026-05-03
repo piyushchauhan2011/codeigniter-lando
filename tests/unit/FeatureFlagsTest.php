@@ -61,7 +61,7 @@ final class FeatureFlagsTest extends CIUnitTestCase
         $config = new class () extends FeatureFlagsConfig {
             public function __construct()
             {
-                \CodeIgniter\Config\BaseConfig::__construct();
+                parent::__construct();
                 $this->flags = [
                     'elkLabNav'         => true,
                     'jobsElasticsearch' => false,
