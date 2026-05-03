@@ -8,6 +8,7 @@ use App\Filters\PortalAuthFilter;
 use App\Filters\PortalEmployerFilter;
 use App\Filters\PortalGuestFilter;
 use App\Filters\PortalSeekerFilter;
+use App\Filters\RequestTelemetryFilter;
 use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
@@ -32,6 +33,7 @@ class Filters extends BaseFilters
      */
     public array $aliases = [
         'locale'        => LocaleFilter::class,
+        'telemetry'     => RequestTelemetryFilter::class,
         'auth'          => PortalAuthFilter::class,
         'guest'         => PortalGuestFilter::class,
         'admin'         => PortalAdminFilter::class,
@@ -86,9 +88,11 @@ class Filters extends BaseFilters
         'before' => ENVIRONMENT === 'testing'
             ? []
             : [
+                'telemetry',
                 'csrf',
             ],
         'after' => [
+            'telemetry',
             // 'honeypot',
             // 'secureheaders',
         ],

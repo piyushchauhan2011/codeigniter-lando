@@ -13,6 +13,15 @@ services:
   appserver:
     xdebug: "debug,develop,coverage"
     scanner: false   # required to skip appserver URL probes (e.g. 127.0.0.1:8000)
+    build_as_root:
+      # Elastic APM PHP agent (native extension): https://github.com/elastic/apm-agent-php/releases
+      - apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y curl ca-certificates
+      - |
+          set -eu
+          ARCH=$(uname -m)
+          case "$ARCH" in aarch64|arm64) PKG="apm-agent-php_1.16.0_arm64.deb" ;; *) PKG="apm-agent-php_1.16.0_amd64.deb" ;; esac
+          curl -fsSL -o /tmp/elastic-apm-php.deb "https://github.com/elastic/apm-agent-php/releases/download/v1.16.0/${PKG}"
+          dpkg -i /tmp/elastic-apm-php.deb || apt-get install -f -y
     config:
       php: .lando/php.ini
 
@@ -94,6 +103,79 @@ services:
         - rustfs_logs:/logs
     scanner: false
 
+  elasticsearch:
+    type: compose
+    app_mount: false
+    services:
+      image: docker.elastic.co/elasticsearch/elasticsearch:8.17.1
+      command: /usr/local/bin/docker-entrypoint.sh eswrapper
+      environment:
+        discovery.type: single-node
+        xpack.security.enabled: "false"
+        xpack.security.enrollment.enabled: "false"
+        cluster.routing.allocation.disk.threshold_enabled: "false"
+        ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ports:
+        - "9200"
+      volumes:
+        - elasticsearch_data:/usr/share/elasticsearch/data
+    scanner: false
+
+  kibana:
+    type: compose
+    app_mount: false
+    services:
+      image: docker.elastic.co/kibana/kibana:8.17.1
+      command: kibana-docker
+      environment:
+        ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+        SERVER_HOST: 0.0.0.0
+        # Single label before .lndo.site so Lando *.lndo.site wildcard TLS matches (nested
+        # kibana.my-first-lamp-app.lndo.site does not — HTTPS breaks in browsers).
+        SERVER_PUBLICBASEURL: https://kibana-my-first-lamp-app.lndo.site
+        # Stops Observability AI Assistant routes from 500'ing when security plugins expect a key (harmless for APM data; dev-only value).
+        XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: codeigniter-elk-lab-local-dev-key-at-least-32-chars-long
+      ports:
+        - "5601"
+    scanner: false
+
+  apm-server:
+    type: compose
+    app_mount: false
+    services:
+      image: docker.elastic.co/apm/apm-server:8.17.1
+      command:
+        - apm-server
+        - -e
+        - -E
+        - apm-server.host=0.0.0.0:8200
+        - -E
+        - apm-server.rum.enabled=true
+        - -E
+        - apm-server.auth.anonymous.enabled=true
+        - -E
+        - apm-server.auth.anonymous.allow_agent=[rum-js]
+        - -E
+        - apm-server.rum.source_mapping.enabled=true
+        - -E
+        - apm-server.rum.source_mapping.elasticsearch.timeout=90s
+        - -E
+        - output.elasticsearch.hosts=["http://elasticsearch:9200"]
+      ports:
+        - "8200"
+    scanner: false
+
+  filebeat:
+    type: compose
+    app_mount: true
+    services:
+      image: docker.elastic.co/beats/filebeat:8.17.1
+      user: root
+      command: filebeat -e --strict.perms=false
+      volumes:
+        - ./.lando/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    scanner: false
+
 proxy:
   rabbitmq:
     - rabbitmq.my-first-lamp-app.lndo.site:15672
@@ -102,8 +184,33 @@ proxy:
   rustfs:
     - rustfs.my-first-lamp-app.lndo.site:9001
     - rustfs-api.my-first-lamp-app.lndo.site:9000
+  kibana:
+    - kibana-my-first-lamp-app.lndo.site:5601
+  apm-server:
+    - apm-my-first-lamp-app.lndo.site:8200
 
 tooling:
+  elastic-health:
+    service: appserver
+    cmd: php spark elk:health
+    description: Check Elasticsearch, Kibana, and APM Server from inside Lando
+  elastic-reindex-jobs:
+    service: appserver
+    cmd: php spark elk:jobs:reindex
+    description: Recreate the local jobs index and index current portal jobs
+  elastic-search-jobs:
+    service: appserver
+    cmd: php spark elk:jobs:search
+    description: Search indexed jobs (pass --q=php --location=remote)
+  elastic-demo-logs:
+    service: appserver
+    cmd: php spark elk:logs:demo
+    description: Write structured sample logs for Kibana Discover
+  kibana-url:
+    service: appserver
+    cmd: >-
+      php -r 'echo "HTTPS Kibana (wildcard-TLS-safe hostname):".PHP_EOL."  https://kibana-my-first-lamp-app.lndo.site".PHP_EOL.PHP_EOL."HTTP fallback (CLI):".PHP_EOL."  http://kibana-my-first-lamp-app.lndo.site:8000".PHP_EOL."  http://apm-my-first-lamp-app.lndo.site:8000".PHP_EOL;'
+    description: Print local Kibana and APM URLs
   queue-work:
     service: appserver
     cmd: php spark queue:work default

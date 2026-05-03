@@ -2,6 +2,7 @@
 /vendor/
 /build/
 /node_modules/
+.pnpm-store/
 /dist/
 /public/assets/dist/
 /playwright-report/
@@ -23,6 +24,7 @@ Thumbs.db
 /writable/uploads/*
 /rustfs_data/
 /rustfs_logs/
+/elasticsearch_data/
 
 # Keep writable subdirectories
 !/writable/cache/index.html

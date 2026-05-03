@@ -4,9 +4,12 @@ namespace Config;
 
 use App\Libraries\ObjectStorage\AwsS3ObjectStorageClient;
 use App\Libraries\ObjectStorage\ObjectStorageClientInterface;
+use App\Libraries\Elastic\ElasticClient;
+use App\Libraries\Elastic\JobSearchService;
 use App\Libraries\PortalAuth;
 use App\Libraries\PortalLocale;
 use CodeIgniter\Config\BaseService;
+use Elastic\Elasticsearch\ClientBuilder;
 
 /**
  * Services Configuration file.
@@ -48,5 +51,37 @@ class Services extends BaseService
         }
 
         return new AwsS3ObjectStorageClient(config(ObjectStorage::class));
+    }
+
+    /**
+     * Official Elasticsearch PHP client ({@see https://github.com/elastic/elasticsearch-php}).
+     */
+    public static function elasticsearch(bool $getShared = true): \Elastic\Elasticsearch\Client
+    {
+        if ($getShared) {
+            return static::getSharedInstance('elasticsearch');
+        }
+
+        return ClientBuilder::create()
+            ->setHosts([rtrim(config(Elastic::class)->elasticsearchUrl, '/')])
+            ->build();
+    }
+
+    public static function elasticClient(bool $getShared = true): ElasticClient
+    {
+        if ($getShared) {
+            return static::getSharedInstance('elasticClient');
+        }
+
+        return new ElasticClient(static::elasticsearch(false));
+    }
+
+    public static function jobSearch(bool $getShared = true): JobSearchService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('jobSearch');
+        }
+
+        return new JobSearchService(static::elasticClient(), config(Elastic::class));
     }
 }

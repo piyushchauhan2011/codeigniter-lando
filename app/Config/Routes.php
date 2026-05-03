@@ -11,6 +11,13 @@ $routes->get('/posts', 'Tutorial::posts');
 $routes->get('/posts/new', 'Tutorial::newPost');
 $routes->post('/posts', 'Tutorial::createPost');
 
+$routes->get('/learning/elk', 'ElkLab::index');
+$routes->get('/learning/elk/log-demo', 'ElkLab::logDemo');
+$routes->get('/learning/elk/handled-error', 'ElkLab::handledError');
+$routes->get('/learning/elk/unhandled-error', 'ElkLab::unhandledError');
+$routes->get('/learning/elk/slow-request', 'ElkLab::slowRequest');
+$routes->get('/learning/elk/not-found', 'ElkLab::notFound');
+
 $portalRoutes = static function (RouteCollection $routes): void {
     $routes->get('jobs', 'Jobs::index');
     $routes->get('jobs/(:num)', 'Jobs::show/$1');

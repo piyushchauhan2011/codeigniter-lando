@@ -220,7 +220,7 @@ pnpm test:e2e
 
 Instead, keep a watch running while you edit TS/SCSS:
 
-- **`pnpm run watch`** — **`vite build --watch`** with **`VITE_FULL_CSS_MAP=1`**. Each save rebuilds **JavaScript** (Rollup **`build.sourcemap`**) and **CSS**, then the Sass post-step writes **`portal.css.map`** / **`tutorialStyle.css.map`** so Chrome can jump to **`resources/scss/...`**.
+- **`pnpm run watch`** — **`vite build --watch`** with **`VITE_FULL_CSS_MAP=1`**. Each save rebuilds **JavaScript** and **CSS**, then the Sass post-step writes **`portal.css.map`** / **`tutorialStyle.css.map`** so Chrome can jump to **`resources/scss/...`**. Production **`pnpm build`** does not emit JS source maps (`vite.config.ts` → **`sourcemap: false`**).
 - **`pnpm run watch:fast`** — same watcher **without** those `.css.map` files (a bit less I/O if you do not need SCSS debugging).
 
 Because **`portal.ts` imports `portal.scss`**, one Rollup graph drives both outputs. There is no separate “CSS-only” or “JS-only” watcher unless we duplicated pipelines and risked two writers clobbering **`portal.css`**.

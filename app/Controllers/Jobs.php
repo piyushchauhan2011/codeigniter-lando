@@ -9,6 +9,7 @@ use App\Models\JobCategoryModel;
 use App\Models\JobModel;
 use App\Models\SavedJobModel;
 use Config\Services;
+use Throwable;
 
 class Jobs extends BaseController
 {
@@ -19,13 +20,62 @@ class Jobs extends BaseController
             'location'        => $this->request->getGet('location'),
             'employment_type' => $this->request->getGet('employment_type'),
             'category_id'     => $this->request->getGet('category_id'),
+            'engine'          => $this->request->getGet('engine'),
         ];
 
-        $jobModel = model(JobModel::class, false);
-        $jobModel->applyPublishedFilters($filters);
-        $jobs  = $jobModel->paginate(10);
-        $pager = $jobModel->pager;
-        $pager->setPath(Services::portalLocale()->localizePath('jobs'));
+        $searchMeta = [
+            'engine'       => $filters['engine'] === 'elastic' ? 'elastic' : 'sql',
+            'total'        => null,
+            'aggregations' => [],
+            'error'        => null,
+        ];
+        $jobs = [];
+        $pager = Services::pager();
+
+        if ($filters['engine'] === 'elastic') {
+            try {
+                $page   = max(1, (int) ($this->request->getGet('page') ?? 1));
+                $result = Services::jobSearch()->search($filters, $page, 10);
+                $jobs   = $result['hits'];
+                $pager  = Services::pager();
+                $pager->setPath(Services::portalLocale()->localizePath('jobs'));
+                $pager->makeLinks($page, 10, $result['total']);
+                $searchMeta['total']        = $result['total'];
+                $searchMeta['aggregations'] = $result['aggregations'];
+            } catch (Throwable $exception) {
+                log_message('error', json_encode([
+                    'message' => 'Elasticsearch job search failed, falling back to SQL',
+                    'event'   => ['dataset' => 'codeigniter.search'],
+                    'error'   => ['type' => $exception::class, 'message' => $exception->getMessage()],
+                ], JSON_THROW_ON_ERROR));
+
+                $filters['engine']   = 'sql';
+                $searchMeta['engine'] = 'sql';
+                $searchMeta['error']  = $exception->getMessage();
+            }
+        }
+
+        if ($filters['engine'] !== 'elastic') {
+            $jobModel = model(JobModel::class, false);
+            $jobModel->applyPublishedFilters($filters);
+            $jobs  = $jobModel->paginate(10);
+            $pager = $jobModel->pager;
+            $pager->setPath(Services::portalLocale()->localizePath('jobs'));
+        }
+
+        log_message('info', json_encode([
+            'message' => 'Job search completed',
+            'event'   => ['dataset' => 'codeigniter.search'],
+            'labels'  => [
+                'engine'          => $searchMeta['engine'],
+                'query'           => (string) ($filters['q'] ?? ''),
+                'location'        => (string) ($filters['location'] ?? ''),
+                'employment_type' => (string) ($filters['employment_type'] ?? ''),
+            ],
+            'search' => [
+                'results_total' => $searchMeta['total'] ?? count($jobs),
+            ],
+        ], JSON_THROW_ON_ERROR));
 
         $categories = model(JobCategoryModel::class)->getCachedForForms();
 
@@ -35,6 +85,7 @@ class Jobs extends BaseController
             'pager'      => $pager,
             'filters'    => $filters,
             'categories' => $categories,
+            'searchMeta' => $searchMeta,
         ]);
     }
 
