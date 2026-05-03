@@ -1,7 +1,7 @@
 /**
  * Keys must match Config\FeatureFlags::$flags.
  */
-export type PortalFeatureFlagKey = 'elkLabNav' | 'jobsElasticsearch' | 'jobsApiLiveBanner';
+export type PortalFeatureFlagKey = "elkLabNav" | "jobsElasticsearch" | "jobsApiLiveBanner";
 
 export type PortalFeatureFlags = Record<PortalFeatureFlagKey, boolean>;
 
@@ -12,7 +12,7 @@ declare global {
 }
 
 export function isFeatureEnabled(key: PortalFeatureFlagKey): boolean {
-  const f = typeof window !== 'undefined' ? window.__FEATURE_FLAGS__ : undefined;
+  const f = typeof window !== "undefined" ? window.__FEATURE_FLAGS__ : undefined;
   if (f === undefined) {
     return false;
   }
