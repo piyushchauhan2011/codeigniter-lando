@@ -4,7 +4,7 @@
 <section class="portal-card elk-lab">
     <h2><?= esc($title) ?></h2>
     <p class="portal-text-muted">
-        Generate local logs, traces, and browser errors, then inspect them in Kibana Discover and APM.
+        Generate local logs and PHP traces for Kibana Discover and APM; send browser demo errors to GlitchTip (see ELK lab docs).
     </p>
 
     <div class="portal-card portal-card--nested">
@@ -23,13 +23,13 @@
     </div>
 
     <div class="portal-card portal-card--nested">
-        <h3>Browser source map demo</h3>
+        <h3>Browser errors (GlitchTip)</h3>
         <p>
-            After `pnpm build` and `pnpm elastic:sourcemaps`, click the button below. The agent sends the error with a full stack trace;
-            Kibana matches <code>portal.js</code> to your uploaded map using <code>bundle_filepath</code> (absolute URL and path-only variants are uploaded).
-            The demo uses <code>captureError</code> (no uncaught exception), so open the console — you should see a short confirmation log each click.
+            Set <code>VITE_GLITCHTIP_DSN</code> from your GlitchTip project, run <code>pnpm build</code>, then click below.
+            By default envelopes POST to <code>/learning/elk/glitchtip-tunnel</code> (same origin); PHP proxies to GlitchTip on Docker — see <code>docs/GLITCHTIP_LANDO.md</code>.
+            Optional source maps: build with <code>SENTRY_*</code> env vars.
         </p>
-        <button type="button" class="portal-button" data-elk-js-error-demo>Demo JS error (APM)</button>
+        <button type="button" class="portal-button" data-portal-error-demo>Demo JS error (GlitchTip)</button>
     </div>
 
     <div class="portal-card portal-card--nested">

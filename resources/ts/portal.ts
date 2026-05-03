@@ -1,17 +1,17 @@
 import "../scss/portal.scss";
 
-import { initElasticApm } from "./elastic_apm";
-import { initElkErrorDemo } from "./elk_error_demo";
 import { bootJobsIndex } from "./jobs";
+import { initGlitchTip } from "./glitchtip";
+import { initGlitchTipErrorDemo } from "./glitchtip_error_demo";
 import { initLocalClock } from "./portal_clock";
 
 export { formatPortalLocalPreview } from "./portal_clock";
 
 function initPortal(): void {
-  initElasticApm();
+  initGlitchTip();
   initLocalClock();
   bootJobsIndex();
-  initElkErrorDemo();
+  initGlitchTipErrorDemo();
 }
 
 if (typeof document !== "undefined") {

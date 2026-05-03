@@ -6,8 +6,10 @@
 declare module "*.scss" {}
 
 interface ImportMetaEnv {
-  readonly VITE_ELASTIC_APM_ENABLED?: string;
-  readonly VITE_ELASTIC_APM_SERVER_URL?: string;
-  readonly VITE_ELASTIC_APM_SERVICE_NAME?: string;
-  readonly VITE_ELASTIC_APM_SERVICE_VERSION?: string;
+  readonly VITE_GLITCHTIP_DSN?: string;
+  readonly VITE_GLITCHTIP_RELEASE?: string;
+  /** 0–1, default 0 in dev and 0.01 in production builds (GlitchTip recommends a low rate). */
+  readonly VITE_GLITCHTIP_TRACES_SAMPLE_RATE?: string;
+  /** Same-origin path for Sentry tunnel → GlitchTip ingest proxy (CodeIgniter). */
+  readonly VITE_GLITCHTIP_TUNNEL_PATH?: string;
 }

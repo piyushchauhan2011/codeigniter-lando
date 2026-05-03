@@ -150,19 +150,46 @@ services:
         - -E
         - apm-server.host=0.0.0.0:8200
         - -E
-        - apm-server.rum.enabled=true
-        - -E
-        - apm-server.auth.anonymous.enabled=true
-        - -E
-        - apm-server.auth.anonymous.allow_agent=[rum-js]
-        - -E
-        - apm-server.rum.source_mapping.enabled=true
-        - -E
-        - apm-server.rum.source_mapping.elasticsearch.timeout=90s
+        - apm-server.rum.enabled=false
         - -E
         - output.elasticsearch.hosts=["http://elasticsearch:9200"]
       ports:
         - "8200"
+    scanner: false
+
+  glitchtippostgres:
+    type: postgres:16
+    portforward: false
+    creds:
+      user: postgres
+      password: postgres
+      database: postgres
+
+  glitchtip:
+    type: compose
+    app_mount: false
+    services:
+      image: glitchtip/glitchtip:6
+      user: root
+      depends_on:
+        - glitchtippostgres
+      ports:
+        - "8000"
+      command: ./bin/start.sh
+      environment:
+        LANDO_DROP_USER: app
+        DATABASE_URL: postgres://postgres:postgres@glitchtippostgres:5432/postgres
+        VALKEY_URL: ""
+        SECRET_KEY: a71beeed292c00af4639ccfc3e44ebf7a710bf800c314f12cb85fc77cbf1c937
+        EMAIL_URL: consolemail://
+        # HTTPS matches GlitchTip “Client keys” DSN (`https://KEY@glitchtip-my-first-lamp-app.lndo.site/…`) so browser SDK works from HTTPS portals without mixed-content blocking.
+        # If HTTPS login fails on your Docker/Lando combo, open **`http://glitchtip-my-first-lamp-app.lndo.site:8080/login`** instead (optional **`GLITCHTIP_DOMAIN=http://…:8080`**).
+        GLITCHTIP_DOMAIN: https://glitchtip-my-first-lamp-app.lndo.site
+        DEFAULT_FROM_EMAIL: glitchtip-lab@localhost
+        SERVER_ROLE: all_in_one
+        GLITCHTIP_ENABLE_UPTIME: "False"
+      volumes:
+        - glitchtip_uploads:/code/uploads
     scanner: false
 
   filebeat:
@@ -188,6 +215,10 @@ proxy:
     - kibana-my-first-lamp-app.lndo.site:5601
   apm-server:
     - apm-my-first-lamp-app.lndo.site:8200
+  glitchtip:
+    - glitchtip-my-first-lamp-app.lndo.site
+    - glitchtip-my-first-lamp-app.lndo.site:8000
+    - glitchtip-my-first-lamp-app.lndo.site:8080
 
 tooling:
   elastic-health:
@@ -209,8 +240,13 @@ tooling:
   kibana-url:
     service: appserver
     cmd: >-
-      php -r 'echo "HTTPS Kibana (wildcard-TLS-safe hostname):".PHP_EOL."  https://kibana-my-first-lamp-app.lndo.site".PHP_EOL."App RUM proxy:".PHP_EOL."  https://my-first-lamp-app.lndo.site/__apm-proxy/…".PHP_EOL.PHP_EOL."HTTP fallback (CLI):".PHP_EOL."  http://kibana-my-first-lamp-app.lndo.site:8000".PHP_EOL."  http://apm-my-first-lamp-app.lndo.site:8000".PHP_EOL;'
-    description: Print local Kibana and APM URLs
+      php -r 'echo "HTTPS Kibana (wildcard-TLS-safe hostname):".PHP_EOL."  https://kibana-my-first-lamp-app.lndo.site".PHP_EOL."GlitchTip UI (HTTPS — matches SDK DSN):".PHP_EOL."  https://glitchtip-my-first-lamp-app.lndo.site/login".PHP_EOL."GlitchTip UI (HTTP fallback):".PHP_EOL."  http://glitchtip-my-first-lamp-app.lndo.site:8080/login".PHP_EOL.PHP_EOL."HTTP fallback (CLI):".PHP_EOL."  http://kibana-my-first-lamp-app.lndo.site:8000".PHP_EOL."  http://apm-my-first-lamp-app.lndo.site:8000".PHP_EOL;'
+    description: Print local Kibana, APM, and GlitchTip URLs
+  glitchtip-url:
+    service: appserver
+    cmd: >-
+      php -r 'echo "GlitchTip UI:".PHP_EOL."  https://glitchtip-my-first-lamp-app.lndo.site/login (preferred — matches HTTPS DSN)".PHP_EOL."  http://glitchtip-my-first-lamp-app.lndo.site:8080/login (fallback)".PHP_EOL."First run: sign up → organization → project → copy DSN + auth token for source maps.".PHP_EOL."Frontend: paste Client Keys DSN into VITE_GLITCHTIP_DSN (HTTPS when portal is HTTPS).".PHP_EOL;'
+    description: Print GlitchTip URL and env reminders
   queue-work:
     service: appserver
     cmd: php spark queue:work default

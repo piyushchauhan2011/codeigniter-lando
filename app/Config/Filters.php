@@ -89,7 +89,11 @@ class Filters extends BaseFilters
             ? []
             : [
                 'telemetry',
-                'csrf' => ['except' => ['__apm-proxy/*']],
+                'csrf' => ['except' => [
+                    'learning/elk/glitchtip-tunnel',
+                    // Pseudo-regex: optional path prefix (subdirectory installs / forwarded URI quirks).
+                    '*/learning/elk/glitchtip-tunnel',
+                ]],
             ],
         'after' => [
             'telemetry',
