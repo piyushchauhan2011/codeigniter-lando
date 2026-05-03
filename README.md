@@ -33,7 +33,7 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 This project is set up for Lando-based local development.
 
 - Read [LANDO_ONBOARDING.md](LANDO_ONBOARDING.md) for setup, troubleshooting, and HTTPS certificate trust steps.
-- Learn Elasticsearch, Kibana, APM, source maps, and log analysis with [ELK_LEARNING_LAB.md](ELK_LEARNING_LAB.md).
+- Learn Elasticsearch, Kibana, PHP APM, logs, and job search with [ELK_LEARNING_LAB.md](ELK_LEARNING_LAB.md).
 - After `lando start`, use the **`https://…` appserver URL from `lando info`** (often `https://my-first-lamp-app.lndo.site/` with **no port** in the host).
 - Set **`app.baseURL` in `.env`** to that same origin (trailing slash). If you see `index.php` in the URL or asset 404s, the base URL usually does not match what you opened in the browser.
 - Adminer is available after `lando rebuild -y` / `lando start`; use a URL from `lando info` such as `http://adminer.my-first-lamp-app.lndo.site:8080/`, with server `database`, username `lamp`, password `lamp`, database `lamp`.
@@ -71,7 +71,7 @@ The job portal uses [CodeIgniter Shield](https://github.com/codeigniter4/shield)
 ## Frontend Tooling (pnpm + Vite + TS + SCSS)
 
 - Install frontend dependencies: `pnpm install`
-- Watch & rebuild **TypeScript + SCSS** into `public/assets/dist` with **JS and `.scss` source maps**: `pnpm watch` (uses `VITE_FULL_CSS_MAP=1`; Lando + Chrome DevTools–friendly).
+- Watch & rebuild **TypeScript + SCSS** into `public/assets/dist` with **`.scss` source maps** (via dart-sass post-step): `pnpm watch` (uses `VITE_FULL_CSS_MAP=1`; Lando + Chrome DevTools–friendly).
 - Same watch **without** Sass `.map` files (slightly less work per save): `pnpm watch:fast`
 - One-off production-style bundle: `pnpm build`
 - One-off bundle **with** `.css.map` for SCSS debugging: `pnpm build:cssmap`

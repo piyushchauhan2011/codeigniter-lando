@@ -61,9 +61,7 @@ export default defineConfig({
   build: {
     outDir: "public/assets/dist",
     emptyOutDir: true,
-    /** Emit `.map` files for `pnpm elastic:sourcemaps` but omit `//# sourceMappingURL` in bundles so browsers keep real `portal.js` URLs in `Error.stack` (APM matches uploaded maps server-side). */
-    sourcemap: "hidden",
-    // sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       input: {
         tutorial: "resources/ts/tutorial.ts",

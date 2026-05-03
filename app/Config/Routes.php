@@ -4,8 +4,6 @@ use CodeIgniter\Router\RouteCollection;
 use CodeIgniter\Shield\Config\Services as ShieldServices;
 
 /** @var RouteCollection $routes */
-$routes->match(['get', 'post', 'options', 'head'], '__apm-proxy/intake/(:segment)/rum/events', 'ApmProxy::forward/$1');
-
 $routes->get('/', 'Home::index');
 $routes->get('/hello', 'Tutorial::hello');
 

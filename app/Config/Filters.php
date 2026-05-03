@@ -89,7 +89,7 @@ class Filters extends BaseFilters
             ? []
             : [
                 'telemetry',
-                'csrf' => ['except' => ['__apm-proxy/*']],
+                'csrf',
             ],
         'after' => [
             'telemetry',

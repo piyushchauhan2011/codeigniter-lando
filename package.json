@@ -5,7 +5,6 @@
   "scripts": {
     "build": "vite build",
     "build:cssmap": "VITE_FULL_CSS_MAP=1 vite build",
-    "elastic:sourcemaps": "node scripts/upload-elastic-sourcemaps.mjs",
     "watch": "VITE_FULL_CSS_MAP=1 vite build --watch",
     "watch:fast": "vite build --watch",
     "typecheck": "tsc --noEmit",
@@ -51,7 +50,6 @@
     "vitest": "latest"
   },
   "dependencies": {
-    "@elastic/apm-rum": "^5.17.4",
     "backbone": "^1.6.1",
     "jquery": "^4.0.0",
     "underscore": "^1.13.8"

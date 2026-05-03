@@ -209,7 +209,7 @@ tooling:
   kibana-url:
     service: appserver
     cmd: >-
-      php -r 'echo "HTTPS Kibana (wildcard-TLS-safe hostname):".PHP_EOL."  https://kibana-my-first-lamp-app.lndo.site".PHP_EOL."App RUM proxy:".PHP_EOL."  https://my-first-lamp-app.lndo.site/__apm-proxy/…".PHP_EOL.PHP_EOL."HTTP fallback (CLI):".PHP_EOL."  http://kibana-my-first-lamp-app.lndo.site:8000".PHP_EOL."  http://apm-my-first-lamp-app.lndo.site:8000".PHP_EOL;'
+      php -r 'echo "HTTPS Kibana (wildcard-TLS-safe hostname):".PHP_EOL."  https://kibana-my-first-lamp-app.lndo.site".PHP_EOL.PHP_EOL."HTTP fallback (CLI):".PHP_EOL."  http://kibana-my-first-lamp-app.lndo.site:8000".PHP_EOL."  http://apm-my-first-lamp-app.lndo.site:8000".PHP_EOL;'
     description: Print local Kibana and APM URLs
   queue-work:
     service: appserver

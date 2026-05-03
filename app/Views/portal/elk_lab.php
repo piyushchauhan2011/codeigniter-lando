@@ -4,7 +4,7 @@
 <section class="portal-card elk-lab">
     <h2><?= esc($title) ?></h2>
     <p class="portal-text-muted">
-        Generate local logs, traces, and browser errors, then inspect them in Kibana Discover and APM.
+        Generate local logs and PHP traces for Kibana Discover and Elastic APM (PHP agent).
     </p>
 
     <div class="portal-card portal-card--nested">
@@ -20,16 +20,6 @@
             Open the unhandled exception in a new tab when you want to produce a visible 500:
             <a href="<?= site_url('learning/elk/unhandled-error') ?>"><?= esc(site_url('learning/elk/unhandled-error')) ?></a>
         </p>
-    </div>
-
-    <div class="portal-card portal-card--nested">
-        <h3>Browser source map demo</h3>
-        <p>
-            After `pnpm build` and `pnpm elastic:sourcemaps`, click the button below. The agent sends the error with a full stack trace;
-            Kibana matches <code>portal.js</code> to your uploaded map using <code>bundle_filepath</code> (absolute URL and path-only variants are uploaded).
-            The demo uses <code>captureError</code> (no uncaught exception), so open the console — you should see a short confirmation log each click.
-        </p>
-        <button type="button" class="portal-button" data-elk-js-error-demo>Demo JS error (APM)</button>
     </div>
 
     <div class="portal-card portal-card--nested">
