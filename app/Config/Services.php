@@ -6,6 +6,7 @@ use App\Libraries\ObjectStorage\AwsS3ObjectStorageClient;
 use App\Libraries\ObjectStorage\ObjectStorageClientInterface;
 use App\Libraries\Elastic\ElasticClient;
 use App\Libraries\Elastic\JobSearchService;
+use App\Libraries\FeatureFlags as FeatureFlagsLib;
 use App\Libraries\PortalAuth;
 use App\Libraries\PortalLocale;
 use CodeIgniter\Config\BaseService;
@@ -83,5 +84,14 @@ class Services extends BaseService
         }
 
         return new JobSearchService(static::elasticClient(), config(Elastic::class));
+    }
+
+    public static function featureFlags(bool $getShared = true): FeatureFlagsLib
+    {
+        if ($getShared) {
+            return static::getSharedInstance('featureFlags');
+        }
+
+        return FeatureFlagsLib::fromConfig(config(FeatureFlags::class));
     }
 }

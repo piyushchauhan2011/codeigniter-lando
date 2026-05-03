@@ -1,11 +1,19 @@
 /** @vitest-environment happy-dom */
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Backbone } from "./backbone_setup";
 import { bootJobsIndex } from "./jobs";
 
 describe("bootJobsIndex (DOM + mocked sync)", () => {
+  beforeEach(() => {
+    window.__FEATURE_FLAGS__ = {
+      elkLabNav: true,
+      jobsElasticsearch: true,
+      jobsApiLiveBanner: true,
+    };
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
     document.body.innerHTML = "";

@@ -13,10 +13,14 @@
         Search engine:
         <?php if (($searchMeta['engine'] ?? 'sql') === 'elastic'): ?>
             <strong>Elasticsearch</strong>
-            <a href="<?= portal_url('jobs?' . http_build_query(array_filter([...$filters, 'engine' => 'sql'], static fn ($value): bool => $value !== null && $value !== ''))) ?>">Use SQL fallback</a>
+            <?php if (feature_enabled('jobsElasticsearch')): ?>
+                <a href="<?= portal_url('jobs?' . http_build_query(array_filter([...$filters, 'engine' => 'sql'], static fn ($value): bool => $value !== null && $value !== ''))) ?>">Use SQL fallback</a>
+            <?php endif; ?>
         <?php else: ?>
             <strong>SQL</strong>
-            <a href="<?= portal_url('jobs?' . http_build_query(array_filter([...$filters, 'engine' => 'elastic'], static fn ($value): bool => $value !== null && $value !== ''))) ?>">Use Elasticsearch</a>
+            <?php if (feature_enabled('jobsElasticsearch')): ?>
+                <a href="<?= portal_url('jobs?' . http_build_query(array_filter([...$filters, 'engine' => 'elastic'], static fn ($value): bool => $value !== null && $value !== ''))) ?>">Use Elasticsearch</a>
+            <?php endif; ?>
         <?php endif; ?>
     </p>
     <?php if (! empty($searchMeta['error'])): ?>
