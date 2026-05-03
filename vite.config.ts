@@ -1,8 +1,36 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import sass from "sass";
 import { defineConfig, type Plugin } from "vite";
+
+function viteSentryPlugins(): Plugin[] {
+  const authToken = process.env.SENTRY_AUTH_TOKEN;
+  const org = process.env.SENTRY_ORG;
+  const project = process.env.SENTRY_PROJECT;
+  const release =
+    process.env.SENTRY_RELEASE ??
+    process.env.VITE_SENTRY_RELEASE ??
+    "";
+
+  if (!authToken || !org || !project || !release) {
+    return [];
+  }
+
+  return [
+    sentryVitePlugin({
+      authToken,
+      org,
+      project,
+      url: process.env.SENTRY_URL,
+      release: { name: release },
+      sourcemaps: {
+        assets: "./public/assets/dist/**",
+      },
+    }),
+  ];
+}
 
 /** When "1", re-emits portal/tutorial CSS with external `.css.map` so Chrome maps rules to `.scss` (Lando uses `dist`). */
 const cssSourceMapToScss = process.env.VITE_FULL_CSS_MAP === "1";
@@ -54,14 +82,14 @@ function sassDistSourcemapPlugin(): Plugin {
 
 export default defineConfig({
   publicDir: false,
-  plugins: cssSourceMapToScss ? [sassDistSourcemapPlugin()] : [],
+  plugins: [...viteSentryPlugins(), ...(cssSourceMapToScss ? [sassDistSourcemapPlugin()] : [])],
   css: {
     devSourcemap: true,
   },
   build: {
     outDir: "public/assets/dist",
     emptyOutDir: true,
-    /** Emit `.map` files for `pnpm elastic:sourcemaps` but omit `//# sourceMappingURL` in bundles so browsers keep real `portal.js` URLs in `Error.stack` (APM matches uploaded maps server-side). */
+    /** Hidden maps for Sentry upload (`@sentry/vite-plugin` when env set); omit `//# sourceMappingURL` so stacks reference deployed chunk URLs. */
     sourcemap: "hidden",
     // sourcemap: true,
     rollupOptions: {

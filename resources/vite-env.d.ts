@@ -6,8 +6,8 @@
 declare module "*.scss" {}
 
 interface ImportMetaEnv {
-  readonly VITE_ELASTIC_APM_ENABLED?: string;
-  readonly VITE_ELASTIC_APM_SERVER_URL?: string;
-  readonly VITE_ELASTIC_APM_SERVICE_NAME?: string;
-  readonly VITE_ELASTIC_APM_SERVICE_VERSION?: string;
+  readonly VITE_SENTRY_DSN?: string;
+  readonly VITE_SENTRY_ENVIRONMENT?: string;
+  readonly VITE_SENTRY_RELEASE?: string;
+  readonly VITE_SENTRY_TRACES_SAMPLE_RATE?: string;
 }

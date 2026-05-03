@@ -150,16 +150,6 @@ services:
         - -E
         - apm-server.host=0.0.0.0:8200
         - -E
-        - apm-server.rum.enabled=true
-        - -E
-        - apm-server.auth.anonymous.enabled=true
-        - -E
-        - apm-server.auth.anonymous.allow_agent=[rum-js]
-        - -E
-        - apm-server.rum.source_mapping.enabled=true
-        - -E
-        - apm-server.rum.source_mapping.elasticsearch.timeout=90s
-        - -E
         - output.elasticsearch.hosts=["http://elasticsearch:9200"]
       ports:
         - "8200"
@@ -186,8 +176,6 @@ proxy:
     - rustfs-api.my-first-lamp-app.lndo.site:9000
   kibana:
     - kibana-my-first-lamp-app.lndo.site:5601
-  apm-server:
-    - apm-my-first-lamp-app.lndo.site:8200
 
 tooling:
   elastic-health:
@@ -209,8 +197,8 @@ tooling:
   kibana-url:
     service: appserver
     cmd: >-
-      php -r 'echo "HTTPS Kibana (wildcard-TLS-safe hostname):".PHP_EOL."  https://kibana-my-first-lamp-app.lndo.site".PHP_EOL."App RUM proxy:".PHP_EOL."  https://my-first-lamp-app.lndo.site/__apm-proxy/…".PHP_EOL.PHP_EOL."HTTP fallback (CLI):".PHP_EOL."  http://kibana-my-first-lamp-app.lndo.site:8000".PHP_EOL."  http://apm-my-first-lamp-app.lndo.site:8000".PHP_EOL;'
-    description: Print local Kibana and APM URLs
+      php -r 'echo "HTTPS Kibana:".PHP_EOL."  https://kibana-my-first-lamp-app.lndo.site".PHP_EOL."HTTP fallback:".PHP_EOL."  http://kibana-my-first-lamp-app.lndo.site:8000".PHP_EOL.PHP_EOL."App:".PHP_EOL."  https://my-first-lamp-app.lndo.site".PHP_EOL.PHP_EOL."Sentry (self-hosted — see docs/SENTRY_SELF_HOSTED.md):".PHP_EOL."  UI typically http://localhost:9000 until you add Lando proxy / HTTPS.".PHP_EOL;'
+    description: Print local Kibana and app URLs (Sentry documented separately)
   queue-work:
     service: appserver
     cmd: php spark queue:work default

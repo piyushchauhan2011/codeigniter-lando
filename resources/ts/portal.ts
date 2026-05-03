@@ -1,17 +1,17 @@
 import "../scss/portal.scss";
 
-import { initElasticApm } from "./elastic_apm";
-import { initElkErrorDemo } from "./elk_error_demo";
 import { bootJobsIndex } from "./jobs";
 import { initLocalClock } from "./portal_clock";
+import { initSentry } from "./sentry";
+import { initSentryErrorDemo } from "./sentry_error_demo";
 
 export { formatPortalLocalPreview } from "./portal_clock";
 
 function initPortal(): void {
-  initElasticApm();
+  initSentry();
   initLocalClock();
   bootJobsIndex();
-  initElkErrorDemo();
+  initSentryErrorDemo();
 }
 
 if (typeof document !== "undefined") {
