@@ -18,7 +18,7 @@ export function initElkErrorDemo(): void {
       );
     } else {
       console.warn(
-        "[ELK lab] RUM agent not initialized — capture skipped. Ensure `pnpm build` includes elastic_apm init and `VITE_ELASTIC_APM_ENABLED` is not \"0\".",
+        '[ELK lab] RUM agent not initialized — capture skipped. Ensure `pnpm build` includes elastic_apm init and `VITE_ELASTIC_APM_ENABLED` is not "0".',
       );
     }
   });
