@@ -23,6 +23,10 @@ class Jobs extends BaseController
             'engine'          => $this->request->getGet('engine'),
         ];
 
+        if (! Services::featureFlags()->enabled('jobsElasticsearch')) {
+            $filters['engine'] = 'sql';
+        }
+
         $searchMeta = [
             'engine'       => $filters['engine'] === 'elastic' ? 'elastic' : 'sql',
             'total'        => null,

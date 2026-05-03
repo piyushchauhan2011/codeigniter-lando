@@ -1,5 +1,6 @@
 import _ from "underscore";
 
+import { isFeatureEnabled } from "../../feature_flags";
 import { $, Backbone } from "../../backbone_setup";
 
 import { JobsCollection } from "../collections/jobs";
@@ -31,6 +32,9 @@ export const JobsIndexView = Backbone.View.extend({
   initialize(this: JobsIndexViewType) {
     const Ctor = JobsCollection as unknown as { new (): JobsCollectionInstance };
     this.collection = new Ctor();
+    if (!isFeatureEnabled("jobsApiLiveBanner")) {
+      return;
+    }
     this.listenTo(this.collection, "sync", this.onApiSync);
     this.listenTo(this.collection, "error", this.onApiError);
     this.collection.fetch();

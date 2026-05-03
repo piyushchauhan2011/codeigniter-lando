@@ -6,6 +6,7 @@ use App\Libraries\ObjectStorage\AwsS3ObjectStorageClient;
 use App\Libraries\ObjectStorage\ObjectStorageClientInterface;
 use App\Libraries\Elastic\ElasticClient;
 use App\Libraries\Elastic\JobSearchService;
+use App\Libraries\FeatureFlags as FeatureFlagsLib;
 use App\Libraries\PortalAuth;
 use App\Libraries\PortalLocale;
 use CodeIgniter\Config\BaseService;
@@ -83,5 +84,14 @@ class Services extends BaseService
         }
 
         return new JobSearchService(static::elasticClient(), config(Elastic::class));
+    }
+
+    public static function featureFlags(bool $getShared = true): FeatureFlagsLib
+    {
+        // Always rebuild from a non-shared config. PHP-FPM reuses the same worker
+        // process across requests, and getSharedInstance() would otherwise keep the
+        // first flag snapshot until a restart. DotEnv reloads .env each request; this
+        // lets editors and toggles see updated flags on the next page refresh.
+        return FeatureFlagsLib::fromConfig(config(FeatureFlags::class, false));
     }
 }
