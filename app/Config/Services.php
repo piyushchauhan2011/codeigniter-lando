@@ -88,10 +88,10 @@ class Services extends BaseService
 
     public static function featureFlags(bool $getShared = true): FeatureFlagsLib
     {
-        if ($getShared) {
-            return static::getSharedInstance('featureFlags');
-        }
-
-        return FeatureFlagsLib::fromConfig(config(FeatureFlags::class));
+        // Always rebuild from a non-shared config. PHP-FPM reuses the same worker
+        // process across requests, and getSharedInstance() would otherwise keep the
+        // first flag snapshot until a restart. DotEnv reloads .env each request; this
+        // lets editors and toggles see updated flags on the next page refresh.
+        return FeatureFlagsLib::fromConfig(config(FeatureFlags::class, false));
     }
 }
