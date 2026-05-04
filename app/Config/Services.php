@@ -9,6 +9,11 @@ use App\Libraries\Elastic\JobSearchService;
 use App\Libraries\FeatureFlags as FeatureFlagsLib;
 use App\Libraries\PortalAuth;
 use App\Libraries\PortalLocale;
+use App\Repositories\JobPortal\JobRepository;
+use App\Repositories\JobPortal\PaymentIntentRepository;
+use App\Services\JobPortal\EmployerDashboardService;
+use App\Services\JobPortal\EmployerProfileService;
+use App\Services\JobPortal\PublicJobListingService;
 use CodeIgniter\Config\BaseService;
 use Elastic\Elasticsearch\ClientBuilder;
 
@@ -93,5 +98,58 @@ class Services extends BaseService
         // first flag snapshot until a restart. DotEnv reloads .env each request; this
         // lets editors and toggles see updated flags on the next page refresh.
         return FeatureFlagsLib::fromConfig(config(FeatureFlags::class, false));
+    }
+
+    public static function jobPortalJobRepository(bool $getShared = true): JobRepository
+    {
+        if ($getShared) {
+            return static::getSharedInstance('jobPortalJobRepository');
+        }
+
+        return new JobRepository();
+    }
+
+    public static function jobPortalPaymentIntentRepository(bool $getShared = true): PaymentIntentRepository
+    {
+        if ($getShared) {
+            return static::getSharedInstance('jobPortalPaymentIntentRepository');
+        }
+
+        return new PaymentIntentRepository();
+    }
+
+    public static function publicJobListing(bool $getShared = true): PublicJobListingService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('publicJobListing');
+        }
+
+        return new PublicJobListingService(
+            static::jobSearch(false),
+            static::jobPortalJobRepository(false),
+            static::featureFlags(false),
+            static::portalLocale(false),
+        );
+    }
+
+    public static function employerDashboard(bool $getShared = true): EmployerDashboardService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('employerDashboard');
+        }
+
+        return new EmployerDashboardService(
+            static::jobPortalJobRepository(false),
+            static::jobPortalPaymentIntentRepository(false),
+        );
+    }
+
+    public static function employerProfile(bool $getShared = true): EmployerProfileService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('employerProfile');
+        }
+
+        return new EmployerProfileService();
     }
 }

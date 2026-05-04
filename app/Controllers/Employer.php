@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\EmployerProfileModel;
 use App\Models\JobApplicationModel;
 use App\Models\JobCategoryModel;
 use App\Models\JobModel;
-use App\Models\PaymentIntentModel;
 use Config\Services;
 
 class Employer extends BaseController
@@ -16,23 +14,19 @@ class Employer extends BaseController
     public function dashboard(): string
     {
         $auth = Services::portalAuth();
-
-        $jobs = model(JobModel::class, false)
-            ->where('employer_user_id', $auth->id())
-            ->orderBy('created_at', 'DESC')
-            ->findAll();
+        $dash = Services::employerDashboard()->buildDashboard((int) $auth->id());
 
         return view('portal/employer/dashboard', [
             'title'          => 'Employer dashboard',
-            'jobs'           => $jobs,
-            'paymentIntents' => model(PaymentIntentModel::class)->latestByEmployerIndexedByJob((int) $auth->id()),
+            'jobs'           => $dash['jobs'],
+            'paymentIntents' => $dash['paymentIntents'],
         ]);
     }
 
     public function profile(): string
     {
         $auth    = Services::portalAuth();
-        $profile = model(EmployerProfileModel::class, false)->where('user_id', $auth->id())->first();
+        $profile = Services::employerProfile()->findByUserId((int) $auth->id());
 
         if ($profile === null) {
             throw new \RuntimeException('Employer profile missing.');
@@ -52,7 +46,8 @@ class Employer extends BaseController
         }
 
         $auth    = Services::portalAuth();
-        $profile = model(EmployerProfileModel::class, false)->where('user_id', $auth->id())->first();
+        $service = Services::employerProfile();
+        $profile = $service->findByUserId((int) $auth->id());
 
         if ($profile === null) {
             return redirect()->back()->with('error', 'Profile not found.');
@@ -64,7 +59,8 @@ class Employer extends BaseController
             'description'  => (string) $this->request->getPost('description'),
         ];
 
-        $file = $this->request->getFile('logo');
+        $logoPath = null;
+        $file     = $this->request->getFile('logo');
         if ($file !== null && $file->isValid() && ! $file->hasMoved()) {
             if (! $this->validate([
                 'logo' => 'uploaded[logo]|max_size[logo,2048]|ext_in[logo,png,jpg,jpeg,webp]',
@@ -72,17 +68,14 @@ class Employer extends BaseController
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
 
-            $target = FCPATH . 'uploads/job_portal/logos/';
-            if (! is_dir($target) && ! mkdir($target, 0775, true) && ! is_dir($target)) {
+            try {
+                $logoPath = $service->storeValidatedLogo($file);
+            } catch (\RuntimeException $e) {
                 return redirect()->back()->with('error', 'Cannot create upload directory.');
             }
-
-            $newName = $file->getRandomName();
-            $file->move($target, $newName);
-            $data['logo_path'] = 'job_portal/logos/' . $newName;
         }
 
-        model(EmployerProfileModel::class, false)->update($profile['id'], $data);
+        $service->update((int) $profile['id'], $data, $logoPath);
 
         return redirect()->to(site_url(Services::portalLocale()->localizePath('employer/profile')))->with('message', 'Profile updated.');
     }

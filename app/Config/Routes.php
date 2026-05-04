@@ -19,6 +19,8 @@ $routes->get('/learning/elk/slow-request', 'ElkLab::slowRequest');
 $routes->get('/learning/elk/not-found', 'ElkLab::notFound');
 
 $portalRoutes = static function (RouteCollection $routes): void {
+    // Public job listing is implemented with App\Services\JobPortal\* and App\Repositories\JobPortal\*
+    // (feature-folder namespaces). This same closure is mounted at /, /fr, and /en — not as separate CI4 Modules.
     $routes->get('jobs', 'Jobs::index');
     $routes->get('jobs/(:num)', 'Jobs::show/$1');
 
