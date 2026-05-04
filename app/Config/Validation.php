@@ -113,6 +113,7 @@ class Validation extends BaseConfig
 
     /** @var array<string, string> */
     public array $portal_job_asset_upload = [
-        'asset' => 'uploaded[asset]|max_size[asset,5120]|ext_in[asset,png,jpg,jpeg,webp,pdf,doc,docx,txt]',
+        'asset' => 'uploaded[asset]|max_size[asset,5120]|ext_in[asset,png,jpg,jpeg,webp,pdf,doc,docx,txt]'
+            . '|mime_in[asset,image/png,image/jpeg,image/webp,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document]',
     ];
 }

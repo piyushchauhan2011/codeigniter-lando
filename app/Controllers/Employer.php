@@ -67,7 +67,8 @@ class Employer extends BaseController
         $file = $this->request->getFile('logo');
         if ($file !== null && $file->isValid() && ! $file->hasMoved()) {
             if (! $this->validate([
-                'logo' => 'uploaded[logo]|max_size[logo,2048]|ext_in[logo,png,jpg,jpeg,webp]',
+                'logo' => 'uploaded[logo]|max_size[logo,2048]|ext_in[logo,png,jpg,jpeg,webp]'
+                    . '|mime_in[logo,image/png,image/jpeg,image/webp]',
             ])) {
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }

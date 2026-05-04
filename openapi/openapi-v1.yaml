@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: Job portal public API
+  version: "1.0.0"
+  description: >
+    Versioned read-only JSON surface for published jobs. Authenticated portal routes remain HTML.
+
+servers:
+  - url: https://example.test
+    description: Replace with app.baseURL origin (HTTPS in production).
+
+paths:
+  /api/v1/jobs:
+    get:
+      summary: List published jobs
+      operationId: listPublishedJobs
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        "200":
+          description: Paginated jobs
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: object
+                    required: [jobs]
+                    properties:
+                      jobs:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Job"
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+                      total_pages:
+                        type: integer
+        "429":
+          description: Application-level rate limit (see Api throttle + nginx edge limits)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RateLimitError"
+
+  /api/v1/jobs/{id}:
+    get:
+      summary: Show one published job
+      operationId: showPublishedJob
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Single job
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: object
+                    required: [job]
+                    properties:
+                      job:
+                        $ref: "#/components/schemas/Job"
+                  meta:
+                    type: object
+        "404":
+          description: Missing or unpublished job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+
+components:
+  schemas:
+    Job:
+      type: object
+      description: Portal job row plus ISO8601 timestamps (UTC).
+      additionalProperties: true
+
+    NotFoundError:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: not_found
+            message:
+              type: string
+
+    RateLimitError:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: too_many_requests
+            message:
+              type: string

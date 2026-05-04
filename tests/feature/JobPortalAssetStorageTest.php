@@ -64,6 +64,23 @@ final class JobPortalAssetStorageTest extends CIUnitTestCase
         self::assertSame('text/plain', $this->storage->putObjects[0]['contentType']);
     }
 
+    public function testEmployerUploadRejectedWhenDetectedMimeOutsideWhitelist(): void
+    {
+        $jobId = $this->firstJobId();
+        $before = $this->db->table('job_assets')->countAllResults();
+
+        $this->fakeUpload('report.pdf', "<?php echo 'no';", 'application/pdf');
+
+        $result = $this
+            ->withSession(['user' => ['id' => $this->userIdForEmail('employer@example.test')]])
+            ->post('/employer/jobs/' . $jobId . '/assets');
+
+        $result->assertRedirect();
+
+        self::assertSame($before, $this->db->table('job_assets')->countAllResults());
+        self::assertCount(0, $this->storage->putObjects);
+    }
+
     public function testEmployerGetsSignedUrlForOwnedAsset(): void
     {
         $assetId = $this->insertAssetForEmployer('offer.pdf');

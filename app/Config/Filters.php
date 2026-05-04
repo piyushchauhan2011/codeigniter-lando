@@ -2,7 +2,9 @@
 
 namespace Config;
 
+use App\Filters\ApiThrottleFilter;
 use App\Filters\LocaleFilter;
+use App\Filters\LoginThrottleFilter;
 use App\Filters\PortalAdminFilter;
 use App\Filters\PortalAuthFilter;
 use App\Filters\PortalEmployerFilter;
@@ -33,6 +35,8 @@ class Filters extends BaseFilters
      */
     public array $aliases = [
         'locale'        => LocaleFilter::class,
+        'apiThrottle'   => ApiThrottleFilter::class,
+        'loginThrottle' => LoginThrottleFilter::class,
         'telemetry'     => RequestTelemetryFilter::class,
         'auth'          => PortalAuthFilter::class,
         'guest'         => PortalGuestFilter::class,
@@ -89,7 +93,14 @@ class Filters extends BaseFilters
             ? []
             : [
                 'telemetry',
-                'csrf',
+                [
+                    'csrf' => [
+                        'except' => [
+                            'api',
+                            'api/*',
+                        ],
+                    ],
+                ],
             ],
         'after' => [
             'telemetry',

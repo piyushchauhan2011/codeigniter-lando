@@ -1,0 +1,18 @@
+[Unit]
+Description=CodeIgniter queue worker (spark queue:work)
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/release/current
+# Adjust PHP binary path and queue connection flags for your install.
+ExecStart=/usr/bin/php spark queue:work --verbose
+Restart=always
+RestartSec=5
+EnvironmentFile=-/var/www/release/shared/.env.queue
+
+[Install]
+WantedBy=multi-user.target

@@ -53,8 +53,11 @@ class Cookie extends BaseConfig
      * --------------------------------------------------------------------------
      *
      * Cookie will only be set if a secure HTTPS connection exists.
+     *
+     * Production deployments must terminate TLS at the proxy (see docs/LXC_VPS_LAB.md).
+     * Local HTTP development keeps this false unless you serve HTTPS everywhere.
      */
-    public bool $secure = false;
+    public bool $secure = ENVIRONMENT === 'production';
 
     /**
      * --------------------------------------------------------------------------
