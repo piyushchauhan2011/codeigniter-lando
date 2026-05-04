@@ -27,7 +27,7 @@ $portalRoutes = static function (RouteCollection $routes): void {
 
     $routes->group('', ['filter' => 'guest'], static function (RouteCollection $routes): void {
         $routes->get('login', 'Auth::login');
-        $routes->post('login', 'Auth::attemptLogin');
+        $routes->post('login', 'Auth::attemptLogin', ['filter' => 'loginThrottle']);
         $routes->get('register', 'Auth::register');
         $routes->post('register', 'Auth::attemptRegister');
     });
@@ -79,4 +79,9 @@ ShieldServices::auth()->routes($routes, ['except' => ['register', 'login', 'logo
 
 $routes->group('api', ['namespace' => 'App\Controllers\Api'], static function (RouteCollection $routes): void {
     $routes->resource('jobs', ['controller' => 'JobsApi', 'only' => ['index', 'show']]);
+});
+
+$routes->group('api/v1', ['namespace' => 'App\Controllers\Api\V1', 'filter' => 'apiThrottle'], static function (RouteCollection $routes): void {
+    $routes->get('jobs', 'PublishedJobs::index');
+    $routes->get('jobs/(:num)', 'PublishedJobs::show/$1');
 });

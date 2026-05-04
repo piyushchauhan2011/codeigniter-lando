@@ -38,6 +38,13 @@ This project is set up for Lando-based local development.
 - Set **`app.baseURL` in `.env`** to that same origin (trailing slash). If you see `index.php` in the URL or asset 404s, the base URL usually does not match what you opened in the browser.
 - Adminer is available after `lando rebuild -y` / `lando start`; use a URL from `lando info` such as `http://adminer.my-first-lamp-app.lndo.site:8080/`, with server `database`, username `lamp`, password `lamp`, database `lamp`.
 
+## VPS-style labs (LXC, TLS, ops discipline)
+
+- Multi-container topology, mkcert TLS at nginx, systemd queue worker, backup drill: [docs/LXC_VPS_LAB.md](docs/LXC_VPS_LAB.md).
+- OWASP-aligned checklist tied to config and tests: [docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md).
+- ELK dashboard + alert + incident runbook (builds on [ELK_LEARNING_LAB.md](ELK_LEARNING_LAB.md)): [docs/ELK_INCIDENT_RUNBOOK.md](docs/ELK_INCIDENT_RUNBOOK.md).
+- Versioned public JSON API contract (`GET /api/v1/jobs`): [openapi/openapi-v1.yaml](openapi/openapi-v1.yaml).
+
 ## Running CodeIgniter Tests
 
 Information on running the CodeIgniter test suite can be found in the [README.md](tests/README.md) file in the tests directory.

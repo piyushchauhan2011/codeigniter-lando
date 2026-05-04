@@ -143,6 +143,10 @@ In the browser, open `/jobs` and switch from SQL to Elasticsearch using the link
 5. Create Kibana alerting rules conceptually for high error rate, slow requests, and searches with zero results.
 6. Explore ILM concepts for rotating `codeigniter-app-logs-*` indexes.
 
+## Operating discipline
+
+Practice turning telemetry into response habits with **[docs/ELK_INCIDENT_RUNBOOK.md](docs/ELK_INCIDENT_RUNBOOK.md)** (dashboard recipes, threshold alerts, queue/error cues, and a short incident playbook).
+
 ## Troubleshooting
 
 - **Kibana console: Cross-Origin-Opener-Policy / “untrustworthy origin”**: You opened Kibana over plain **HTTP** (e.g. `http://…:8080`). Browsers ignore COOP on non-HTTPS origins; use **`https://kibana-my-first-lamp-app.lndo.site`** so behavior matches `SERVER_PUBLICBASEURL`.
